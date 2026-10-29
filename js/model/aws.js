@@ -67,7 +67,7 @@ export function normalizeAws(doc, meta) {
   if (!acct) missing("$.Account", "Account section");
   const accountId = (acct && acct.AccountId) || `unknown:${file}`;
   if (acct && !acct.AccountId) missing("$.Account.AccountId", "Account ID");
-  const accountTags = tagMap(acct && acct.Tags);
+  const accountTags = acct && acct.Tags ? tagMap(acct.Tags) : null; // null: not in export
   const company = (acct && acct.Company) || meta.folder || null;
   if (acct && !acct.Company) missing("$.Account.Company", "Company name");
   if (acct && !acct.Tags) missing("$.Account.Tags", "Account tags");
@@ -79,8 +79,8 @@ export function normalizeAws(doc, meta) {
   const sections = {}; // region -> { section: true|false }
   out.accounts.push({
     cloud: "aws", id: accountId, name: (acct && acct.AccountName) || null, company,
-    file, tags: accountTags, role: accountTags.AccountRole ?? null,
-    environment: accountTags.Environment ?? null, regions: regionNames, sections,
+    file, tags: accountTags, role: accountTags?.AccountRole ?? null,
+    environment: accountTags?.Environment ?? null, regions: regionNames, sections,
     src: src("Account"),
   });
 
@@ -156,7 +156,8 @@ export function normalizeAws(doc, meta) {
         cloud: "aws", region, id: a.TransitGatewayAttachmentId, transitGatewayId: a.TransitGatewayId,
         transitOwnerId: a.TransitGatewayOwnerId ?? null, resourceOwnerId: a.ResourceOwnerId ?? null,
         resourceType: a.ResourceType ?? null, networkId: a.ResourceType === "vpc" ? a.ResourceId : null,
-        state: a.State ?? null, seenIn: [file], src: src("Regions", region, "TransitGatewayAttachments", i),
+        state: a.State ?? null, seenIn: [src("Regions", region, "TransitGatewayAttachments", i)],
+        src: src("Regions", region, "TransitGatewayAttachments", i),
       });
     }
 
@@ -243,7 +244,7 @@ export function normalizeAws(doc, meta) {
       out.peerings.push({
         cloud: "aws", id: p.VpcPeeringConnectionId, status: p.Status?.Code ?? null,
         active: p.Status?.Code === "active", requester: side(p.RequesterVpcInfo),
-        accepter: side(p.AccepterVpcInfo), seenIn: [file],
+        accepter: side(p.AccepterVpcInfo), seenIn: [src("Regions", region, "VpcPeeringConnections", i)],
         src: src("Regions", region, "VpcPeeringConnections", i),
       });
     }
@@ -276,7 +277,9 @@ export function normalizeAws(doc, meta) {
       out.cdnDistributions.push({
         cloud: "aws", accountId, region: "global", id: d.Id, aliases: d.Aliases?.Items || [],
         domainName: d.DomainName ?? null, enabled: d.Enabled !== false,
-        wafAclArn: d.WebACLId ? d.WebACLId : null, src: src("Global", "CloudFrontDistributions", i),
+        // "" means no WAF; a missing field means the export cannot say
+        wafAclArn: d.WebACLId === undefined ? undefined : d.WebACLId || null,
+        src: src("Global", "CloudFrontDistributions", i),
       });
     }
   }

@@ -1,0 +1,7 @@
+{
+  "_export": {
+    "schema": "oracle-tenancy-inventory/1.0",
+    "synthetic": true
+  },
+  "Tenancy": {}
+}

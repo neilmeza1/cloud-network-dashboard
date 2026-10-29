@@ -11,7 +11,7 @@
 //   loadBalancers, listeners, cdnDistributions, wafAcls, peerings, flowLogs
 // }
 // Records shared between files (peerings, transit gateway attachments) are kept once,
-// with `seenIn` listing every file that reported them.
+// with `seenIn` listing every { file, path } that reported them.
 
 import { detectFormat } from "./detect.js";
 import { normalizeAws, emptyFragment } from "./aws.js";

@@ -22,4 +22,4 @@ A static web app. A user uploads a cloud inventory JSON export (AWS first; Azure
 - Work in the build order from the design doc, one step at a time, and stop after each step so the result can be checked.
 
 ## Commands
-- `python3 tools/generate_samples.py` regenerates the synthetic samples and the answer key
+- `python tools/generate_samples.py` regenerates the synthetic samples and the answer key
