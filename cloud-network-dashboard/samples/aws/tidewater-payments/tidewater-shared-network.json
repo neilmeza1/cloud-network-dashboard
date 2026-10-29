@@ -1,0 +1,1817 @@
+{
+  "_export": {
+    "schema": "aws-account-inventory/1.0",
+    "generated": "2026-10-28T12:00:00Z",
+    "synthetic": true,
+    "source": "SYNTHETIC SAMPLE: fictional company, not a real environment. Shapes mirror AWS CLI describe-* output merged per account."
+  },
+  "Account": {
+    "AccountId": "710420000001",
+    "AccountName": "tidewater-shared-network",
+    "Company": "Tidewater Payments",
+    "Tags": {
+      "AccountRole": "shared-network",
+      "Environment": "shared",
+      "Owner": "network-engineering"
+    }
+  },
+  "Regions": {
+    "us-east-1": {
+      "Vpcs": [
+        {
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "CidrBlock": "10.20.0.0/20",
+          "State": "available",
+          "IsDefault": false,
+          "OwnerId": "710420000001",
+          "InstanceTenancy": "default",
+          "DhcpOptionsId": "dopt-579cd9b5",
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge"
+            }
+          ]
+        }
+      ],
+      "Subnets": [
+        {
+          "SubnetId": "subnet-7a3afd32f941095b4",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "CidrBlock": "10.20.0.0/24",
+          "AvailabilityZone": "us-east-1a",
+          "AvailabilityZoneId": "use1-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 230,
+          "OwnerId": "710420000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-edge-public-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "public"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-038cdac87b40b4ce3",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "CidrBlock": "10.20.1.0/24",
+          "AvailabilityZone": "us-east-1b",
+          "AvailabilityZoneId": "use1-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 230,
+          "OwnerId": "710420000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-edge-public-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "public"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-11326c6b8c8e84c76",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "CidrBlock": "10.20.2.0/24",
+          "AvailabilityZone": "us-east-1c",
+          "AvailabilityZoneId": "use1-az3",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 243,
+          "OwnerId": "710420000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-edge-public-c"
+            },
+            {
+              "Key": "Tier",
+              "Value": "public"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-7a30c394628e60033",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "CidrBlock": "10.20.3.0/24",
+          "AvailabilityZone": "us-east-1a",
+          "AvailabilityZoneId": "use1-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 233,
+          "OwnerId": "710420000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-edge-attach-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "attach"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-4fe96725aee6050bf",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "CidrBlock": "10.20.4.0/24",
+          "AvailabilityZone": "us-east-1b",
+          "AvailabilityZoneId": "use1-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 221,
+          "OwnerId": "710420000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-edge-attach-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "attach"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-5e5ea1f041acbf0de",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "CidrBlock": "10.20.5.0/24",
+          "AvailabilityZone": "us-east-1c",
+          "AvailabilityZoneId": "use1-az3",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 217,
+          "OwnerId": "710420000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-edge-attach-c"
+            },
+            {
+              "Key": "Tier",
+              "Value": "attach"
+            }
+          ]
+        }
+      ],
+      "RouteTables": [
+        {
+          "RouteTableId": "rtb-eb7a62b58a6b6dc42",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "OwnerId": "710420000001",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.0.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "GatewayId": "igw-baeaa6c945a1d9887",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-2fb7519e5a16e1a09",
+              "RouteTableId": "rtb-eb7a62b58a6b6dc42",
+              "SubnetId": "subnet-7a3afd32f941095b4",
+              "AssociationState": {
+                "State": "associated"
+              }
+            },
+            {
+              "RouteTableAssociationId": "rtbassoc-84e3951731f00b502",
+              "RouteTableId": "rtb-eb7a62b58a6b6dc42",
+              "SubnetId": "subnet-038cdac87b40b4ce3",
+              "AssociationState": {
+                "State": "associated"
+              }
+            },
+            {
+              "RouteTableAssociationId": "rtbassoc-9a5f510bd5e342a34",
+              "RouteTableId": "rtb-eb7a62b58a6b6dc42",
+              "SubnetId": "subnet-11326c6b8c8e84c76",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-rt-public"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-fa0f2a79152fcd15b",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "OwnerId": "710420000001",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.0.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "NatGatewayId": "nat-7998e3e6b0893c809"
+            },
+            {
+              "DestinationCidrBlock": "10.0.0.0/8",
+              "TransitGatewayId": "tgw-161f480e76106edb6",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-5ea36ccea043720c9",
+              "RouteTableId": "rtb-fa0f2a79152fcd15b",
+              "SubnetId": "subnet-7a30c394628e60033",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-rt-attach-a"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-567a743ccd84952ac",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "OwnerId": "710420000001",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.0.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "NatGatewayId": "nat-5febadad5301456fa"
+            },
+            {
+              "DestinationCidrBlock": "10.0.0.0/8",
+              "TransitGatewayId": "tgw-161f480e76106edb6",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-25c01e05df2e4dbd4",
+              "RouteTableId": "rtb-567a743ccd84952ac",
+              "SubnetId": "subnet-4fe96725aee6050bf",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-rt-attach-b"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-29e2c8423a7ceecf7",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "OwnerId": "710420000001",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.0.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "NatGatewayId": "nat-dba47da10d9c9ff1b"
+            },
+            {
+              "DestinationCidrBlock": "10.0.0.0/8",
+              "TransitGatewayId": "tgw-161f480e76106edb6",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-de229a342dd3e1dc0",
+              "RouteTableId": "rtb-29e2c8423a7ceecf7",
+              "SubnetId": "subnet-5e5ea1f041acbf0de",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-rt-attach-c"
+            }
+          ]
+        }
+      ],
+      "InternetGateways": [
+        {
+          "InternetGatewayId": "igw-baeaa6c945a1d9887",
+          "OwnerId": "710420000001",
+          "Attachments": [
+            {
+              "VpcId": "vpc-6e26126f1b444c57f",
+              "State": "available"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-igw"
+            }
+          ]
+        }
+      ],
+      "NatGateways": [
+        {
+          "NatGatewayId": "nat-7998e3e6b0893c809",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "SubnetId": "subnet-7a3afd32f941095b4",
+          "State": "available",
+          "ConnectivityType": "public",
+          "CreateTime": "2025-03-14T15:02:11+00:00",
+          "NatGatewayAddresses": [
+            {
+              "AllocationId": "eipalloc-78d3a75e3df521dc9",
+              "NetworkInterfaceId": "eni-0b45c9c09a70b3d1f",
+              "PrivateIp": "10.20.0.4",
+              "PublicIp": "203.0.113.119"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-nat-a"
+            }
+          ]
+        },
+        {
+          "NatGatewayId": "nat-5febadad5301456fa",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "SubnetId": "subnet-038cdac87b40b4ce3",
+          "State": "available",
+          "ConnectivityType": "public",
+          "CreateTime": "2025-03-14T15:02:11+00:00",
+          "NatGatewayAddresses": [
+            {
+              "AllocationId": "eipalloc-10465f76fb32eafdd",
+              "NetworkInterfaceId": "eni-f4468a97f54cb0429",
+              "PrivateIp": "10.20.1.4",
+              "PublicIp": "203.0.113.198"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-nat-b"
+            }
+          ]
+        },
+        {
+          "NatGatewayId": "nat-dba47da10d9c9ff1b",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "SubnetId": "subnet-11326c6b8c8e84c76",
+          "State": "available",
+          "ConnectivityType": "public",
+          "CreateTime": "2025-03-14T15:02:11+00:00",
+          "NatGatewayAddresses": [
+            {
+              "AllocationId": "eipalloc-21f05d8f93c0a3a43",
+              "NetworkInterfaceId": "eni-c8d3e83d05c7f59d7",
+              "PrivateIp": "10.20.2.4",
+              "PublicIp": "203.0.113.192"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-nat-c"
+            }
+          ]
+        }
+      ],
+      "TransitGateways": [
+        {
+          "TransitGatewayId": "tgw-161f480e76106edb6",
+          "TransitGatewayArn": "arn:aws:ec2:us-east-1:710420000001:transit-gateway/tgw-161f480e76106edb6",
+          "State": "available",
+          "OwnerId": "710420000001",
+          "Description": "Shared transit hub",
+          "Options": {
+            "AmazonSideAsn": 64512,
+            "DefaultRouteTableAssociation": "disable",
+            "DefaultRouteTablePropagation": "disable"
+          },
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-transit-hub"
+            }
+          ]
+        }
+      ],
+      "TransitGatewayAttachments": [
+        {
+          "TransitGatewayAttachmentId": "tgw-attach-50298055b9ccff287",
+          "TransitGatewayId": "tgw-161f480e76106edb6",
+          "TransitGatewayOwnerId": "710420000001",
+          "ResourceOwnerId": "710420000001",
+          "ResourceType": "vpc",
+          "ResourceId": "vpc-6e26126f1b444c57f",
+          "State": "available",
+          "Association": {
+            "TransitGatewayRouteTableId": "tgw-rtb-0a1b2c3d4e5f60718",
+            "State": "associated"
+          },
+          "SubnetIds": [
+            "subnet-7a30c394628e60033",
+            "subnet-4fe96725aee6050bf",
+            "subnet-5e5ea1f041acbf0de"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-tgw-attach"
+            }
+          ]
+        },
+        {
+          "TransitGatewayAttachmentId": "tgw-attach-bc0db2086e7446fcf",
+          "TransitGatewayId": "tgw-161f480e76106edb6",
+          "TransitGatewayOwnerId": "710420000001",
+          "ResourceOwnerId": "710420000002",
+          "ResourceType": "vpc",
+          "ResourceId": "vpc-e533ef6f2fdd3bc80",
+          "State": "available",
+          "Association": {
+            "TransitGatewayRouteTableId": "tgw-rtb-0a1b2c3d4e5f60718",
+            "State": "associated"
+          },
+          "SubnetIds": [
+            "subnet-eab446484657c315e",
+            "subnet-91ce31cc6908fe37f",
+            "subnet-ed55b65e9608543d1"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2040"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-prod-app-tgw-attach"
+            }
+          ]
+        },
+        {
+          "TransitGatewayAttachmentId": "tgw-attach-c9ad4d7fc00e78dd4",
+          "TransitGatewayId": "tgw-161f480e76106edb6",
+          "TransitGatewayOwnerId": "710420000001",
+          "ResourceOwnerId": "710420000003",
+          "ResourceType": "vpc",
+          "ResourceId": "vpc-cd05bc4f43deb74ec",
+          "State": "available",
+          "Association": {
+            "TransitGatewayRouteTableId": "tgw-rtb-0a1b2c3d4e5f60718",
+            "State": "associated"
+          },
+          "SubnetIds": [
+            "subnet-7a49f5a745d28666b",
+            "subnet-f6c7a7cfd31b51a50"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-tgw-attach"
+            }
+          ]
+        },
+        {
+          "TransitGatewayAttachmentId": "tgw-attach-2525584c12fc5a235",
+          "TransitGatewayId": "tgw-161f480e76106edb6",
+          "TransitGatewayOwnerId": "710420000001",
+          "ResourceOwnerId": "710420000004",
+          "ResourceType": "vpc",
+          "ResourceId": "vpc-c756f62cedd126cb5",
+          "State": "available",
+          "Association": {
+            "TransitGatewayRouteTableId": "tgw-rtb-0a1b2c3d4e5f60718",
+            "State": "associated"
+          },
+          "SubnetIds": [
+            "subnet-5f39f53d75629be8a",
+            "subnet-5f3593559071f3cbb",
+            "subnet-219a919742d86a45c"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-tgw-attach"
+            }
+          ]
+        },
+        {
+          "TransitGatewayAttachmentId": "tgw-attach-79001b78b12577bc2",
+          "TransitGatewayId": "tgw-161f480e76106edb6",
+          "TransitGatewayOwnerId": "710420000001",
+          "ResourceOwnerId": "710420000005",
+          "ResourceType": "vpc",
+          "ResourceId": "vpc-0a757bfe8d70d76a8",
+          "State": "available",
+          "Association": {
+            "TransitGatewayRouteTableId": "tgw-rtb-0a1b2c3d4e5f60718",
+            "State": "associated"
+          },
+          "SubnetIds": [
+            "subnet-7ffa2a199f8d96f54",
+            "subnet-936ea12fa20cebccd"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "security-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-4001"
+            },
+            {
+              "Key": "Application",
+              "Value": "security-logging"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-seclog-tgw-attach"
+            }
+          ]
+        }
+      ],
+      "VpcEndpoints": [],
+      "NetworkInterfaces": [
+        {
+          "NetworkInterfaceId": "eni-0b45c9c09a70b3d1f",
+          "SubnetId": "subnet-7a3afd32f941095b4",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000001",
+          "InterfaceType": "nat_gateway",
+          "Description": "Interface for NAT Gateway nat-7998e3e6b0893c809",
+          "PrivateIpAddress": "10.20.0.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [],
+          "Association": {
+            "PublicIp": "203.0.113.119",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-f4468a97f54cb0429",
+          "SubnetId": "subnet-038cdac87b40b4ce3",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000001",
+          "InterfaceType": "nat_gateway",
+          "Description": "Interface for NAT Gateway nat-5febadad5301456fa",
+          "PrivateIpAddress": "10.20.1.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [],
+          "Association": {
+            "PublicIp": "203.0.113.198",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-c8d3e83d05c7f59d7",
+          "SubnetId": "subnet-11326c6b8c8e84c76",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "AvailabilityZone": "us-east-1c",
+          "OwnerId": "710420000001",
+          "InterfaceType": "nat_gateway",
+          "Description": "Interface for NAT Gateway nat-dba47da10d9c9ff1b",
+          "PrivateIpAddress": "10.20.2.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [],
+          "Association": {
+            "PublicIp": "203.0.113.192",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-4831ea5cb46f5e58e",
+          "SubnetId": "subnet-7a3afd32f941095b4",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000001",
+          "InterfaceType": "interface",
+          "Description": "ELB app/tw-edge-alb/cc5a67ea8d71da53",
+          "PrivateIpAddress": "10.20.0.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-231b469aae3bed815",
+              "GroupName": "alb-public"
+            }
+          ],
+          "Association": {
+            "PublicIp": "203.0.113.50",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-550a37af69710992e",
+          "SubnetId": "subnet-038cdac87b40b4ce3",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000001",
+          "InterfaceType": "interface",
+          "Description": "ELB app/tw-edge-alb/cc5a67ea8d71da53",
+          "PrivateIpAddress": "10.20.1.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-231b469aae3bed815",
+              "GroupName": "alb-public"
+            }
+          ],
+          "Association": {
+            "PublicIp": "198.51.100.89",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-b8de038bbbce00351",
+          "SubnetId": "subnet-11326c6b8c8e84c76",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "AvailabilityZone": "us-east-1c",
+          "OwnerId": "710420000001",
+          "InterfaceType": "interface",
+          "Description": "ELB app/tw-edge-alb/cc5a67ea8d71da53",
+          "PrivateIpAddress": "10.20.2.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-231b469aae3bed815",
+              "GroupName": "alb-public"
+            }
+          ],
+          "Association": {
+            "PublicIp": "203.0.113.175",
+            "IpOwnerId": "amazon"
+          }
+        }
+      ],
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-a8f2f3926342ccc9c",
+          "GroupName": "default",
+          "Description": "default VPC security group",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "OwnerId": "710420000001",
+          "IpPermissions": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-a8f2f3926342ccc9c",
+                  "UserId": "710420000001"
+                }
+              ]
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": []
+        },
+        {
+          "GroupId": "sg-231b469aae3bed815",
+          "GroupName": "alb-public",
+          "Description": "Public ALB: HTTP and HTTPS from the internet",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "OwnerId": "710420000001",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 443,
+              "ToPort": 443
+            },
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 80,
+              "ToPort": 80
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-alb-public"
+            }
+          ]
+        }
+      ],
+      "VpcPeeringConnections": [],
+      "FlowLogs": [
+        {
+          "FlowLogId": "fl-271e7d50b404c8029",
+          "ResourceId": "vpc-6e26126f1b444c57f",
+          "TrafficType": "ALL",
+          "LogDestinationType": "s3",
+          "LogDestination": "arn:aws:s3:::tidewater-central-flow-logs",
+          "FlowLogStatus": "ACTIVE",
+          "CreationTime": "2025-03-14T15:30:00+00:00"
+        }
+      ],
+      "LoadBalancers": [
+        {
+          "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-1:710420000001:loadbalancer/app/tw-edge-alb/cc5a67ea8d71da53",
+          "DNSName": "tw-edge-alb-5ad6bad64.us-east-1.elb.amazonaws.com",
+          "CanonicalHostedZoneId": "Z35SXDOTRQ7X7K",
+          "CreatedTime": "2025-02-20T14:31:09+00:00",
+          "LoadBalancerName": "tw-edge-alb",
+          "Scheme": "internet-facing",
+          "VpcId": "vpc-6e26126f1b444c57f",
+          "State": {
+            "Code": "active"
+          },
+          "Type": "application",
+          "AvailabilityZones": [
+            {
+              "ZoneName": "us-east-1a",
+              "SubnetId": "subnet-7a3afd32f941095b4"
+            },
+            {
+              "ZoneName": "us-east-1b",
+              "SubnetId": "subnet-038cdac87b40b4ce3"
+            },
+            {
+              "ZoneName": "us-east-1c",
+              "SubnetId": "subnet-11326c6b8c8e84c76"
+            }
+          ],
+          "SecurityGroups": [
+            "sg-231b469aae3bed815"
+          ],
+          "IpAddressType": "ipv4"
+        }
+      ],
+      "Listeners": [
+        {
+          "ListenerArn": "arn:aws:elasticloadbalancing:us-east-1:710420000001:listener/app/tw-edge-alb/cc5a67ea8d71da53/4d54cbda46e15bfa",
+          "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-1:710420000001:loadbalancer/app/tw-edge-alb/cc5a67ea8d71da53",
+          "Port": 443,
+          "Protocol": "HTTPS",
+          "DefaultActions": [
+            {
+              "Type": "forward"
+            }
+          ],
+          "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-2021-06"
+        },
+        {
+          "ListenerArn": "arn:aws:elasticloadbalancing:us-east-1:710420000001:listener/app/tw-edge-alb/cc5a67ea8d71da53/6f562858ef63cd6c",
+          "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-1:710420000001:loadbalancer/app/tw-edge-alb/cc5a67ea8d71da53",
+          "Port": 80,
+          "Protocol": "HTTP",
+          "DefaultActions": [
+            {
+              "Type": "redirect",
+              "RedirectConfig": {
+                "Protocol": "HTTPS",
+                "Port": "443",
+                "StatusCode": "HTTP_301"
+              }
+            }
+          ]
+        }
+      ],
+      "WebAcls": [
+        {
+          "Name": "baseline-regional-waf",
+          "Id": "876ccb3a-cb36-191c-9d97-1accb93169ec",
+          "Scope": "REGIONAL",
+          "ARN": "arn:aws:wafv2:us-east-1:710420000001:regional/webacl/baseline-regional-waf/876ccb3a-cb36-191c-9d97-1accb93169ec"
+        }
+      ],
+      "WebAclResources": [
+        {
+          "WebAclArn": "arn:aws:wafv2:us-east-1:710420000001:regional/webacl/baseline-regional-waf/876ccb3a-cb36-191c-9d97-1accb93169ec",
+          "ResourceArns": [
+            "arn:aws:elasticloadbalancing:us-east-1:710420000001:loadbalancer/app/tw-edge-alb/cc5a67ea8d71da53"
+          ]
+        }
+      ]
+    },
+    "us-west-2": {
+      "Vpcs": [
+        {
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "CidrBlock": "10.21.0.0/20",
+          "State": "available",
+          "IsDefault": false,
+          "OwnerId": "710420000001",
+          "InstanceTenancy": "default",
+          "DhcpOptionsId": "dopt-d9b66730",
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr"
+            }
+          ]
+        }
+      ],
+      "Subnets": [
+        {
+          "SubnetId": "subnet-3140271cd367f0af3",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "CidrBlock": "10.21.0.0/24",
+          "AvailabilityZone": "us-west-2a",
+          "AvailabilityZoneId": "usw2-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 238,
+          "OwnerId": "710420000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr-public-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "public"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-fa8bcb0d34f7cb661",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "CidrBlock": "10.21.1.0/24",
+          "AvailabilityZone": "us-west-2b",
+          "AvailabilityZoneId": "usw2-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 244,
+          "OwnerId": "710420000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr-public-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "public"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-bff683b9d0d46f987",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "CidrBlock": "10.21.2.0/24",
+          "AvailabilityZone": "us-west-2a",
+          "AvailabilityZoneId": "usw2-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 237,
+          "OwnerId": "710420000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr-attach-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "attach"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-5ad2f3eabafc4b436",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "CidrBlock": "10.21.3.0/24",
+          "AvailabilityZone": "us-west-2b",
+          "AvailabilityZoneId": "usw2-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 241,
+          "OwnerId": "710420000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr-attach-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "attach"
+            }
+          ]
+        }
+      ],
+      "RouteTables": [
+        {
+          "RouteTableId": "rtb-d0bbf5b24014fde3e",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "OwnerId": "710420000001",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.21.0.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "GatewayId": "igw-0d94e27721d0a7a4a",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-2cc097697f38d2f66",
+              "RouteTableId": "rtb-d0bbf5b24014fde3e",
+              "SubnetId": "subnet-3140271cd367f0af3",
+              "AssociationState": {
+                "State": "associated"
+              }
+            },
+            {
+              "RouteTableAssociationId": "rtbassoc-94237c1a6f0f1f3b8",
+              "RouteTableId": "rtb-d0bbf5b24014fde3e",
+              "SubnetId": "subnet-fa8bcb0d34f7cb661",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr-rt-public"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-f26eb1d92a8dc1115",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "OwnerId": "710420000001",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.21.0.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "NatGatewayId": "nat-c8e2b78a0e4014eb9"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-692e2685a43fb3fab",
+              "RouteTableId": "rtb-f26eb1d92a8dc1115",
+              "SubnetId": "subnet-bff683b9d0d46f987",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr-rt-attach-a"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-07d5f8701cdfa1ea7",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "OwnerId": "710420000001",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.21.0.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "NatGatewayId": "nat-2a16a62aa025e4789"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-c7ef7a66844c57a15",
+              "RouteTableId": "rtb-07d5f8701cdfa1ea7",
+              "SubnetId": "subnet-5ad2f3eabafc4b436",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr-rt-attach-b"
+            }
+          ]
+        }
+      ],
+      "InternetGateways": [
+        {
+          "InternetGatewayId": "igw-0d94e27721d0a7a4a",
+          "OwnerId": "710420000001",
+          "Attachments": [
+            {
+              "VpcId": "vpc-d8cbcb1ea3990332a",
+              "State": "available"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr-igw"
+            }
+          ]
+        }
+      ],
+      "NatGateways": [
+        {
+          "NatGatewayId": "nat-c8e2b78a0e4014eb9",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "SubnetId": "subnet-3140271cd367f0af3",
+          "State": "available",
+          "ConnectivityType": "public",
+          "CreateTime": "2025-03-14T15:02:11+00:00",
+          "NatGatewayAddresses": [
+            {
+              "AllocationId": "eipalloc-2e20ab766243dcd59",
+              "NetworkInterfaceId": "eni-75c314abc3f444e7d",
+              "PrivateIp": "10.21.0.4",
+              "PublicIp": "203.0.113.170"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr-nat-a"
+            }
+          ]
+        },
+        {
+          "NatGatewayId": "nat-2a16a62aa025e4789",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "SubnetId": "subnet-fa8bcb0d34f7cb661",
+          "State": "available",
+          "ConnectivityType": "public",
+          "CreateTime": "2025-03-14T15:02:11+00:00",
+          "NatGatewayAddresses": [
+            {
+              "AllocationId": "eipalloc-20109f3c3fd3db2b6",
+              "NetworkInterfaceId": "eni-8c927ca7b893d4c23",
+              "PrivateIp": "10.21.1.4",
+              "PublicIp": "198.51.100.116"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr-nat-b"
+            }
+          ]
+        }
+      ],
+      "TransitGateways": [],
+      "TransitGatewayAttachments": [],
+      "VpcEndpoints": [],
+      "NetworkInterfaces": [
+        {
+          "NetworkInterfaceId": "eni-75c314abc3f444e7d",
+          "SubnetId": "subnet-3140271cd367f0af3",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "AvailabilityZone": "us-west-2a",
+          "OwnerId": "710420000001",
+          "InterfaceType": "nat_gateway",
+          "Description": "Interface for NAT Gateway nat-c8e2b78a0e4014eb9",
+          "PrivateIpAddress": "10.21.0.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [],
+          "Association": {
+            "PublicIp": "203.0.113.170",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-8c927ca7b893d4c23",
+          "SubnetId": "subnet-fa8bcb0d34f7cb661",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "AvailabilityZone": "us-west-2b",
+          "OwnerId": "710420000001",
+          "InterfaceType": "nat_gateway",
+          "Description": "Interface for NAT Gateway nat-2a16a62aa025e4789",
+          "PrivateIpAddress": "10.21.1.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [],
+          "Association": {
+            "PublicIp": "198.51.100.116",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-fb52aebe9985a990f",
+          "SubnetId": "subnet-3140271cd367f0af3",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "AvailabilityZone": "us-west-2a",
+          "OwnerId": "710420000001",
+          "InterfaceType": "interface",
+          "Description": "ELB app/tw-edge-dr-alb/41ad0c216fda98d3",
+          "PrivateIpAddress": "10.21.0.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-39ba233561e8f786f",
+              "GroupName": "alb-public"
+            }
+          ],
+          "Association": {
+            "PublicIp": "203.0.113.22",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-49cf874ba7595dbea",
+          "SubnetId": "subnet-fa8bcb0d34f7cb661",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "AvailabilityZone": "us-west-2b",
+          "OwnerId": "710420000001",
+          "InterfaceType": "interface",
+          "Description": "ELB app/tw-edge-dr-alb/41ad0c216fda98d3",
+          "PrivateIpAddress": "10.21.1.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-39ba233561e8f786f",
+              "GroupName": "alb-public"
+            }
+          ],
+          "Association": {
+            "PublicIp": "203.0.113.49",
+            "IpOwnerId": "amazon"
+          }
+        }
+      ],
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-b07ac4e2a89c5b376",
+          "GroupName": "default",
+          "Description": "default VPC security group",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "OwnerId": "710420000001",
+          "IpPermissions": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-b07ac4e2a89c5b376",
+                  "UserId": "710420000001"
+                }
+              ]
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": []
+        },
+        {
+          "GroupId": "sg-39ba233561e8f786f",
+          "GroupName": "alb-public",
+          "Description": "Public ALB: HTTP and HTTPS from the internet",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "OwnerId": "710420000001",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 443,
+              "ToPort": 443
+            },
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 80,
+              "ToPort": 80
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "network-engineering"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-1001"
+            },
+            {
+              "Key": "Application",
+              "Value": "edge-network"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-edge-dr-alb-public"
+            }
+          ]
+        }
+      ],
+      "VpcPeeringConnections": [],
+      "FlowLogs": [
+        {
+          "FlowLogId": "fl-a20c214ab56c60b53",
+          "ResourceId": "vpc-d8cbcb1ea3990332a",
+          "TrafficType": "ALL",
+          "LogDestinationType": "s3",
+          "LogDestination": "arn:aws:s3:::tidewater-central-flow-logs",
+          "FlowLogStatus": "ACTIVE",
+          "CreationTime": "2025-03-14T15:30:00+00:00"
+        }
+      ],
+      "LoadBalancers": [
+        {
+          "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:710420000001:loadbalancer/app/tw-edge-dr-alb/41ad0c216fda98d3",
+          "DNSName": "tw-edge-dr-alb-ca2902164.us-west-2.elb.amazonaws.com",
+          "CanonicalHostedZoneId": "Z35SXDOTRQ7X7K",
+          "CreatedTime": "2025-02-20T14:31:09+00:00",
+          "LoadBalancerName": "tw-edge-dr-alb",
+          "Scheme": "internet-facing",
+          "VpcId": "vpc-d8cbcb1ea3990332a",
+          "State": {
+            "Code": "active"
+          },
+          "Type": "application",
+          "AvailabilityZones": [
+            {
+              "ZoneName": "us-west-2a",
+              "SubnetId": "subnet-3140271cd367f0af3"
+            },
+            {
+              "ZoneName": "us-west-2b",
+              "SubnetId": "subnet-fa8bcb0d34f7cb661"
+            }
+          ],
+          "SecurityGroups": [
+            "sg-39ba233561e8f786f"
+          ],
+          "IpAddressType": "ipv4"
+        }
+      ],
+      "Listeners": [
+        {
+          "ListenerArn": "arn:aws:elasticloadbalancing:us-west-2:710420000001:listener/app/tw-edge-dr-alb/41ad0c216fda98d3/472887d5746aaf70",
+          "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:710420000001:loadbalancer/app/tw-edge-dr-alb/41ad0c216fda98d3",
+          "Port": 443,
+          "Protocol": "HTTPS",
+          "DefaultActions": [
+            {
+              "Type": "forward"
+            }
+          ],
+          "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-2021-06"
+        },
+        {
+          "ListenerArn": "arn:aws:elasticloadbalancing:us-west-2:710420000001:listener/app/tw-edge-dr-alb/41ad0c216fda98d3/42706fd5f542359d",
+          "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:710420000001:loadbalancer/app/tw-edge-dr-alb/41ad0c216fda98d3",
+          "Port": 80,
+          "Protocol": "HTTP",
+          "DefaultActions": [
+            {
+              "Type": "redirect",
+              "RedirectConfig": {
+                "Protocol": "HTTPS",
+                "Port": "443",
+                "StatusCode": "HTTP_301"
+              }
+            }
+          ]
+        }
+      ],
+      "WebAcls": [
+        {
+          "Name": "baseline-regional-waf",
+          "Id": "c4af6bfb-383e-5fda-28b2-bdbfee90f87c",
+          "Scope": "REGIONAL",
+          "ARN": "arn:aws:wafv2:us-west-2:710420000001:regional/webacl/baseline-regional-waf/c4af6bfb-383e-5fda-28b2-bdbfee90f87c"
+        }
+      ],
+      "WebAclResources": [
+        {
+          "WebAclArn": "arn:aws:wafv2:us-west-2:710420000001:regional/webacl/baseline-regional-waf/c4af6bfb-383e-5fda-28b2-bdbfee90f87c",
+          "ResourceArns": [
+            "arn:aws:elasticloadbalancing:us-west-2:710420000001:loadbalancer/app/tw-edge-dr-alb/41ad0c216fda98d3"
+          ]
+        }
+      ]
+    }
+  },
+  "Global": {
+    "CloudFrontDistributions": [
+      {
+        "Id": "E7881E19F92F49",
+        "ARN": "arn:aws:cloudfront::710420000001:distribution/E7881E19F92F49",
+        "DomainName": "d743f01d5df060.cloudfront.net",
+        "Aliases": {
+          "Quantity": 1,
+          "Items": [
+            "pay.tidewater.example"
+          ]
+        },
+        "Enabled": true,
+        "WebACLId": "arn:aws:wafv2:us-east-1:710420000001:global/webacl/baseline-edge-waf/2e1cc111-9007-e049-5ff4-54b739e1cd0d",
+        "Origins": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "Id": "edge-alb",
+              "DomainName": "tw-edge-alb-5ad6bad64.us-east-1.elb.amazonaws.com"
+            }
+          ]
+        }
+      }
+    ],
+    "WebAclsGlobal": [
+      {
+        "Name": "baseline-edge-waf",
+        "Id": "2e1cc111-9007-e049-5ff4-54b739e1cd0d",
+        "ARN": "arn:aws:wafv2:us-east-1:710420000001:global/webacl/baseline-edge-waf/2e1cc111-9007-e049-5ff4-54b739e1cd0d",
+        "Scope": "CLOUDFRONT"
+      }
+    ]
+  }
+}

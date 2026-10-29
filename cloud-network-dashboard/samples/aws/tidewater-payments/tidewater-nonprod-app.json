@@ -1,0 +1,1065 @@
+{
+  "_export": {
+    "schema": "aws-account-inventory/1.0",
+    "generated": "2026-10-28T12:00:00Z",
+    "synthetic": true,
+    "source": "SYNTHETIC SAMPLE: fictional company, not a real environment. Shapes mirror AWS CLI describe-* output merged per account."
+  },
+  "Account": {
+    "AccountId": "710420000003",
+    "AccountName": "tidewater-nonprod-app",
+    "Company": "Tidewater Payments",
+    "Tags": {
+      "AccountRole": "nonprod",
+      "Environment": "nonprod",
+      "Owner": "payments-team"
+    }
+  },
+  "Regions": {
+    "us-east-1": {
+      "Vpcs": [
+        {
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "CidrBlock": "10.20.32.0/20",
+          "State": "available",
+          "IsDefault": false,
+          "OwnerId": "710420000003",
+          "InstanceTenancy": "default",
+          "DhcpOptionsId": "dopt-4aa8ceab",
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app"
+            }
+          ]
+        }
+      ],
+      "Subnets": [
+        {
+          "SubnetId": "subnet-72e8241d353a86c73",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "CidrBlock": "10.20.32.0/24",
+          "AvailabilityZone": "us-east-1a",
+          "AvailabilityZoneId": "use1-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 240,
+          "OwnerId": "710420000003",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-public-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "public"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-50b9ecab4c8b35c38",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "CidrBlock": "10.20.33.0/24",
+          "AvailabilityZone": "us-east-1b",
+          "AvailabilityZoneId": "use1-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 238,
+          "OwnerId": "710420000003",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-public-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "public"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-7a49f5a745d28666b",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "CidrBlock": "10.20.34.0/24",
+          "AvailabilityZone": "us-east-1a",
+          "AvailabilityZoneId": "use1-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 237,
+          "OwnerId": "710420000003",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-app-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-f6c7a7cfd31b51a50",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "CidrBlock": "10.20.35.0/24",
+          "AvailabilityZone": "us-east-1b",
+          "AvailabilityZoneId": "use1-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 246,
+          "OwnerId": "710420000003",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-app-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        }
+      ],
+      "RouteTables": [
+        {
+          "RouteTableId": "rtb-b0e743a6cf4128bf0",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "OwnerId": "710420000003",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.32.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "GatewayId": "igw-819545b58d8349fc8",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-020e71bcdce5c5fe0",
+              "RouteTableId": "rtb-b0e743a6cf4128bf0",
+              "SubnetId": "subnet-72e8241d353a86c73",
+              "AssociationState": {
+                "State": "associated"
+              }
+            },
+            {
+              "RouteTableAssociationId": "rtbassoc-462665000a054314a",
+              "RouteTableId": "rtb-b0e743a6cf4128bf0",
+              "SubnetId": "subnet-50b9ecab4c8b35c38",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-rt-public"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-f7fb89af633fd4c7e",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "OwnerId": "710420000003",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.32.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "NatGatewayId": "nat-a933db50f843fe7b6"
+            },
+            {
+              "DestinationCidrBlock": "10.0.0.0/8",
+              "TransitGatewayId": "tgw-161f480e76106edb6",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-019f7709400c69a2c",
+              "RouteTableId": "rtb-f7fb89af633fd4c7e",
+              "SubnetId": "subnet-7a49f5a745d28666b",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-rt-app-a"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-c978297a6fc5a231c",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "OwnerId": "710420000003",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.32.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "NatGatewayId": "nat-79dc54bc078f5eb52"
+            },
+            {
+              "DestinationCidrBlock": "10.0.0.0/8",
+              "TransitGatewayId": "tgw-161f480e76106edb6",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-7ca95ac46a46b6f0d",
+              "RouteTableId": "rtb-c978297a6fc5a231c",
+              "SubnetId": "subnet-f6c7a7cfd31b51a50",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-rt-app-b"
+            }
+          ]
+        }
+      ],
+      "InternetGateways": [
+        {
+          "InternetGatewayId": "igw-819545b58d8349fc8",
+          "OwnerId": "710420000003",
+          "Attachments": [
+            {
+              "VpcId": "vpc-cd05bc4f43deb74ec",
+              "State": "available"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-igw"
+            }
+          ]
+        }
+      ],
+      "NatGateways": [
+        {
+          "NatGatewayId": "nat-a933db50f843fe7b6",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "SubnetId": "subnet-72e8241d353a86c73",
+          "State": "available",
+          "ConnectivityType": "public",
+          "CreateTime": "2025-03-14T15:02:11+00:00",
+          "NatGatewayAddresses": [
+            {
+              "AllocationId": "eipalloc-df92ea3635ddcde7d",
+              "NetworkInterfaceId": "eni-9c7667647f51bdf8f",
+              "PrivateIp": "10.20.32.4",
+              "PublicIp": "203.0.113.55"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-nat-a"
+            }
+          ]
+        },
+        {
+          "NatGatewayId": "nat-79dc54bc078f5eb52",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "SubnetId": "subnet-50b9ecab4c8b35c38",
+          "State": "available",
+          "ConnectivityType": "public",
+          "CreateTime": "2025-03-14T15:02:11+00:00",
+          "NatGatewayAddresses": [
+            {
+              "AllocationId": "eipalloc-d9210463d35ca2a32",
+              "NetworkInterfaceId": "eni-dede1dd1ef7d8915f",
+              "PrivateIp": "10.20.33.4",
+              "PublicIp": "198.51.100.196"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-nat-b"
+            }
+          ]
+        }
+      ],
+      "TransitGateways": [],
+      "TransitGatewayAttachments": [
+        {
+          "TransitGatewayAttachmentId": "tgw-attach-c9ad4d7fc00e78dd4",
+          "TransitGatewayId": "tgw-161f480e76106edb6",
+          "TransitGatewayOwnerId": "710420000001",
+          "ResourceOwnerId": "710420000003",
+          "ResourceType": "vpc",
+          "ResourceId": "vpc-cd05bc4f43deb74ec",
+          "State": "available",
+          "Association": {
+            "TransitGatewayRouteTableId": "tgw-rtb-0a1b2c3d4e5f60718",
+            "State": "associated"
+          },
+          "SubnetIds": [
+            "subnet-7a49f5a745d28666b",
+            "subnet-f6c7a7cfd31b51a50"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-tgw-attach"
+            }
+          ]
+        }
+      ],
+      "VpcEndpoints": [
+        {
+          "VpcEndpointId": "vpce-75fcf99c7c270a1ec",
+          "VpcEndpointType": "Gateway",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "ServiceName": "com.amazonaws.us-east-1.s3",
+          "State": "available",
+          "OwnerId": "710420000003",
+          "PrivateDnsEnabled": false,
+          "RouteTableIds": [
+            "rtb-f7fb89af633fd4c7e",
+            "rtb-c978297a6fc5a231c"
+          ],
+          "SubnetIds": [],
+          "Groups": [],
+          "NetworkInterfaceIds": [],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-s3"
+            }
+          ]
+        },
+        {
+          "VpcEndpointId": "vpce-3790b9d1f3385484a",
+          "VpcEndpointType": "Interface",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "ServiceName": "com.amazonaws.us-east-1.logs",
+          "State": "available",
+          "OwnerId": "710420000003",
+          "PrivateDnsEnabled": true,
+          "RouteTableIds": [],
+          "SubnetIds": [
+            "subnet-7a49f5a745d28666b",
+            "subnet-f6c7a7cfd31b51a50"
+          ],
+          "Groups": [
+            {
+              "GroupId": "sg-c7232ebb76d710aad",
+              "GroupName": "default"
+            }
+          ],
+          "NetworkInterfaceIds": [
+            "eni-8c7c62bec4aecba7c",
+            "eni-c0369e1466f1cd44b"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-logs"
+            }
+          ]
+        }
+      ],
+      "NetworkInterfaces": [
+        {
+          "NetworkInterfaceId": "eni-9c7667647f51bdf8f",
+          "SubnetId": "subnet-72e8241d353a86c73",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000003",
+          "InterfaceType": "nat_gateway",
+          "Description": "Interface for NAT Gateway nat-a933db50f843fe7b6",
+          "PrivateIpAddress": "10.20.32.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [],
+          "Association": {
+            "PublicIp": "203.0.113.55",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-dede1dd1ef7d8915f",
+          "SubnetId": "subnet-50b9ecab4c8b35c38",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000003",
+          "InterfaceType": "nat_gateway",
+          "Description": "Interface for NAT Gateway nat-79dc54bc078f5eb52",
+          "PrivateIpAddress": "10.20.33.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [],
+          "Association": {
+            "PublicIp": "198.51.100.196",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-8c7c62bec4aecba7c",
+          "SubnetId": "subnet-7a49f5a745d28666b",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000003",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-3790b9d1f3385484a",
+          "PrivateIpAddress": "10.20.34.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-c7232ebb76d710aad",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-c0369e1466f1cd44b",
+          "SubnetId": "subnet-f6c7a7cfd31b51a50",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000003",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-3790b9d1f3385484a",
+          "PrivateIpAddress": "10.20.35.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-c7232ebb76d710aad",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-d3bc998931018a745",
+          "SubnetId": "subnet-7a49f5a745d28666b",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000003",
+          "InterfaceType": "interface",
+          "Description": "tw-nonprod-app workload 1",
+          "PrivateIpAddress": "10.20.34.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-e0414d122d2313e9e",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-da474efccb65aafef",
+          "SubnetId": "subnet-f6c7a7cfd31b51a50",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000003",
+          "InterfaceType": "interface",
+          "Description": "tw-nonprod-app workload 2",
+          "PrivateIpAddress": "10.20.35.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-e0414d122d2313e9e",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-e1cfe4e3582f3bee8",
+          "SubnetId": "subnet-7a49f5a745d28666b",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000003",
+          "InterfaceType": "interface",
+          "Description": "tw-nonprod-app workload 3",
+          "PrivateIpAddress": "10.20.34.6",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-e0414d122d2313e9e",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-00da0854d5a499408",
+          "SubnetId": "subnet-f6c7a7cfd31b51a50",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000003",
+          "InterfaceType": "interface",
+          "Description": "tw-nonprod-app workload 4",
+          "PrivateIpAddress": "10.20.35.6",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-e0414d122d2313e9e",
+              "GroupName": "app"
+            }
+          ]
+        }
+      ],
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-c7232ebb76d710aad",
+          "GroupName": "default",
+          "Description": "default VPC security group",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "OwnerId": "710420000003",
+          "IpPermissions": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-c7232ebb76d710aad",
+                  "UserId": "710420000003"
+                }
+              ]
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": []
+        },
+        {
+          "GroupId": "sg-0045570de28e83b5e",
+          "GroupName": "alb-internal",
+          "Description": "Internal ALB",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "OwnerId": "710420000003",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "10.0.0.0/8"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 443,
+              "ToPort": 443
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-alb-internal"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-e0414d122d2313e9e",
+          "GroupName": "app",
+          "Description": "Application tier",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "OwnerId": "710420000003",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-0045570de28e83b5e",
+                  "UserId": "710420000003"
+                }
+              ],
+              "FromPort": 8443,
+              "ToPort": 8443
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-app"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-215a18280b7108bb4",
+          "GroupName": "db",
+          "Description": "Database tier",
+          "VpcId": "vpc-cd05bc4f43deb74ec",
+          "OwnerId": "710420000003",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-e0414d122d2313e9e",
+                  "UserId": "710420000003"
+                }
+              ],
+              "FromPort": 5432,
+              "ToPort": 5432
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "payments-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "nonprod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-2041"
+            },
+            {
+              "Key": "Application",
+              "Value": "payments-api"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-nonprod-app-db"
+            }
+          ]
+        }
+      ],
+      "VpcPeeringConnections": [],
+      "FlowLogs": [
+        {
+          "FlowLogId": "fl-ad167b825c0c24658",
+          "ResourceId": "vpc-cd05bc4f43deb74ec",
+          "TrafficType": "ALL",
+          "LogDestinationType": "s3",
+          "LogDestination": "arn:aws:s3:::tidewater-central-flow-logs",
+          "FlowLogStatus": "ACTIVE",
+          "CreationTime": "2025-03-14T15:30:00+00:00"
+        }
+      ],
+      "LoadBalancers": [],
+      "Listeners": [],
+      "WebAcls": [],
+      "WebAclResources": []
+    },
+    "us-west-2": {
+      "Vpcs": [
+        {
+          "VpcId": "vpc-2e361cb40da4e13e8",
+          "CidrBlock": "172.31.0.0/16",
+          "State": "available",
+          "IsDefault": true,
+          "OwnerId": "710420000003",
+          "InstanceTenancy": "default",
+          "DhcpOptionsId": "dopt-b1377f7d",
+          "Tags": []
+        }
+      ],
+      "Subnets": [
+        {
+          "SubnetId": "subnet-3de3b82ca2149c4e8",
+          "VpcId": "vpc-2e361cb40da4e13e8",
+          "CidrBlock": "172.31.0.0/20",
+          "AvailabilityZone": "us-west-2a",
+          "AvailabilityZoneId": "usw2-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 4068,
+          "OwnerId": "710420000003",
+          "Tags": []
+        },
+        {
+          "SubnetId": "subnet-864772a3a31d550cd",
+          "VpcId": "vpc-2e361cb40da4e13e8",
+          "CidrBlock": "172.31.16.0/20",
+          "AvailabilityZone": "us-west-2b",
+          "AvailabilityZoneId": "usw2-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 4086,
+          "OwnerId": "710420000003",
+          "Tags": []
+        },
+        {
+          "SubnetId": "subnet-e8ababf946325f5f8",
+          "VpcId": "vpc-2e361cb40da4e13e8",
+          "CidrBlock": "172.31.32.0/20",
+          "AvailabilityZone": "us-west-2c",
+          "AvailabilityZoneId": "usw2-az3",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 4083,
+          "OwnerId": "710420000003",
+          "Tags": []
+        }
+      ],
+      "RouteTables": [
+        {
+          "RouteTableId": "rtb-428ac5f90aa60b45c",
+          "VpcId": "vpc-2e361cb40da4e13e8",
+          "OwnerId": "710420000003",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "172.31.0.0/16",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "GatewayId": "igw-5124a2cee9b940d47",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-bf76b781ced5d3779",
+              "RouteTableId": "rtb-428ac5f90aa60b45c",
+              "Main": true,
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": []
+        }
+      ],
+      "InternetGateways": [
+        {
+          "InternetGatewayId": "igw-5124a2cee9b940d47",
+          "OwnerId": "710420000003",
+          "Attachments": [
+            {
+              "VpcId": "vpc-2e361cb40da4e13e8",
+              "State": "available"
+            }
+          ],
+          "Tags": []
+        }
+      ],
+      "NatGateways": [],
+      "TransitGateways": [],
+      "TransitGatewayAttachments": [],
+      "VpcEndpoints": [],
+      "NetworkInterfaces": [],
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-ac4ab2109a9f622d5",
+          "GroupName": "default",
+          "Description": "default VPC security group",
+          "VpcId": "vpc-2e361cb40da4e13e8",
+          "OwnerId": "710420000003",
+          "IpPermissions": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-ac4ab2109a9f622d5",
+                  "UserId": "710420000003"
+                }
+              ]
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": []
+        }
+      ],
+      "VpcPeeringConnections": [],
+      "FlowLogs": [],
+      "LoadBalancers": [],
+      "Listeners": [],
+      "WebAcls": [],
+      "WebAclResources": []
+    }
+  },
+  "Global": {
+    "CloudFrontDistributions": [],
+    "WebAclsGlobal": []
+  }
+}

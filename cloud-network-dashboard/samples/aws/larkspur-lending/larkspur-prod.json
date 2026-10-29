@@ -1,0 +1,815 @@
+{
+  "_export": {
+    "schema": "aws-account-inventory/1.0",
+    "generated": "2026-10-28T12:00:00Z",
+    "synthetic": true,
+    "source": "SYNTHETIC SAMPLE: fictional company, not a real environment. Shapes mirror AWS CLI describe-* output merged per account."
+  },
+  "Account": {
+    "AccountId": "880310000001",
+    "AccountName": "larkspur-prod",
+    "Company": "Larkspur Lending",
+    "Tags": {
+      "Environment": "prod",
+      "Owner": "web-team"
+    }
+  },
+  "Regions": {
+    "us-east-1": {
+      "Vpcs": [
+        {
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "CidrBlock": "10.50.0.0/16",
+          "State": "available",
+          "IsDefault": false,
+          "OwnerId": "880310000001",
+          "InstanceTenancy": "default",
+          "DhcpOptionsId": "dopt-122a0123",
+          "Tags": [
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "Application",
+              "Value": "loan-portal"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web"
+            }
+          ]
+        }
+      ],
+      "Subnets": [
+        {
+          "SubnetId": "subnet-595f50ca7dbfcae27",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "CidrBlock": "10.50.0.0/24",
+          "AvailabilityZone": "us-east-1a",
+          "AvailabilityZoneId": "use1-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 216,
+          "OwnerId": "880310000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-public-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "public"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-e1cec31e7661fa7f9",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "CidrBlock": "10.50.1.0/24",
+          "AvailabilityZone": "us-east-1b",
+          "AvailabilityZoneId": "use1-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": true,
+          "AvailableIpAddressCount": 245,
+          "OwnerId": "880310000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-public-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "public"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-8d0da307418933ada",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "CidrBlock": "10.50.2.0/24",
+          "AvailabilityZone": "us-east-1a",
+          "AvailabilityZoneId": "use1-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 246,
+          "OwnerId": "880310000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-app-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-464a5b64c22c6ca5c",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "CidrBlock": "10.50.3.0/24",
+          "AvailabilityZone": "us-east-1b",
+          "AvailabilityZoneId": "use1-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 234,
+          "OwnerId": "880310000001",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-app-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        }
+      ],
+      "RouteTables": [
+        {
+          "RouteTableId": "rtb-8bf91f75d40a1ce1f",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "OwnerId": "880310000001",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.50.0.0/16",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "GatewayId": "igw-2cdaa29cad0dbb087",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-4d8d8c621d9f78540",
+              "RouteTableId": "rtb-8bf91f75d40a1ce1f",
+              "SubnetId": "subnet-595f50ca7dbfcae27",
+              "AssociationState": {
+                "State": "associated"
+              }
+            },
+            {
+              "RouteTableAssociationId": "rtbassoc-557bb43a69c81dec3",
+              "RouteTableId": "rtb-8bf91f75d40a1ce1f",
+              "SubnetId": "subnet-e1cec31e7661fa7f9",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "Application",
+              "Value": "loan-portal"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-rt-public"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-21dacf7f3887d277b",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "OwnerId": "880310000001",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.50.0.0/16",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "NatGatewayId": "nat-07f5364b7cfb46ee7"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-75362e163a88881fb",
+              "RouteTableId": "rtb-21dacf7f3887d277b",
+              "SubnetId": "subnet-8d0da307418933ada",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "Application",
+              "Value": "loan-portal"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-rt-app-a"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-67cb6d1af295295db",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "OwnerId": "880310000001",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.50.0.0/16",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "NatGatewayId": "nat-07f5364b7cfb46ee7"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-4ecd83d4e4c1a4633",
+              "RouteTableId": "rtb-67cb6d1af295295db",
+              "SubnetId": "subnet-464a5b64c22c6ca5c",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "Application",
+              "Value": "loan-portal"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-rt-app-b"
+            }
+          ]
+        }
+      ],
+      "InternetGateways": [
+        {
+          "InternetGatewayId": "igw-2cdaa29cad0dbb087",
+          "OwnerId": "880310000001",
+          "Attachments": [
+            {
+              "VpcId": "vpc-0acb4d20374a0d71f",
+              "State": "available"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "Application",
+              "Value": "loan-portal"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-igw"
+            }
+          ]
+        }
+      ],
+      "NatGateways": [
+        {
+          "NatGatewayId": "nat-07f5364b7cfb46ee7",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "SubnetId": "subnet-595f50ca7dbfcae27",
+          "State": "available",
+          "ConnectivityType": "public",
+          "CreateTime": "2025-03-14T15:02:11+00:00",
+          "NatGatewayAddresses": [
+            {
+              "AllocationId": "eipalloc-cce25a5a5ef254e09",
+              "NetworkInterfaceId": "eni-9c2c37547f34a89a2",
+              "PrivateIp": "10.50.0.4",
+              "PublicIp": "203.0.113.36"
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "Application",
+              "Value": "loan-portal"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-nat-a"
+            }
+          ]
+        }
+      ],
+      "TransitGateways": [],
+      "TransitGatewayAttachments": [],
+      "VpcEndpoints": [],
+      "NetworkInterfaces": [
+        {
+          "NetworkInterfaceId": "eni-9c2c37547f34a89a2",
+          "SubnetId": "subnet-595f50ca7dbfcae27",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "880310000001",
+          "InterfaceType": "nat_gateway",
+          "Description": "Interface for NAT Gateway nat-07f5364b7cfb46ee7",
+          "PrivateIpAddress": "10.50.0.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [],
+          "Association": {
+            "PublicIp": "203.0.113.36",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-1c9f2c9586a32283b",
+          "SubnetId": "subnet-8d0da307418933ada",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "880310000001",
+          "InterfaceType": "interface",
+          "Description": "ll-prod-web workload 1",
+          "PrivateIpAddress": "10.50.2.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-5bc578d61924a238d",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-2342aaa2ca1aab5be",
+          "SubnetId": "subnet-464a5b64c22c6ca5c",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "880310000001",
+          "InterfaceType": "interface",
+          "Description": "ll-prod-web workload 2",
+          "PrivateIpAddress": "10.50.3.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-5bc578d61924a238d",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-71f5ef9e8096e144f",
+          "SubnetId": "subnet-8d0da307418933ada",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "880310000001",
+          "InterfaceType": "interface",
+          "Description": "ll-prod-web workload 3",
+          "PrivateIpAddress": "10.50.2.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-5bc578d61924a238d",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-cae72cd659e3cef73",
+          "SubnetId": "subnet-595f50ca7dbfcae27",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "880310000001",
+          "InterfaceType": "interface",
+          "Description": "ll-prod-web public workload 1",
+          "PrivateIpAddress": "10.50.0.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-7e87d1730d182b087",
+              "GroupName": "app-open"
+            }
+          ],
+          "Association": {
+            "PublicIp": "198.51.100.136",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-7e34a331a5f82baca",
+          "SubnetId": "subnet-e1cec31e7661fa7f9",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "880310000001",
+          "InterfaceType": "interface",
+          "Description": "ll-prod-web public workload 2",
+          "PrivateIpAddress": "10.50.1.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-7e87d1730d182b087",
+              "GroupName": "app-open"
+            }
+          ],
+          "Association": {
+            "PublicIp": "198.51.100.223",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-78b85adcaa890392e",
+          "SubnetId": "subnet-595f50ca7dbfcae27",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "880310000001",
+          "InterfaceType": "interface",
+          "Description": "ELB app/ll-portal-alb/671fbfa60c52f8fc",
+          "PrivateIpAddress": "10.50.0.6",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-b0cff14870dae6603",
+              "GroupName": "alb-public"
+            }
+          ],
+          "Association": {
+            "PublicIp": "198.51.100.50",
+            "IpOwnerId": "amazon"
+          }
+        },
+        {
+          "NetworkInterfaceId": "eni-aa04752a5cad1c70f",
+          "SubnetId": "subnet-e1cec31e7661fa7f9",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "880310000001",
+          "InterfaceType": "interface",
+          "Description": "ELB app/ll-portal-alb/671fbfa60c52f8fc",
+          "PrivateIpAddress": "10.50.1.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-b0cff14870dae6603",
+              "GroupName": "alb-public"
+            }
+          ],
+          "Association": {
+            "PublicIp": "203.0.113.49",
+            "IpOwnerId": "amazon"
+          }
+        }
+      ],
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-5607e0cebf13dc34b",
+          "GroupName": "default",
+          "Description": "default VPC security group",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "OwnerId": "880310000001",
+          "IpPermissions": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-5607e0cebf13dc34b",
+                  "UserId": "880310000001"
+                }
+              ]
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": []
+        },
+        {
+          "GroupId": "sg-b0cff14870dae6603",
+          "GroupName": "alb-public",
+          "Description": "Public ALB: HTTP and HTTPS from the internet",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "OwnerId": "880310000001",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 443,
+              "ToPort": 443
+            },
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 80,
+              "ToPort": 80
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "Application",
+              "Value": "loan-portal"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-alb-public"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-5bc578d61924a238d",
+          "GroupName": "app",
+          "Description": "App tier",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "OwnerId": "880310000001",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-b0cff14870dae6603",
+                  "UserId": "880310000001"
+                }
+              ],
+              "FromPort": 8080,
+              "ToPort": 8080
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "Application",
+              "Value": "loan-portal"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-app"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-7e87d1730d182b087",
+          "GroupName": "app-open",
+          "Description": "App servers (temporary, wide open)",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "OwnerId": "880310000001",
+          "IpPermissions": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "Application",
+              "Value": "loan-portal"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-app-open"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-6a159ce18d8ef20ba",
+          "GroupName": "db-legacy",
+          "Description": "Legacy MySQL",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "OwnerId": "880310000001",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 3306,
+              "ToPort": 3306
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "Application",
+              "Value": "loan-portal"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-prod-web-db-legacy"
+            }
+          ]
+        }
+      ],
+      "VpcPeeringConnections": [
+        {
+          "VpcPeeringConnectionId": "pcx-ccb5c1b67570d5d13",
+          "Status": {
+            "Code": "active",
+            "Message": "Active"
+          },
+          "RequesterVpcInfo": {
+            "VpcId": "vpc-0acb4d20374a0d71f",
+            "OwnerId": "880310000001",
+            "CidrBlock": "10.50.0.0/16",
+            "Region": "us-east-1"
+          },
+          "AccepterVpcInfo": {
+            "VpcId": "vpc-eec0a2c833338c8ca",
+            "OwnerId": "880310000002",
+            "CidrBlock": "10.60.0.0/20",
+            "Region": "us-east-2"
+          },
+          "Tags": []
+        }
+      ],
+      "FlowLogs": [],
+      "LoadBalancers": [
+        {
+          "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-1:880310000001:loadbalancer/app/ll-portal-alb/671fbfa60c52f8fc",
+          "DNSName": "ll-portal-alb-0e4be67de.us-east-1.elb.amazonaws.com",
+          "CanonicalHostedZoneId": "Z35SXDOTRQ7X7K",
+          "CreatedTime": "2025-02-20T14:31:09+00:00",
+          "LoadBalancerName": "ll-portal-alb",
+          "Scheme": "internet-facing",
+          "VpcId": "vpc-0acb4d20374a0d71f",
+          "State": {
+            "Code": "active"
+          },
+          "Type": "application",
+          "AvailabilityZones": [
+            {
+              "ZoneName": "us-east-1a",
+              "SubnetId": "subnet-595f50ca7dbfcae27"
+            },
+            {
+              "ZoneName": "us-east-1b",
+              "SubnetId": "subnet-e1cec31e7661fa7f9"
+            }
+          ],
+          "SecurityGroups": [
+            "sg-b0cff14870dae6603"
+          ],
+          "IpAddressType": "ipv4"
+        }
+      ],
+      "Listeners": [
+        {
+          "ListenerArn": "arn:aws:elasticloadbalancing:us-east-1:880310000001:listener/app/ll-portal-alb/671fbfa60c52f8fc/800e5d2891d0f5d5",
+          "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-1:880310000001:loadbalancer/app/ll-portal-alb/671fbfa60c52f8fc",
+          "Port": 80,
+          "Protocol": "HTTP",
+          "DefaultActions": [
+            {
+              "Type": "forward"
+            }
+          ]
+        },
+        {
+          "ListenerArn": "arn:aws:elasticloadbalancing:us-east-1:880310000001:listener/app/ll-portal-alb/671fbfa60c52f8fc/4312e4a408e393e9",
+          "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-1:880310000001:loadbalancer/app/ll-portal-alb/671fbfa60c52f8fc",
+          "Port": 443,
+          "Protocol": "HTTPS",
+          "DefaultActions": [
+            {
+              "Type": "forward"
+            }
+          ],
+          "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-2021-06"
+        }
+      ],
+      "WebAcls": [],
+      "WebAclResources": []
+    }
+  },
+  "Global": {
+    "CloudFrontDistributions": [],
+    "WebAclsGlobal": []
+  }
+}

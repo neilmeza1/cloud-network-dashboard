@@ -1,0 +1,575 @@
+# Kestrel Ridge Financial - Cloud Standards
+# FICTIONAL COMPANY for a portfolio project. Not derived from any real organization's files.
+#
+# Single source of truth: mandates (must) and design principles (should), pillar-first.
+#
+# Consumed directly by:
+#   - the cloud network dashboard (maps findings to standard IDs through each mandate's `check`)
+#   - the /analyze-cloud-export skill (see AI_SKILLS_README.md)
+#   - the architecture review checklist
+#
+# Rule: adding, removing or renaming a pillar, mandate, principle or check
+# means updating every consumer above and bumping meta.version.
+#
+# Owner: Cloud Architecture & Platform Strategy (CAPS)
+# Date: October 2026
+
+meta:
+  version: "0.1.0"
+  date: "2026-10-28"
+  owner: Cloud Architecture & Platform Strategy (CAPS)
+  company: Kestrel Ridge Financial (fictional)
+  pillar_count: 6
+  mandate_count: 31
+  principle_count: 12
+  check_types:
+    detectable: a rule the dashboard can evaluate from an inventory export; `check` names the rule
+    manual: needs evidence outside the export; the dashboard lists it under "Evidence needed"
+
+# Values the detectable checks read. Change them here, not in code.
+config:
+  approved_regions:
+    aws: [us-east-1, us-west-2]
+    azure: [eastus, eastus2, westus2]
+    gcp: [us-east1, us-east4, us-west1]
+  admin_ports: [22, 3389, 5985, 5986]
+  database_ports: [1433, 1521, 3306, 5432, 6379, 27017]
+  public_web_ports: [80, 443]
+  required_tags: [Owner, Environment, CostCenter, Application]
+  environments: [prod, nonprod, shared, sandbox]
+  min_azs_for_prod: 2
+  severity_scale:
+    critical: fix now; blocks onboarding of the environment
+    high: fix within 30 days
+    medium: fix within 90 days
+    low: track and review quarterly
+
+service_commitments:
+  standard_path:
+    name: Ready to Build in 15 Days
+    description: |
+      A validated design that uses the standard patterns gets an environment
+      that is ready for application deployment within 15 business days.
+    depends_on: [NET-01, PLT-01, PLT-02]
+    exception: |
+      Custom architectures and workloads that need a bespoke security review
+      follow the full architecture review instead.
+  exception_path:
+    steps:
+      - Raise the request with the CAPS review desk
+      - The review decides how a standard is enforced for this case, not whether it applies
+      - Written decision with an expiry date within 7 business days; no open-ended exceptions
+  review_cadence:
+    - tier: Tier 1 (revenue-critical)
+      frequency: Quarterly
+      trigger: Scheduled and after any major incident
+    - tier: Tier 2 (production, moderate impact)
+      frequency: Twice a year
+      trigger: Scheduled
+    - tier: Tier 3 (internal, low impact)
+      frequency: Yearly
+      trigger: Scheduled
+    - tier: New or acquired environments
+      frequency: Before go-live or within 60 days of acquisition close
+      trigger: Onboarding
+
+pillars:
+  # ===========================================================================
+  - id: NET
+    name: Network & Isolation
+    owner_team: Network Engineering
+    summary: How accounts and networks are created, connected, exposed and watched.
+
+    mandates:
+      - id: NET-01
+        name: Vended Accounts Only
+        severity: high
+        check: account_role_tag_present
+        statement: |
+          Every cloud account, subscription or project is created from the approved
+          baseline and carries an AccountRole tag (shared-network, prod, nonprod,
+          data, security, sandbox).
+        why: Gives every environment a consistent starting posture and a stated purpose.
+        enforcement: Account vending pipeline; organization policy blocks manual account creation.
+        kpi: 100% of accounts vended from the baseline.
+
+      - id: NET-02
+        name: Retire Default Networks
+        severity: medium
+        check: default_network_present
+        statement: |
+          Default VPCs and default virtual networks are deleted, or kept empty and
+          unrouted. Workloads run in purpose-built networks.
+        why: Default networks ship with permissive routing and no ownership tags.
+        enforcement: Baseline removes defaults at account creation; drift scan.
+        kpi: Zero default networks in use.
+
+      - id: NET-03
+        name: One Address Plan
+        severity: high
+        check: cidr_overlap
+        statement: |
+          Every network CIDR comes from the central address plan. Networks that can
+          be connected (transit hub, peering, VPN) must not overlap.
+        why: Overlaps block connectivity and force expensive renumbering later.
+        enforcement: IPAM allocation at network creation; overlap check in design review.
+        kpi: Zero overlapping connectable networks.
+
+      - id: NET-04
+        name: Public Subnets Stay Thin
+        severity: high
+        check: workload_in_public_subnet
+        statement: |
+          Only load balancers, NAT or egress gateways and other approved edge
+          services live in public subnets. Workload network interfaces never get
+          public IP addresses.
+        why: A public IP on a workload is a direct path to it.
+        enforcement: Policy blocks public IP assignment in workload subnets.
+        kpi: Zero workloads with public IPs.
+
+      - id: NET-05
+        name: One Protected Front Door
+        severity: critical
+        check: public_endpoint_without_waf
+        statement: |
+          Every internet-facing web endpoint (public load balancer, CDN
+          distribution, application gateway) is protected by a web application
+          firewall running the baseline rule set.
+        why: Blocks common attacks before they reach the application.
+        enforcement: WAF association required when the endpoint is created; gap scan.
+        kpi: 100% of public web endpoints behind a WAF.
+
+      - id: NET-06
+        name: No Open Admin Access
+        severity: critical
+        check: open_admin_ports
+        statement: |
+          No security group, firewall rule or network security group opens an
+          administrative port (config.admin_ports) to the internet. Use
+          session-based access instead.
+        why: Internet-exposed admin ports are among the most attacked services.
+        enforcement: Organization policy denies the rule; continuous scan.
+        kpi: Zero open admin rules.
+
+      - id: NET-07
+        name: Least-Open Firewall Rules
+        severity: high
+        check: open_to_world_non_web
+        statement: |
+          Rules open to 0.0.0.0/0 are allowed only for ports 80 and 443 on approved
+          edge services. No rule allows all traffic, and database ports are never
+          open to the internet.
+        why: Broad rules turn one mistake into a wide exposure.
+        enforcement: Rule review in the pipeline; continuous scan.
+        kpi: Zero world-open rules outside ports 80/443.
+
+      - id: NET-08
+        name: Private Paths to Cloud Services
+        severity: medium
+        check: missing_private_endpoints
+        statement: |
+          Networks that run workloads use private connectivity (gateway or private
+          endpoints) for object storage, and for registry, key and logging traffic.
+        why: Keeps service traffic off the public internet and reduces NAT cost.
+        enforcement: The standard network module includes endpoints by default.
+        kpi: 100% of workload networks with an object-storage endpoint.
+
+      - id: NET-09
+        name: Egress That Survives a Zone Failure
+        severity: medium
+        check: nat_not_per_az
+        statement: |
+          Where a network has NAT or egress gateways, there is one in every
+          availability zone that hosts workloads, or egress is centralized in a
+          shared egress network.
+        why: A single NAT gateway is a single point of failure for outbound traffic.
+        enforcement: Standard network module; review check.
+        kpi: 100% of networks with egress in every zone.
+
+      - id: NET-10
+        name: Flow Logs Everywhere
+        severity: high
+        check: flow_logs_disabled
+        statement: |
+          Flow logs are enabled on every network and delivered to the central log
+          account.
+        why: Without flow logs an incident cannot be reconstructed.
+        enforcement: Network module enables logs; drift scan.
+        kpi: 100% of networks with active flow logs.
+
+      - id: NET-11
+        name: Reviewed Peering
+        severity: medium
+        check: peering_present
+        statement: |
+          Point-to-point peering needs an approved design record. The shared transit
+          hub is the default way to connect networks.
+        why: Peering meshes are hard to see, route and secure at scale.
+        enforcement: Peering requests go through design review.
+        kpi: Every peering has a design record.
+
+    principles:
+      - id: P-NET-1
+        name: Small Blast Radius by Design
+        non_negotiable: true
+        guidance: |
+          Segment by workload and environment. A failure or compromise in one
+          network must not reach another business line. Prefer separate accounts for
+          high-value workloads; use namespaces or subnets only where the added
+          isolation is documented.
+        test: "Can you name every network this workload could take down? If the list is long, split it."
+
+      - id: P-NET-2
+        name: Edge Is a Product
+        non_negotiable: false
+        guidance: |
+          Internet traffic enters through one governed path that teams consume.
+          They do not build their own front doors.
+        test: "Two different ways into the same application means a control is missing."
+
+  # ===========================================================================
+  - id: PLT
+    name: Platform & Delivery
+    owner_team: Platform Engineering
+    summary: How infrastructure is built, checked and changed.
+
+    mandates:
+      - id: PLT-01
+        name: Infrastructure as Code Only
+        severity: high
+        check: manual
+        statement: |
+          All infrastructure is provisioned through the approved infrastructure as
+          code platform. Nothing is created by hand in production.
+        why: Repeatable builds are reviewable, auditable and recoverable.
+        enforcement: Production permissions limited to the pipeline role.
+        kpi: 100% of production resources managed by code.
+
+      - id: PLT-02
+        name: Policy Checks Before Apply
+        severity: high
+        check: manual
+        statement: |
+          Every infrastructure run passes automated policy checks. Hard rules
+          (encryption, public access, region) cannot be overridden by the deploying
+          team.
+        why: Blocks non-compliant infrastructure before it exists.
+        enforcement: Policy sets attached to every workspace or pipeline.
+        kpi: Zero hard-rule overrides per quarter.
+
+      - id: PLT-03
+        name: Version Control and Peer Review
+        severity: medium
+        check: manual
+        statement: |
+          All infrastructure code lives in version control and merges only after
+          peer review.
+        why: Enables traceability, rollback and shared ownership.
+        enforcement: Protected branches; required reviews.
+        kpi: Zero deployments from unreviewed code.
+
+      - id: PLT-04
+        name: Pipeline-Based Change
+        severity: medium
+        check: manual
+        statement: |
+          Changes deployed through the approved pipeline are pre-approved standard
+          changes. Anything done outside the pipeline needs a change ticket and
+          board approval.
+        why: Removes waiting for controls the pipeline already enforces.
+        enforcement: Pipeline opens and closes the change record automatically.
+        kpi: Zero production changes without a change record.
+
+    principles:
+      - id: P-PLT-1
+        name: Pave the Road
+        non_negotiable: false
+        guidance: |
+          Provide modules and templates that are the easiest way to build. Custom
+          builds need a reason: no module covers it, an extension request was
+          declined, or the requirement is truly specific to the product.
+        test: "If the compliant path is slower than the workaround, fix the path."
+
+      - id: P-PLT-2
+        name: Let the Pipeline Carry the Evidence
+        non_negotiable: false
+        guidance: |
+          Approvals, scans and results are produced by the pipeline, not collected
+          in meetings or email threads.
+        test: "When an auditor asks who approved a release, the answer is a link."
+
+  # ===========================================================================
+  - id: SEC
+    name: Security & Identity
+    owner_team: Security Architecture
+    summary: Who can do what, with which credentials, and where.
+
+    mandates:
+      - id: SEC-01
+        name: Central Identity
+        severity: high
+        check: manual
+        statement: |
+          People sign in through the central identity provider. No standalone
+          long-lived users or access keys for people.
+        why: One place to grant, review and revoke access.
+        enforcement: Organization policy denies local user creation; access reviews.
+        kpi: Zero standalone human users.
+
+      - id: SEC-02
+        name: Phishing-Resistant MFA and Time-Bound Privilege
+        severity: critical
+        check: manual
+        statement: |
+          Privileged access requires phishing-resistant MFA and is granted just in
+          time, with monitored break-glass accounts. No standing administrator
+          access.
+        why: Stolen credentials are the most common route to a breach.
+        enforcement: Privileged access management; automated access reviews.
+        kpi: 100% of privileged roles on MFA and just-in-time access.
+
+      - id: SEC-03
+        name: Approved Secrets Vault
+        severity: high
+        check: manual
+        statement: |
+          Secrets live in the approved vault. No hardcoded credentials in code,
+          configuration or pipeline variables.
+        why: Secrets in code leak through repositories and logs.
+        enforcement: Secret scanning in pipelines and repositories.
+        kpi: Zero secrets found outside the vault.
+
+      - id: SEC-04
+        name: Region Guardrails
+        severity: high
+        check: unapproved_region
+        statement: |
+          Organization-level policies limit resources to approved regions
+          (config.approved_regions). Resources found elsewhere are non-compliant.
+        why: Data residency and regulatory exposure follow the region.
+        enforcement: Service control policies or equivalent applied before onboarding.
+        kpi: Zero resources in unapproved regions.
+
+      - id: SEC-05
+        name: Hardened Baselines
+        severity: medium
+        check: manual
+        statement: |
+          Images, clusters and managed services follow CIS-aligned baselines, with
+          drift detection and automated remediation.
+        why: Prescriptive hardening removes common misconfigurations.
+        enforcement: Continuous compliance scans.
+        kpi: 100% of resources passing the baseline or covered by an exception.
+
+    principles:
+      - id: P-SEC-1
+        name: Identity Is the Perimeter
+        non_negotiable: true
+        guidance: |
+          Verify every identity, grant the least privilege that works, and make
+          elevated access temporary. Network position alone proves nothing.
+        test: "A standing administrator session is a failure."
+
+      - id: P-SEC-2
+        name: Assume Something Will Be Misconfigured
+        non_negotiable: true
+        guidance: |
+          Organization-level guardrails catch what individual teams miss. Design so
+          that one wrong setting in a workload account cannot expose data.
+        test: "If a single click can expose a data store, the guardrail is missing."
+
+  # ===========================================================================
+  - id: DAT
+    name: Data Protection
+    owner_team: Data Governance
+    summary: How data is classified, encrypted and kept out of the wrong places.
+
+    mandates:
+      - id: DAT-01
+        name: Encrypt Everywhere
+        severity: critical
+        check: plain_http_listener
+        statement: |
+          Data is encrypted at rest with managed keys and in transit with TLS 1.2
+          or later. Public listeners do not serve content over plain HTTP; port 80
+          may only redirect to HTTPS.
+        why: Meets regulatory expectations and limits the damage of a leak.
+        enforcement: Policy checks on storage, databases and listeners.
+        kpi: Zero unencrypted stores; zero plain-HTTP public listeners.
+
+      - id: DAT-02
+        name: Classify at Creation
+        severity: high
+        check: manual
+        statement: |
+          Every data store is classified when it is created. Retention, encryption
+          and access rules follow the classification.
+        why: Controls cannot match data nobody has classified.
+        enforcement: Classification tag required by the pipeline; scanning.
+        kpi: 100% of data stores classified.
+
+      - id: DAT-03
+        name: No Production Data Below Production
+        severity: high
+        check: manual
+        statement: |
+          Non-production environments use synthetic or tokenized data. No personal
+          or sensitive data outside production.
+        why: Lower environments have weaker controls and wider access.
+        enforcement: Data scanning in non-production accounts.
+        kpi: Zero sensitive records found in non-production.
+
+    principles:
+      - id: P-DAT-1
+        name: Know What You Hold
+        non_negotiable: true
+        guidance: |
+          Classify data at creation, keep lineage for audit, and deploy where the
+          data is allowed to live, not where compute is cheapest.
+        test: "A data store nobody can classify in one word is not ready for production."
+
+      - id: P-DAT-2
+        name: Vendors Inherit Your Risk
+        non_negotiable: false
+        guidance: |
+          Every third-party service holding your data becomes part of your attack
+          surface. Keep a live inventory, ask vendors for control mappings, and
+          reassess after an acquisition, incident or renewal.
+        test: "If you cannot say what a vendor outage means for customers, the risk is unassessed."
+
+  # ===========================================================================
+  - id: RES
+    name: Resilience & Continuity
+    owner_team: Site Reliability Engineering
+    summary: How workloads keep running and recover.
+
+    mandates:
+      - id: RES-01
+        name: Multi-Zone Production
+        severity: high
+        check: single_az_network
+        statement: |
+          Production networks span at least config.min_azs_for_prod availability
+          zones.
+        why: A single-zone network goes down with that zone.
+        enforcement: Standard network module; design review.
+        kpi: 100% of production networks in two or more zones.
+
+      - id: RES-02
+        name: Tiered Disaster Recovery
+        severity: high
+        check: manual
+        statement: |
+          Recovery strategy matches the tier: backup and restore for Tier 3, pilot
+          light or warm standby for Tier 2, active-active or warm standby for
+          Tier 1. Recovery is tested on schedule.
+        why: Recovery objectives only mean something once they are exercised.
+        enforcement: Recovery runbooks in code; scheduled failover tests.
+        kpi: 100% of critical workloads with recovery tested within the cadence.
+
+      - id: RES-03
+        name: Immutable Backups
+        severity: high
+        check: manual
+        statement: |
+          Critical data has immutable, encrypted backups managed from a separate
+          administrative plane, with periodic restore tests.
+        why: Protects against ransomware and operator error.
+        enforcement: Object lock or vault lock policies; restore test scheduling.
+        kpi: 100% of critical data with an immutable backup and a passing restore test.
+
+      - id: RES-04
+        name: SLOs and Error Budgets
+        severity: medium
+        check: manual
+        statement: |
+          Tier 1 and Tier 2 services define SLIs, SLOs and error budgets. Releases
+          pause when a budget is spent.
+        why: Balances delivery speed with reliability.
+        enforcement: Budget policy in pipelines; consumption dashboards.
+        kpi: 100% of Tier 1/2 services with SLOs defined.
+
+    principles:
+      - id: P-RES-1
+        name: Practice the Failure
+        non_negotiable: true
+        guidance: |
+          Define recovery time and recovery point for every production workload,
+          automate recovery, and rehearse it. A runbook nobody has run is a guess.
+        test: "Untested failover is a hypothesis, not a capability."
+
+      - id: P-RES-2
+        name: Match Protection to Impact
+        non_negotiable: false
+        guidance: |
+          Spend resilience effort where an outage costs the most. Tier workloads
+          and apply the matching recovery pattern instead of one pattern for all.
+        test: "If every workload has the same recovery plan, the tiering was skipped."
+
+  # ===========================================================================
+  - id: OPS
+    name: Operations & Cost
+    owner_team: Cloud Operations
+    summary: How environments are tagged, observed, supported and paid for.
+
+    mandates:
+      - id: OPS-01
+        name: Mandatory Tags
+        severity: medium
+        check: missing_required_tags
+        statement: |
+          Every network and resource carries the tags in config.required_tags
+          (Owner, Environment, CostCenter, Application).
+        why: Ownership, chargeback and incident routing all depend on tags.
+        enforcement: Tag policy in the pipeline; orphan detection.
+        kpi: 100% tag compliance.
+
+      - id: OPS-02
+        name: Central Logging and Detection
+        severity: high
+        check: manual
+        statement: |
+          Logs and telemetry from every production workload ship to the central
+          platform with alerting playbooks for the main incident categories.
+        why: Faster detection and audit-ready evidence.
+        enforcement: Mandatory log shipping; playbook coverage tracking.
+        kpi: Detection and response time targets met.
+
+      - id: OPS-03
+        name: Practiced Incident Response
+        severity: medium
+        check: manual
+        statement: |
+          An incident response program aligned to a recognized framework runs
+          regular exercises and publishes blameless post-incident reviews.
+        why: Each incident should make the next one shorter.
+        enforcement: Quarterly exercises; action tracking.
+        kpi: Corrective actions closed within 60 days.
+
+      - id: OPS-04
+        name: Non-Production Scheduling and Budgets
+        severity: low
+        check: manual
+        statement: |
+          Non-production environments shut down outside working hours unless
+          justified. Every account has a budget and anomaly alerts.
+        why: Cuts spend that delivers no business value.
+        enforcement: Scheduled automation; cost anomaly detection.
+        kpi: Zero unjustified always-on non-production environments.
+
+    principles:
+      - id: P-OPS-1
+        name: If You Cannot See It, You Cannot Run It
+        non_negotiable: true
+        guidance: |
+          Structured logs, traces and actionable alerts exist from the first
+          deployment. Alert on customer impact, not on raw resource metrics.
+        test: "A service that emits no telemetry has no owner in practice."
+
+      - id: P-OPS-2
+        name: Costs Have Owners
+        non_negotiable: false
+        guidance: |
+          Every resource has an owner and a cost center. Teams understand cost per
+          transaction and remove what is orphaned.
+        test: "Spend nobody can explain in one sentence is waste until shown otherwise."

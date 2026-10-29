@@ -1,0 +1,185 @@
+{
+  "_export": {
+    "schema": "gcp-project-inventory/1.0",
+    "generated": "2026-10-28T12:00:00Z",
+    "synthetic": true,
+    "source": "SYNTHETIC SAMPLE: fictional company. Shapes mirror `gcloud compute ... list` output."
+  },
+  "Project": {
+    "projectId": "cobalt-analytics-prod",
+    "projectNumber": "512300009900",
+    "name": "cobalt-analytics-prod",
+    "labels": {
+      "accountrole": "prod",
+      "environment": "prod",
+      "owner": "analytics-eng",
+      "costcenter": "cc-6200",
+      "application": "analytics"
+    }
+  },
+  "Networks": [
+    {
+      "name": "vpc-analytics",
+      "autoCreateSubnetworks": false,
+      "routingConfig": {
+        "routingMode": "GLOBAL"
+      }
+    },
+    {
+      "name": "default",
+      "autoCreateSubnetworks": true,
+      "routingConfig": {
+        "routingMode": "REGIONAL"
+      }
+    }
+  ],
+  "Subnetworks": [
+    {
+      "name": "snet-us-east1",
+      "region": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/regions/us-east1",
+      "network": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/global/networks/vpc-analytics",
+      "ipCidrRange": "10.40.0.0/20",
+      "privateIpGoogleAccess": true,
+      "logConfig": {
+        "enable": true
+      }
+    },
+    {
+      "name": "snet-us-east4",
+      "region": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/regions/us-east4",
+      "network": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/global/networks/vpc-analytics",
+      "ipCidrRange": "10.40.16.0/20",
+      "privateIpGoogleAccess": true,
+      "logConfig": {
+        "enable": true
+      }
+    },
+    {
+      "name": "snet-europe-west1",
+      "region": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/regions/europe-west1",
+      "network": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/global/networks/vpc-analytics",
+      "ipCidrRange": "10.41.0.0/20",
+      "privateIpGoogleAccess": true,
+      "logConfig": {
+        "enable": false
+      }
+    }
+  ],
+  "Firewalls": [
+    {
+      "name": "fw-allow-lb-health",
+      "network": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/global/networks/vpc-analytics",
+      "direction": "INGRESS",
+      "priority": 1000,
+      "disabled": false,
+      "sourceRanges": [
+        "130.211.0.0/22",
+        "35.191.0.0/16"
+      ],
+      "allowed": [
+        {
+          "IPProtocol": "tcp",
+          "ports": [
+            "443"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "fw-allow-iap-ssh",
+      "network": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/global/networks/vpc-analytics",
+      "direction": "INGRESS",
+      "priority": 1000,
+      "disabled": false,
+      "sourceRanges": [
+        "35.235.240.0/20"
+      ],
+      "allowed": [
+        {
+          "IPProtocol": "tcp",
+          "ports": [
+            "22"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "fw-allow-internal",
+      "network": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/global/networks/vpc-analytics",
+      "direction": "INGRESS",
+      "priority": 1000,
+      "disabled": false,
+      "sourceRanges": [
+        "10.40.0.0/16"
+      ],
+      "allowed": [
+        {
+          "IPProtocol": "tcp",
+          "ports": [
+            "0-65535"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "fw-allow-ssh-any",
+      "network": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/global/networks/vpc-analytics",
+      "direction": "INGRESS",
+      "priority": 1000,
+      "disabled": false,
+      "sourceRanges": [
+        "0.0.0.0/0"
+      ],
+      "allowed": [
+        {
+          "IPProtocol": "tcp",
+          "ports": [
+            "22"
+          ]
+        }
+      ]
+    }
+  ],
+  "Routers": [
+    {
+      "name": "router-us-east1",
+      "region": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/regions/us-east1",
+      "network": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/global/networks/vpc-analytics"
+    }
+  ],
+  "RouterNats": [
+    {
+      "name": "nat-us-east1",
+      "router": "router-us-east1",
+      "natIpAllocateOption": "AUTO_ONLY",
+      "sourceSubnetworkIpRangesToNat": "ALL_SUBNETWORKS_ALL_IP_RANGES"
+    }
+  ],
+  "ForwardingRules": [
+    {
+      "name": "fr-analytics-https",
+      "region": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/regions/us-east1",
+      "IPAddress": "203.0.113.20",
+      "loadBalancingScheme": "EXTERNAL_MANAGED",
+      "portRange": "443-443"
+    }
+  ],
+  "BackendServices": [
+    {
+      "name": "bs-analytics-ui",
+      "loadBalancingScheme": "EXTERNAL_MANAGED",
+      "securityPolicy": "https://www.googleapis.com/compute/v1/projects/cobalt-analytics-prod/global/securityPolicies/armor-baseline"
+    },
+    {
+      "name": "bs-legacy-report",
+      "loadBalancingScheme": "EXTERNAL_MANAGED"
+    }
+  ],
+  "SecurityPolicies": [
+    {
+      "name": "armor-baseline",
+      "type": "CLOUD_ARMOR"
+    }
+  ],
+  "VpnTunnels": []
+}

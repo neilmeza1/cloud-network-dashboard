@@ -1,0 +1,643 @@
+{
+  "_export": {
+    "schema": "aws-account-inventory/1.0",
+    "generated": "2026-10-28T12:00:00Z",
+    "synthetic": true,
+    "source": "SYNTHETIC SAMPLE: fictional company, not a real environment. Shapes mirror AWS CLI describe-* output merged per account."
+  },
+  "Account": {
+    "AccountId": "710420000005",
+    "AccountName": "tidewater-security-logging",
+    "Company": "Tidewater Payments",
+    "Tags": {
+      "AccountRole": "security",
+      "Environment": "shared",
+      "Owner": "security-team"
+    }
+  },
+  "Regions": {
+    "us-east-1": {
+      "Vpcs": [
+        {
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "CidrBlock": "10.20.64.0/22",
+          "State": "available",
+          "IsDefault": false,
+          "OwnerId": "710420000005",
+          "InstanceTenancy": "default",
+          "DhcpOptionsId": "dopt-ed9137e3",
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "security-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-4001"
+            },
+            {
+              "Key": "Application",
+              "Value": "security-logging"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-seclog"
+            }
+          ]
+        }
+      ],
+      "Subnets": [
+        {
+          "SubnetId": "subnet-7ffa2a199f8d96f54",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "CidrBlock": "10.20.64.0/24",
+          "AvailabilityZone": "us-east-1a",
+          "AvailabilityZoneId": "use1-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 234,
+          "OwnerId": "710420000005",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-seclog-app-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-936ea12fa20cebccd",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "CidrBlock": "10.20.65.0/24",
+          "AvailabilityZone": "us-east-1b",
+          "AvailabilityZoneId": "use1-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 213,
+          "OwnerId": "710420000005",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-seclog-app-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        }
+      ],
+      "RouteTables": [
+        {
+          "RouteTableId": "rtb-817843080c2ad8a50",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "OwnerId": "710420000005",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.64.0/22",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "TransitGatewayId": "tgw-161f480e76106edb6"
+            },
+            {
+              "DestinationCidrBlock": "10.0.0.0/8",
+              "TransitGatewayId": "tgw-161f480e76106edb6",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-713bd44856e35cdf7",
+              "RouteTableId": "rtb-817843080c2ad8a50",
+              "SubnetId": "subnet-7ffa2a199f8d96f54",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "security-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-4001"
+            },
+            {
+              "Key": "Application",
+              "Value": "security-logging"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-seclog-rt-app-a"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-e6c85542376bcdd91",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "OwnerId": "710420000005",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.64.0/22",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "TransitGatewayId": "tgw-161f480e76106edb6"
+            },
+            {
+              "DestinationCidrBlock": "10.0.0.0/8",
+              "TransitGatewayId": "tgw-161f480e76106edb6",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-0f751ef3874148a5f",
+              "RouteTableId": "rtb-e6c85542376bcdd91",
+              "SubnetId": "subnet-936ea12fa20cebccd",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "security-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-4001"
+            },
+            {
+              "Key": "Application",
+              "Value": "security-logging"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-seclog-rt-app-b"
+            }
+          ]
+        }
+      ],
+      "InternetGateways": [],
+      "NatGateways": [],
+      "TransitGateways": [],
+      "TransitGatewayAttachments": [
+        {
+          "TransitGatewayAttachmentId": "tgw-attach-79001b78b12577bc2",
+          "TransitGatewayId": "tgw-161f480e76106edb6",
+          "TransitGatewayOwnerId": "710420000001",
+          "ResourceOwnerId": "710420000005",
+          "ResourceType": "vpc",
+          "ResourceId": "vpc-0a757bfe8d70d76a8",
+          "State": "available",
+          "Association": {
+            "TransitGatewayRouteTableId": "tgw-rtb-0a1b2c3d4e5f60718",
+            "State": "associated"
+          },
+          "SubnetIds": [
+            "subnet-7ffa2a199f8d96f54",
+            "subnet-936ea12fa20cebccd"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "security-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-4001"
+            },
+            {
+              "Key": "Application",
+              "Value": "security-logging"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-seclog-tgw-attach"
+            }
+          ]
+        }
+      ],
+      "VpcEndpoints": [
+        {
+          "VpcEndpointId": "vpce-6d05b9195ba948020",
+          "VpcEndpointType": "Gateway",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "ServiceName": "com.amazonaws.us-east-1.s3",
+          "State": "available",
+          "OwnerId": "710420000005",
+          "PrivateDnsEnabled": false,
+          "RouteTableIds": [
+            "rtb-817843080c2ad8a50",
+            "rtb-e6c85542376bcdd91"
+          ],
+          "SubnetIds": [],
+          "Groups": [],
+          "NetworkInterfaceIds": [],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "security-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-4001"
+            },
+            {
+              "Key": "Application",
+              "Value": "security-logging"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-seclog-s3"
+            }
+          ]
+        },
+        {
+          "VpcEndpointId": "vpce-11a798e5f157c7a8a",
+          "VpcEndpointType": "Interface",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "ServiceName": "com.amazonaws.us-east-1.logs",
+          "State": "available",
+          "OwnerId": "710420000005",
+          "PrivateDnsEnabled": true,
+          "RouteTableIds": [],
+          "SubnetIds": [
+            "subnet-7ffa2a199f8d96f54",
+            "subnet-936ea12fa20cebccd"
+          ],
+          "Groups": [
+            {
+              "GroupId": "sg-72e90e46c84eac605",
+              "GroupName": "default"
+            }
+          ],
+          "NetworkInterfaceIds": [
+            "eni-d014f7c570c63ac50",
+            "eni-54fbb127a4cd38514"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "security-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-4001"
+            },
+            {
+              "Key": "Application",
+              "Value": "security-logging"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-seclog-logs"
+            }
+          ]
+        }
+      ],
+      "NetworkInterfaces": [
+        {
+          "NetworkInterfaceId": "eni-d014f7c570c63ac50",
+          "SubnetId": "subnet-7ffa2a199f8d96f54",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000005",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-11a798e5f157c7a8a",
+          "PrivateIpAddress": "10.20.64.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-72e90e46c84eac605",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-54fbb127a4cd38514",
+          "SubnetId": "subnet-936ea12fa20cebccd",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000005",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-11a798e5f157c7a8a",
+          "PrivateIpAddress": "10.20.65.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-72e90e46c84eac605",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-e7b70d0f82f2d760d",
+          "SubnetId": "subnet-7ffa2a199f8d96f54",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000005",
+          "InterfaceType": "interface",
+          "Description": "tw-seclog workload 1",
+          "PrivateIpAddress": "10.20.64.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-67d0be9e60de5c20a",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-aac21204131d1c0d8",
+          "SubnetId": "subnet-936ea12fa20cebccd",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000005",
+          "InterfaceType": "interface",
+          "Description": "tw-seclog workload 2",
+          "PrivateIpAddress": "10.20.65.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-67d0be9e60de5c20a",
+              "GroupName": "app"
+            }
+          ]
+        }
+      ],
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-72e90e46c84eac605",
+          "GroupName": "default",
+          "Description": "default VPC security group",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "OwnerId": "710420000005",
+          "IpPermissions": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-72e90e46c84eac605",
+                  "UserId": "710420000005"
+                }
+              ]
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": []
+        },
+        {
+          "GroupId": "sg-d3c8ed52596ac0978",
+          "GroupName": "alb-internal",
+          "Description": "Internal ALB",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "OwnerId": "710420000005",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "10.0.0.0/8"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 443,
+              "ToPort": 443
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "security-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-4001"
+            },
+            {
+              "Key": "Application",
+              "Value": "security-logging"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-seclog-alb-internal"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-67d0be9e60de5c20a",
+          "GroupName": "app",
+          "Description": "Application tier",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "OwnerId": "710420000005",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-d3c8ed52596ac0978",
+                  "UserId": "710420000005"
+                }
+              ],
+              "FromPort": 8443,
+              "ToPort": 8443
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "security-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-4001"
+            },
+            {
+              "Key": "Application",
+              "Value": "security-logging"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-seclog-app"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-b2fe543d81bf4f4a8",
+          "GroupName": "db",
+          "Description": "Database tier",
+          "VpcId": "vpc-0a757bfe8d70d76a8",
+          "OwnerId": "710420000005",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-67d0be9e60de5c20a",
+                  "UserId": "710420000005"
+                }
+              ],
+              "FromPort": 5432,
+              "ToPort": 5432
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "security-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "shared"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-4001"
+            },
+            {
+              "Key": "Application",
+              "Value": "security-logging"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-seclog-db"
+            }
+          ]
+        }
+      ],
+      "VpcPeeringConnections": [],
+      "FlowLogs": [
+        {
+          "FlowLogId": "fl-3d167e68073fc7b27",
+          "ResourceId": "vpc-0a757bfe8d70d76a8",
+          "TrafficType": "ALL",
+          "LogDestinationType": "s3",
+          "LogDestination": "arn:aws:s3:::tidewater-central-flow-logs",
+          "FlowLogStatus": "ACTIVE",
+          "CreationTime": "2025-03-14T15:30:00+00:00"
+        }
+      ],
+      "LoadBalancers": [],
+      "Listeners": [],
+      "WebAcls": [],
+      "WebAclResources": []
+    }
+  },
+  "Global": {
+    "CloudFrontDistributions": [],
+    "WebAclsGlobal": []
+  }
+}

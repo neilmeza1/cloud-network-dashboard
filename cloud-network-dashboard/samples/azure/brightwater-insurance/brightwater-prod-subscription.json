@@ -1,0 +1,306 @@
+{
+  "_export": {
+    "schema": "azure-subscription-inventory/1.0",
+    "generated": "2026-10-28T12:00:00Z",
+    "synthetic": true,
+    "source": "SYNTHETIC SAMPLE: fictional company. Shapes mirror `az network ... list` output."
+  },
+  "Subscription": {
+    "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02",
+    "subscriptionId": "81fcc694-d611-4450-e126-cf20161d6e02",
+    "displayName": "brightwater-prod",
+    "tags": {
+      "AccountRole": "prod",
+      "Environment": "prod"
+    }
+  },
+  "VirtualNetworks": [
+    {
+      "name": "vnet-prod-eus",
+      "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/virtualNetworks/vnet-prod-eus",
+      "location": "eastus",
+      "tags": {
+        "Owner": "claims-platform",
+        "Environment": "prod",
+        "CostCenter": "CC-5100",
+        "Application": "claims-portal"
+      },
+      "addressSpace": {
+        "addressPrefixes": [
+          "10.30.0.0/20"
+        ]
+      },
+      "subnets": [
+        {
+          "name": "snet-web",
+          "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/virtualNetworks/vnet-prod-eus/subnets/snet-web",
+          "addressPrefix": "10.30.0.0/24",
+          "networkSecurityGroup": {
+            "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/networkSecurityGroups/nsg-web"
+          }
+        },
+        {
+          "name": "snet-app",
+          "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/virtualNetworks/vnet-prod-eus/subnets/snet-app",
+          "addressPrefix": "10.30.1.0/24",
+          "networkSecurityGroup": {
+            "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/networkSecurityGroups/nsg-app"
+          },
+          "natGateway": {
+            "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/natGateways/nat-prod-eus"
+          }
+        },
+        {
+          "name": "snet-mgmt",
+          "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/virtualNetworks/vnet-prod-eus/subnets/snet-mgmt",
+          "addressPrefix": "10.30.2.0/24",
+          "networkSecurityGroup": {
+            "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/networkSecurityGroups/nsg-mgmt"
+          }
+        },
+        {
+          "name": "snet-pe",
+          "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/virtualNetworks/vnet-prod-eus/subnets/snet-pe",
+          "addressPrefix": "10.30.3.0/24"
+        }
+      ],
+      "virtualNetworkPeerings": []
+    },
+    {
+      "name": "vnet-dr-neu",
+      "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/virtualNetworks/vnet-dr-neu",
+      "location": "northeurope",
+      "tags": {
+        "Owner": "claims-platform",
+        "Environment": "prod",
+        "CostCenter": "CC-5100",
+        "Application": "claims-portal"
+      },
+      "addressSpace": {
+        "addressPrefixes": [
+          "10.31.0.0/20"
+        ]
+      },
+      "subnets": [
+        {
+          "name": "snet-app",
+          "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/virtualNetworks/vnet-dr-neu/subnets/snet-app",
+          "addressPrefix": "10.31.1.0/24"
+        }
+      ],
+      "virtualNetworkPeerings": []
+    }
+  ],
+  "NetworkSecurityGroups": [
+    {
+      "name": "nsg-web",
+      "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/networkSecurityGroups/nsg-web",
+      "location": "eastus",
+      "tags": {
+        "Owner": "claims-platform",
+        "Environment": "prod",
+        "CostCenter": "CC-5100",
+        "Application": "claims-portal"
+      },
+      "securityRules": [
+        {
+          "name": "allow-https-in",
+          "priority": 100,
+          "direction": "Inbound",
+          "access": "Allow",
+          "protocol": "Tcp",
+          "sourceAddressPrefix": "Internet",
+          "sourcePortRange": "*",
+          "destinationAddressPrefix": "*",
+          "destinationPortRange": "443"
+        }
+      ]
+    },
+    {
+      "name": "nsg-app",
+      "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/networkSecurityGroups/nsg-app",
+      "location": "eastus",
+      "tags": {
+        "Owner": "claims-platform",
+        "Environment": "prod",
+        "CostCenter": "CC-5100",
+        "Application": "claims-portal"
+      },
+      "securityRules": [
+        {
+          "name": "allow-from-web",
+          "priority": 100,
+          "direction": "Inbound",
+          "access": "Allow",
+          "protocol": "Tcp",
+          "sourceAddressPrefix": "10.30.0.0/24",
+          "sourcePortRange": "*",
+          "destinationAddressPrefix": "*",
+          "destinationPortRange": "8443"
+        }
+      ]
+    },
+    {
+      "name": "nsg-mgmt",
+      "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/networkSecurityGroups/nsg-mgmt",
+      "location": "eastus",
+      "tags": {
+        "Owner": "claims-platform",
+        "Environment": "prod",
+        "CostCenter": "CC-5100",
+        "Application": "claims-portal"
+      },
+      "securityRules": [
+        {
+          "name": "allow-rdp-any",
+          "priority": 100,
+          "direction": "Inbound",
+          "access": "Allow",
+          "protocol": "Tcp",
+          "sourceAddressPrefix": "*",
+          "sourcePortRange": "*",
+          "destinationAddressPrefix": "*",
+          "destinationPortRange": "3389"
+        }
+      ]
+    }
+  ],
+  "PublicIPAddresses": [
+    {
+      "name": "pip-agw-claims-portal",
+      "location": "eastus",
+      "ipAddress": "203.0.113.40",
+      "sku": {
+        "name": "Standard"
+      }
+    },
+    {
+      "name": "pip-agw-legacy-quotes",
+      "location": "eastus",
+      "ipAddress": "203.0.113.41",
+      "sku": {
+        "name": "Standard"
+      }
+    },
+    {
+      "name": "pip-nat-prod",
+      "location": "eastus",
+      "ipAddress": "198.51.100.7",
+      "sku": {
+        "name": "Standard"
+      }
+    }
+  ],
+  "ApplicationGateways": [
+    {
+      "name": "agw-claims-portal",
+      "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/applicationGateways/agw-claims-portal",
+      "location": "eastus",
+      "tags": {
+        "Owner": "claims-platform",
+        "Environment": "prod",
+        "CostCenter": "CC-5100",
+        "Application": "claims-portal"
+      },
+      "sku": {
+        "name": "WAF_v2",
+        "tier": "WAF_v2"
+      },
+      "frontendIPConfigurations": [
+        {
+          "publicIPAddress": {
+            "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/publicIPAddresses/pip-agw-claims-portal"
+          }
+        }
+      ],
+      "firewallPolicy": {
+        "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/waf-baseline"
+      }
+    },
+    {
+      "name": "agw-legacy-quotes",
+      "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/applicationGateways/agw-legacy-quotes",
+      "location": "eastus",
+      "tags": {
+        "Owner": "claims-platform",
+        "Environment": "prod",
+        "CostCenter": "CC-5100",
+        "Application": "claims-portal"
+      },
+      "sku": {
+        "name": "Standard_v2",
+        "tier": "Standard_v2"
+      },
+      "frontendIPConfigurations": [
+        {
+          "publicIPAddress": {
+            "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/publicIPAddresses/pip-agw-legacy-quotes"
+          }
+        }
+      ]
+    }
+  ],
+  "NatGateways": [
+    {
+      "name": "nat-prod-eus",
+      "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/natGateways/nat-prod-eus",
+      "location": "eastus",
+      "tags": {
+        "Owner": "claims-platform",
+        "Environment": "prod",
+        "CostCenter": "CC-5100",
+        "Application": "claims-portal"
+      }
+    }
+  ],
+  "PrivateEndpoints": [
+    {
+      "name": "pe-storage-claims",
+      "location": "eastus",
+      "subnet": {
+        "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/virtualNetworks/vnet-prod-eus/subnets/snet-pe"
+      },
+      "privateLinkServiceConnections": [
+        {
+          "groupIds": [
+            "blob"
+          ]
+        }
+      ],
+      "tags": {
+        "Owner": "claims-platform",
+        "Environment": "prod",
+        "CostCenter": "CC-5100",
+        "Application": "claims-portal"
+      }
+    },
+    {
+      "name": "pe-keyvault-claims",
+      "location": "eastus",
+      "subnet": {
+        "id": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/virtualNetworks/vnet-prod-eus/subnets/snet-pe"
+      },
+      "privateLinkServiceConnections": [
+        {
+          "groupIds": [
+            "vault"
+          ]
+        }
+      ],
+      "tags": {
+        "Owner": "claims-platform",
+        "Environment": "prod",
+        "CostCenter": "CC-5100",
+        "Application": "claims-portal"
+      }
+    }
+  ],
+  "FlowLogs": [
+    {
+      "name": "fl-vnet-prod-eus",
+      "location": "eastus",
+      "enabled": true,
+      "targetResourceId": "/subscriptions/81fcc694-d611-4450-e126-cf20161d6e02/resourceGroups/rg-brightwater-prod-network/providers/Microsoft.Network/virtualNetworks/vnet-prod-eus"
+    }
+  ]
+}

@@ -1,0 +1,1669 @@
+{
+  "_export": {
+    "schema": "aws-account-inventory/1.0",
+    "generated": "2026-10-28T12:00:00Z",
+    "synthetic": true,
+    "source": "SYNTHETIC SAMPLE: fictional company, not a real environment. Shapes mirror AWS CLI describe-* output merged per account."
+  },
+  "Account": {
+    "AccountId": "710420000004",
+    "AccountName": "tidewater-data-platform",
+    "Company": "Tidewater Payments",
+    "Tags": {
+      "AccountRole": "data",
+      "Environment": "prod",
+      "Owner": "data-team"
+    }
+  },
+  "Regions": {
+    "eu-west-1": {
+      "Vpcs": [
+        {
+          "VpcId": "vpc-04afa732b453cefc8",
+          "CidrBlock": "10.22.0.0/20",
+          "State": "available",
+          "IsDefault": false,
+          "OwnerId": "710420000004",
+          "InstanceTenancy": "default",
+          "DhcpOptionsId": "dopt-ce72bbb5",
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu"
+            }
+          ]
+        }
+      ],
+      "Subnets": [
+        {
+          "SubnetId": "subnet-1dfa6635e94afbacf",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "CidrBlock": "10.22.0.0/24",
+          "AvailabilityZone": "eu-west-1a",
+          "AvailabilityZoneId": "euw1-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 234,
+          "OwnerId": "710420000004",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-app-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-7a256281aa23d8bd5",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "CidrBlock": "10.22.1.0/24",
+          "AvailabilityZone": "eu-west-1b",
+          "AvailabilityZoneId": "euw1-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 220,
+          "OwnerId": "710420000004",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-app-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-d1a2204b9ce2d7e2b",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "CidrBlock": "10.22.2.0/24",
+          "AvailabilityZone": "eu-west-1a",
+          "AvailabilityZoneId": "euw1-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 241,
+          "OwnerId": "710420000004",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-data-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "data"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-f72278ec962ac4904",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "CidrBlock": "10.22.3.0/24",
+          "AvailabilityZone": "eu-west-1b",
+          "AvailabilityZoneId": "euw1-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 244,
+          "OwnerId": "710420000004",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-data-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "data"
+            }
+          ]
+        }
+      ],
+      "RouteTables": [
+        {
+          "RouteTableId": "rtb-aa64adad4d1a8ba26",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "OwnerId": "710420000004",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.22.0.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-fbc7662b37c362671",
+              "RouteTableId": "rtb-aa64adad4d1a8ba26",
+              "SubnetId": "subnet-1dfa6635e94afbacf",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-rt-app-a"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-7ce3d80a537c1916f",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "OwnerId": "710420000004",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.22.0.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-dee23117c919856aa",
+              "RouteTableId": "rtb-7ce3d80a537c1916f",
+              "SubnetId": "subnet-7a256281aa23d8bd5",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-rt-app-b"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-b1af42b8898cb75b8",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "OwnerId": "710420000004",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.22.0.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-d561664e8e1624952",
+              "RouteTableId": "rtb-b1af42b8898cb75b8",
+              "SubnetId": "subnet-d1a2204b9ce2d7e2b",
+              "AssociationState": {
+                "State": "associated"
+              }
+            },
+            {
+              "RouteTableAssociationId": "rtbassoc-2f8852e3917143130",
+              "RouteTableId": "rtb-b1af42b8898cb75b8",
+              "SubnetId": "subnet-f72278ec962ac4904",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-rt-data"
+            }
+          ]
+        }
+      ],
+      "InternetGateways": [],
+      "NatGateways": [],
+      "TransitGateways": [],
+      "TransitGatewayAttachments": [],
+      "VpcEndpoints": [
+        {
+          "VpcEndpointId": "vpce-9a83648b2aadcdc22",
+          "VpcEndpointType": "Gateway",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "ServiceName": "com.amazonaws.eu-west-1.s3",
+          "State": "available",
+          "OwnerId": "710420000004",
+          "PrivateDnsEnabled": false,
+          "RouteTableIds": [
+            "rtb-aa64adad4d1a8ba26",
+            "rtb-7ce3d80a537c1916f",
+            "rtb-b1af42b8898cb75b8"
+          ],
+          "SubnetIds": [],
+          "Groups": [],
+          "NetworkInterfaceIds": [],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-s3"
+            }
+          ]
+        },
+        {
+          "VpcEndpointId": "vpce-a44d7c289f69de1e2",
+          "VpcEndpointType": "Interface",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "ServiceName": "com.amazonaws.eu-west-1.logs",
+          "State": "available",
+          "OwnerId": "710420000004",
+          "PrivateDnsEnabled": true,
+          "RouteTableIds": [],
+          "SubnetIds": [
+            "subnet-1dfa6635e94afbacf",
+            "subnet-7a256281aa23d8bd5"
+          ],
+          "Groups": [
+            {
+              "GroupId": "sg-f079d8d77b2da8978",
+              "GroupName": "default"
+            }
+          ],
+          "NetworkInterfaceIds": [
+            "eni-32ab155d8f66707b4",
+            "eni-7659eb67c3a4e5e1c"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-logs"
+            }
+          ]
+        }
+      ],
+      "NetworkInterfaces": [
+        {
+          "NetworkInterfaceId": "eni-32ab155d8f66707b4",
+          "SubnetId": "subnet-1dfa6635e94afbacf",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "AvailabilityZone": "eu-west-1a",
+          "OwnerId": "710420000004",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-a44d7c289f69de1e2",
+          "PrivateIpAddress": "10.22.0.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-f079d8d77b2da8978",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-7659eb67c3a4e5e1c",
+          "SubnetId": "subnet-7a256281aa23d8bd5",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "AvailabilityZone": "eu-west-1b",
+          "OwnerId": "710420000004",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-a44d7c289f69de1e2",
+          "PrivateIpAddress": "10.22.1.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-f079d8d77b2da8978",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-06ea6b3dd79d0ac0b",
+          "SubnetId": "subnet-1dfa6635e94afbacf",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "AvailabilityZone": "eu-west-1a",
+          "OwnerId": "710420000004",
+          "InterfaceType": "interface",
+          "Description": "tw-data-eu workload 1",
+          "PrivateIpAddress": "10.22.0.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-87e0282aacdd95d81",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-782b33de954474d11",
+          "SubnetId": "subnet-7a256281aa23d8bd5",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "AvailabilityZone": "eu-west-1b",
+          "OwnerId": "710420000004",
+          "InterfaceType": "interface",
+          "Description": "tw-data-eu workload 2",
+          "PrivateIpAddress": "10.22.1.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-87e0282aacdd95d81",
+              "GroupName": "app"
+            }
+          ]
+        }
+      ],
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-f079d8d77b2da8978",
+          "GroupName": "default",
+          "Description": "default VPC security group",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "OwnerId": "710420000004",
+          "IpPermissions": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-f079d8d77b2da8978",
+                  "UserId": "710420000004"
+                }
+              ]
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": []
+        },
+        {
+          "GroupId": "sg-77e607750e4947caa",
+          "GroupName": "alb-internal",
+          "Description": "Internal ALB",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "OwnerId": "710420000004",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "10.0.0.0/8"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 443,
+              "ToPort": 443
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-alb-internal"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-87e0282aacdd95d81",
+          "GroupName": "app",
+          "Description": "Application tier",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "OwnerId": "710420000004",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-77e607750e4947caa",
+                  "UserId": "710420000004"
+                }
+              ],
+              "FromPort": 8443,
+              "ToPort": 8443
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-app"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-f406b2c3890f64104",
+          "GroupName": "db",
+          "Description": "Database tier",
+          "VpcId": "vpc-04afa732b453cefc8",
+          "OwnerId": "710420000004",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-87e0282aacdd95d81",
+                  "UserId": "710420000004"
+                }
+              ],
+              "FromPort": 5432,
+              "ToPort": 5432
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-eu-db"
+            }
+          ]
+        }
+      ],
+      "VpcPeeringConnections": [],
+      "FlowLogs": [
+        {
+          "FlowLogId": "fl-0080d66e19264f0f9",
+          "ResourceId": "vpc-04afa732b453cefc8",
+          "TrafficType": "ALL",
+          "LogDestinationType": "s3",
+          "LogDestination": "arn:aws:s3:::tidewater-central-flow-logs",
+          "FlowLogStatus": "ACTIVE",
+          "CreationTime": "2025-03-14T15:30:00+00:00"
+        }
+      ],
+      "LoadBalancers": [],
+      "Listeners": [],
+      "WebAcls": [],
+      "WebAclResources": []
+    },
+    "us-east-1": {
+      "Vpcs": [
+        {
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "CidrBlock": "10.20.32.0/20",
+          "State": "available",
+          "IsDefault": false,
+          "OwnerId": "710420000004",
+          "InstanceTenancy": "default",
+          "DhcpOptionsId": "dopt-b7374676",
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform"
+            }
+          ]
+        }
+      ],
+      "Subnets": [
+        {
+          "SubnetId": "subnet-5f39f53d75629be8a",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "CidrBlock": "10.20.32.0/24",
+          "AvailabilityZone": "us-east-1a",
+          "AvailabilityZoneId": "use1-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 218,
+          "OwnerId": "710420000004",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-app-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-5f3593559071f3cbb",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "CidrBlock": "10.20.33.0/24",
+          "AvailabilityZone": "us-east-1b",
+          "AvailabilityZoneId": "use1-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 232,
+          "OwnerId": "710420000004",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-app-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-219a919742d86a45c",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "CidrBlock": "10.20.34.0/24",
+          "AvailabilityZone": "us-east-1c",
+          "AvailabilityZoneId": "use1-az3",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 211,
+          "OwnerId": "710420000004",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-app-c"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-00e44378d339a6976",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "CidrBlock": "10.20.35.0/24",
+          "AvailabilityZone": "us-east-1a",
+          "AvailabilityZoneId": "use1-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 224,
+          "OwnerId": "710420000004",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-data-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "data"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-372b8b6232b7a8886",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "CidrBlock": "10.20.36.0/24",
+          "AvailabilityZone": "us-east-1b",
+          "AvailabilityZoneId": "use1-az2",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 211,
+          "OwnerId": "710420000004",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-data-b"
+            },
+            {
+              "Key": "Tier",
+              "Value": "data"
+            }
+          ]
+        },
+        {
+          "SubnetId": "subnet-356b45bd8869f6f43",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "CidrBlock": "10.20.37.0/24",
+          "AvailabilityZone": "us-east-1c",
+          "AvailabilityZoneId": "use1-az3",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 236,
+          "OwnerId": "710420000004",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-data-c"
+            },
+            {
+              "Key": "Tier",
+              "Value": "data"
+            }
+          ]
+        }
+      ],
+      "RouteTables": [
+        {
+          "RouteTableId": "rtb-cf69d12597ba04fd8",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "OwnerId": "710420000004",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.32.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "TransitGatewayId": "tgw-161f480e76106edb6"
+            },
+            {
+              "DestinationCidrBlock": "10.0.0.0/8",
+              "TransitGatewayId": "tgw-161f480e76106edb6",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-364d62d04631eb2dc",
+              "RouteTableId": "rtb-cf69d12597ba04fd8",
+              "SubnetId": "subnet-5f39f53d75629be8a",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-rt-app-a"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-189588cce76dd4e3c",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "OwnerId": "710420000004",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.32.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "TransitGatewayId": "tgw-161f480e76106edb6"
+            },
+            {
+              "DestinationCidrBlock": "10.0.0.0/8",
+              "TransitGatewayId": "tgw-161f480e76106edb6",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-a9a5b85e468aeca3d",
+              "RouteTableId": "rtb-189588cce76dd4e3c",
+              "SubnetId": "subnet-5f3593559071f3cbb",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-rt-app-b"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-86ef8d938ebd7f646",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "OwnerId": "710420000004",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.32.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "State": "active",
+              "TransitGatewayId": "tgw-161f480e76106edb6"
+            },
+            {
+              "DestinationCidrBlock": "10.0.0.0/8",
+              "TransitGatewayId": "tgw-161f480e76106edb6",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-9d977a0800d19e965",
+              "RouteTableId": "rtb-86ef8d938ebd7f646",
+              "SubnetId": "subnet-219a919742d86a45c",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-rt-app-c"
+            }
+          ]
+        },
+        {
+          "RouteTableId": "rtb-7b93cf9dc38fb9e30",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "OwnerId": "710420000004",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.20.32.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            },
+            {
+              "DestinationCidrBlock": "10.0.0.0/8",
+              "TransitGatewayId": "tgw-161f480e76106edb6",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-53bfaed844b94b9c2",
+              "RouteTableId": "rtb-7b93cf9dc38fb9e30",
+              "SubnetId": "subnet-00e44378d339a6976",
+              "AssociationState": {
+                "State": "associated"
+              }
+            },
+            {
+              "RouteTableAssociationId": "rtbassoc-5cd88c3165d932ce4",
+              "RouteTableId": "rtb-7b93cf9dc38fb9e30",
+              "SubnetId": "subnet-372b8b6232b7a8886",
+              "AssociationState": {
+                "State": "associated"
+              }
+            },
+            {
+              "RouteTableAssociationId": "rtbassoc-612f615910419a263",
+              "RouteTableId": "rtb-7b93cf9dc38fb9e30",
+              "SubnetId": "subnet-356b45bd8869f6f43",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-rt-data"
+            }
+          ]
+        }
+      ],
+      "InternetGateways": [],
+      "NatGateways": [],
+      "TransitGateways": [],
+      "TransitGatewayAttachments": [
+        {
+          "TransitGatewayAttachmentId": "tgw-attach-2525584c12fc5a235",
+          "TransitGatewayId": "tgw-161f480e76106edb6",
+          "TransitGatewayOwnerId": "710420000001",
+          "ResourceOwnerId": "710420000004",
+          "ResourceType": "vpc",
+          "ResourceId": "vpc-c756f62cedd126cb5",
+          "State": "available",
+          "Association": {
+            "TransitGatewayRouteTableId": "tgw-rtb-0a1b2c3d4e5f60718",
+            "State": "associated"
+          },
+          "SubnetIds": [
+            "subnet-5f39f53d75629be8a",
+            "subnet-5f3593559071f3cbb",
+            "subnet-219a919742d86a45c"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-tgw-attach"
+            }
+          ]
+        }
+      ],
+      "VpcEndpoints": [
+        {
+          "VpcEndpointId": "vpce-5f6988272e4330ecf",
+          "VpcEndpointType": "Gateway",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "ServiceName": "com.amazonaws.us-east-1.s3",
+          "State": "available",
+          "OwnerId": "710420000004",
+          "PrivateDnsEnabled": false,
+          "RouteTableIds": [
+            "rtb-cf69d12597ba04fd8",
+            "rtb-189588cce76dd4e3c",
+            "rtb-86ef8d938ebd7f646",
+            "rtb-7b93cf9dc38fb9e30"
+          ],
+          "SubnetIds": [],
+          "Groups": [],
+          "NetworkInterfaceIds": [],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-s3"
+            }
+          ]
+        },
+        {
+          "VpcEndpointId": "vpce-e7341741c5a34f790",
+          "VpcEndpointType": "Interface",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "ServiceName": "com.amazonaws.us-east-1.glue",
+          "State": "available",
+          "OwnerId": "710420000004",
+          "PrivateDnsEnabled": true,
+          "RouteTableIds": [],
+          "SubnetIds": [
+            "subnet-5f39f53d75629be8a",
+            "subnet-5f3593559071f3cbb",
+            "subnet-219a919742d86a45c"
+          ],
+          "Groups": [
+            {
+              "GroupId": "sg-0064aad68009c68b8",
+              "GroupName": "default"
+            }
+          ],
+          "NetworkInterfaceIds": [
+            "eni-24e4ed6793c9c3f22",
+            "eni-3675966feb298a415",
+            "eni-f11214d707ba8af0f"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-glue"
+            }
+          ]
+        },
+        {
+          "VpcEndpointId": "vpce-ae920dc36ae5913d2",
+          "VpcEndpointType": "Interface",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "ServiceName": "com.amazonaws.us-east-1.logs",
+          "State": "available",
+          "OwnerId": "710420000004",
+          "PrivateDnsEnabled": true,
+          "RouteTableIds": [],
+          "SubnetIds": [
+            "subnet-5f39f53d75629be8a",
+            "subnet-5f3593559071f3cbb",
+            "subnet-219a919742d86a45c"
+          ],
+          "Groups": [
+            {
+              "GroupId": "sg-0064aad68009c68b8",
+              "GroupName": "default"
+            }
+          ],
+          "NetworkInterfaceIds": [
+            "eni-a1299c8e66234c369",
+            "eni-7540c407f68778883",
+            "eni-01288bb8e2f309fdc"
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-logs"
+            }
+          ]
+        }
+      ],
+      "NetworkInterfaces": [
+        {
+          "NetworkInterfaceId": "eni-24e4ed6793c9c3f22",
+          "SubnetId": "subnet-5f39f53d75629be8a",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000004",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-e7341741c5a34f790",
+          "PrivateIpAddress": "10.20.32.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-0064aad68009c68b8",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-3675966feb298a415",
+          "SubnetId": "subnet-5f3593559071f3cbb",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000004",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-e7341741c5a34f790",
+          "PrivateIpAddress": "10.20.33.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-0064aad68009c68b8",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-f11214d707ba8af0f",
+          "SubnetId": "subnet-219a919742d86a45c",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "AvailabilityZone": "us-east-1c",
+          "OwnerId": "710420000004",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-e7341741c5a34f790",
+          "PrivateIpAddress": "10.20.34.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-0064aad68009c68b8",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-a1299c8e66234c369",
+          "SubnetId": "subnet-5f39f53d75629be8a",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000004",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-ae920dc36ae5913d2",
+          "PrivateIpAddress": "10.20.32.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-0064aad68009c68b8",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-7540c407f68778883",
+          "SubnetId": "subnet-5f3593559071f3cbb",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000004",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-ae920dc36ae5913d2",
+          "PrivateIpAddress": "10.20.33.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-0064aad68009c68b8",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-01288bb8e2f309fdc",
+          "SubnetId": "subnet-219a919742d86a45c",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "AvailabilityZone": "us-east-1c",
+          "OwnerId": "710420000004",
+          "InterfaceType": "vpc_endpoint",
+          "Description": "VPC Endpoint Interface vpce-ae920dc36ae5913d2",
+          "PrivateIpAddress": "10.20.34.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-0064aad68009c68b8",
+              "GroupName": "default"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-5ddf6c06fd1cc50aa",
+          "SubnetId": "subnet-5f39f53d75629be8a",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000004",
+          "InterfaceType": "interface",
+          "Description": "tw-data-platform workload 1",
+          "PrivateIpAddress": "10.20.32.6",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-88247cfa13a473e21",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-be76db0349f0de1da",
+          "SubnetId": "subnet-5f3593559071f3cbb",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000004",
+          "InterfaceType": "interface",
+          "Description": "tw-data-platform workload 2",
+          "PrivateIpAddress": "10.20.33.6",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-88247cfa13a473e21",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-f16de09234cb60bb1",
+          "SubnetId": "subnet-219a919742d86a45c",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "AvailabilityZone": "us-east-1c",
+          "OwnerId": "710420000004",
+          "InterfaceType": "interface",
+          "Description": "tw-data-platform workload 3",
+          "PrivateIpAddress": "10.20.34.6",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-88247cfa13a473e21",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-a17cf8c8f2ea002c0",
+          "SubnetId": "subnet-5f39f53d75629be8a",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "AvailabilityZone": "us-east-1a",
+          "OwnerId": "710420000004",
+          "InterfaceType": "interface",
+          "Description": "tw-data-platform workload 4",
+          "PrivateIpAddress": "10.20.32.7",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-88247cfa13a473e21",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-f6ae8d6902df0afd5",
+          "SubnetId": "subnet-5f3593559071f3cbb",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "AvailabilityZone": "us-east-1b",
+          "OwnerId": "710420000004",
+          "InterfaceType": "interface",
+          "Description": "tw-data-platform workload 5",
+          "PrivateIpAddress": "10.20.33.7",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-88247cfa13a473e21",
+              "GroupName": "app"
+            }
+          ]
+        }
+      ],
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-0064aad68009c68b8",
+          "GroupName": "default",
+          "Description": "default VPC security group",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "OwnerId": "710420000004",
+          "IpPermissions": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-0064aad68009c68b8",
+                  "UserId": "710420000004"
+                }
+              ]
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": []
+        },
+        {
+          "GroupId": "sg-a87175866f2709ff6",
+          "GroupName": "alb-internal",
+          "Description": "Internal ALB",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "OwnerId": "710420000004",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "10.0.0.0/8"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 443,
+              "ToPort": 443
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-alb-internal"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-88247cfa13a473e21",
+          "GroupName": "app",
+          "Description": "Application tier",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "OwnerId": "710420000004",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-a87175866f2709ff6",
+                  "UserId": "710420000004"
+                }
+              ],
+              "FromPort": 8443,
+              "ToPort": 8443
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-app"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-ae7fe24a3f628df61",
+          "GroupName": "db",
+          "Description": "Database tier",
+          "VpcId": "vpc-c756f62cedd126cb5",
+          "OwnerId": "710420000004",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-88247cfa13a473e21",
+                  "UserId": "710420000004"
+                }
+              ],
+              "FromPort": 5432,
+              "ToPort": 5432
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "data-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-3010"
+            },
+            {
+              "Key": "Application",
+              "Value": "data-platform"
+            },
+            {
+              "Key": "Name",
+              "Value": "tw-data-platform-db"
+            }
+          ]
+        }
+      ],
+      "VpcPeeringConnections": [],
+      "FlowLogs": [],
+      "LoadBalancers": [],
+      "Listeners": [],
+      "WebAcls": [],
+      "WebAclResources": []
+    }
+  },
+  "Global": {
+    "CloudFrontDistributions": [],
+    "WebAclsGlobal": []
+  }
+}

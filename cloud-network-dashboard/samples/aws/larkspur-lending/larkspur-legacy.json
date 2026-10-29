@@ -1,0 +1,332 @@
+{
+  "_export": {
+    "schema": "aws-account-inventory/1.0",
+    "generated": "2026-10-28T12:00:00Z",
+    "synthetic": true,
+    "source": "SYNTHETIC SAMPLE: fictional company, not a real environment. Shapes mirror AWS CLI describe-* output merged per account."
+  },
+  "Account": {
+    "AccountId": "880310000002",
+    "AccountName": "larkspur-legacy",
+    "Company": "Larkspur Lending",
+    "Tags": {
+      "Environment": "prod",
+      "Owner": "ops-team"
+    }
+  },
+  "Regions": {
+    "us-east-2": {
+      "Vpcs": [
+        {
+          "VpcId": "vpc-eec0a2c833338c8ca",
+          "CidrBlock": "10.60.0.0/20",
+          "State": "available",
+          "IsDefault": false,
+          "OwnerId": "880310000002",
+          "InstanceTenancy": "default",
+          "DhcpOptionsId": "dopt-c7795306",
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "ops-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-7002"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-legacy-batch"
+            }
+          ]
+        }
+      ],
+      "Subnets": [
+        {
+          "SubnetId": "subnet-0c19d7f06ca059e14",
+          "VpcId": "vpc-eec0a2c833338c8ca",
+          "CidrBlock": "10.60.0.0/24",
+          "AvailabilityZone": "us-east-2a",
+          "AvailabilityZoneId": "use2-az1",
+          "State": "available",
+          "MapPublicIpOnLaunch": false,
+          "AvailableIpAddressCount": 224,
+          "OwnerId": "880310000002",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ll-legacy-batch-app-a"
+            },
+            {
+              "Key": "Tier",
+              "Value": "app"
+            }
+          ]
+        }
+      ],
+      "RouteTables": [
+        {
+          "RouteTableId": "rtb-07fb8337532356409",
+          "VpcId": "vpc-eec0a2c833338c8ca",
+          "OwnerId": "880310000002",
+          "Routes": [
+            {
+              "DestinationCidrBlock": "10.60.0.0/20",
+              "GatewayId": "local",
+              "State": "active"
+            }
+          ],
+          "Associations": [
+            {
+              "RouteTableAssociationId": "rtbassoc-a22f7f94e7657f1b4",
+              "RouteTableId": "rtb-07fb8337532356409",
+              "SubnetId": "subnet-0c19d7f06ca059e14",
+              "AssociationState": {
+                "State": "associated"
+              }
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "ops-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-7002"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-legacy-batch-rt-app-a"
+            }
+          ]
+        }
+      ],
+      "InternetGateways": [],
+      "NatGateways": [],
+      "TransitGateways": [],
+      "TransitGatewayAttachments": [],
+      "VpcEndpoints": [],
+      "NetworkInterfaces": [
+        {
+          "NetworkInterfaceId": "eni-4829aa18882d8bbaf",
+          "SubnetId": "subnet-0c19d7f06ca059e14",
+          "VpcId": "vpc-eec0a2c833338c8ca",
+          "AvailabilityZone": "us-east-2a",
+          "OwnerId": "880310000002",
+          "InterfaceType": "interface",
+          "Description": "ll-legacy-batch workload 1",
+          "PrivateIpAddress": "10.60.0.4",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-babe070dc9745b68e",
+              "GroupName": "app"
+            }
+          ]
+        },
+        {
+          "NetworkInterfaceId": "eni-38784b778bed6553e",
+          "SubnetId": "subnet-0c19d7f06ca059e14",
+          "VpcId": "vpc-eec0a2c833338c8ca",
+          "AvailabilityZone": "us-east-2a",
+          "OwnerId": "880310000002",
+          "InterfaceType": "interface",
+          "Description": "ll-legacy-batch workload 2",
+          "PrivateIpAddress": "10.60.0.5",
+          "Status": "in-use",
+          "SourceDestCheck": true,
+          "Groups": [
+            {
+              "GroupId": "sg-babe070dc9745b68e",
+              "GroupName": "app"
+            }
+          ]
+        }
+      ],
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-143239559802c363a",
+          "GroupName": "default",
+          "Description": "default VPC security group",
+          "VpcId": "vpc-eec0a2c833338c8ca",
+          "OwnerId": "880310000002",
+          "IpPermissions": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [
+                {
+                  "GroupId": "sg-143239559802c363a",
+                  "UserId": "880310000002"
+                }
+              ]
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": []
+        },
+        {
+          "GroupId": "sg-babe070dc9745b68e",
+          "GroupName": "app",
+          "Description": "Batch servers",
+          "VpcId": "vpc-eec0a2c833338c8ca",
+          "OwnerId": "880310000002",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "10.50.0.0/16"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 9000,
+              "ToPort": 9000
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "ops-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-7002"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-legacy-batch-app"
+            }
+          ]
+        },
+        {
+          "GroupId": "sg-57bb6722f05816ed8",
+          "GroupName": "ssh-any",
+          "Description": "SSH from anywhere",
+          "VpcId": "vpc-eec0a2c833338c8ca",
+          "OwnerId": "880310000002",
+          "IpPermissions": [
+            {
+              "IpProtocol": "tcp",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": [],
+              "FromPort": 22,
+              "ToPort": 22
+            }
+          ],
+          "IpPermissionsEgress": [
+            {
+              "IpProtocol": "-1",
+              "IpRanges": [
+                {
+                  "CidrIp": "0.0.0.0/0"
+                }
+              ],
+              "Ipv6Ranges": [],
+              "PrefixListIds": [],
+              "UserIdGroupPairs": []
+            }
+          ],
+          "Tags": [
+            {
+              "Key": "Owner",
+              "Value": "ops-team"
+            },
+            {
+              "Key": "Environment",
+              "Value": "prod"
+            },
+            {
+              "Key": "CostCenter",
+              "Value": "CC-7002"
+            },
+            {
+              "Key": "Name",
+              "Value": "ll-legacy-batch-ssh-any"
+            }
+          ]
+        }
+      ],
+      "VpcPeeringConnections": [
+        {
+          "VpcPeeringConnectionId": "pcx-ccb5c1b67570d5d13",
+          "Status": {
+            "Code": "active",
+            "Message": "Active"
+          },
+          "RequesterVpcInfo": {
+            "VpcId": "vpc-0acb4d20374a0d71f",
+            "OwnerId": "880310000001",
+            "CidrBlock": "10.50.0.0/16",
+            "Region": "us-east-1"
+          },
+          "AccepterVpcInfo": {
+            "VpcId": "vpc-eec0a2c833338c8ca",
+            "OwnerId": "880310000002",
+            "CidrBlock": "10.60.0.0/20",
+            "Region": "us-east-2"
+          },
+          "Tags": []
+        }
+      ],
+      "FlowLogs": [],
+      "LoadBalancers": [],
+      "Listeners": [],
+      "WebAcls": [],
+      "WebAclResources": []
+    }
+  },
+  "Global": {
+    "CloudFrontDistributions": [],
+    "WebAclsGlobal": []
+  }
+}
