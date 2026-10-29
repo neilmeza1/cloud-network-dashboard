@@ -1,0 +1,11 @@
+# Real exports must never be committed
+private-data/
+*.private.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Editors and OS
+.vscode/
+.DS_Store
