@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Parser Count Check</title>
+  <style>
+    body { font: 14px/1.4 system-ui, sans-serif; margin: 16px; background: #fff; color: #111; }
+    pre { font: 12px/1.35 ui-monospace, Consolas, monospace; overflow-x: auto; }
+    .error { color: #a00; }
+  </style>
+</head>
+<body>
+  <h1>Build step 1: AWS parser count summary</h1>
+  <p>Developer check page. Loads the Tidewater and Larkspur samples through the normalizer and prints
+    per-account counts. Compare with the table printed by <code>tools/generate_samples.py</code>.</p>
+  <pre id="summary">Loading…</pre>
+  <script type="module">
+    import { buildModel } from "../js/model/model.js";
+    import { countSummary, formatSummary } from "../js/model/counts.js";
+    import { fetchSampleSet } from "../js/samples.js";
+
+    const out = document.getElementById("summary");
+    try {
+      const base = new URL("../", location.href);
+      const inputs = [...await fetchSampleSet("tidewater", base), ...await fetchSampleSet("larkspur", base)];
+      const model = buildModel(inputs);
+      let text = formatSummary(countSummary(model));
+      text += `files parsed: ${model.files.length}, errors: ${model.errors.length}, not-in-export items: ${model.notInExport.length}\n`;
+      for (const e of model.errors) text += `ERROR ${e.message}\n`;
+      out.textContent = text;
+      window.model = model; // for poking at in the console
+    } catch (e) {
+      out.className = "error";
+      out.textContent = String(e);
+    }
+  </script>
+</body>
+</html>

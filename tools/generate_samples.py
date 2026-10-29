@@ -556,6 +556,56 @@ for acct in (ll_prod, ll_leg):
     write_json(OUT / "aws" / "larkspur-lending" / acct.file, acct.export())
 
 
+def aws_counts(acct):
+    """Per-account counts, same columns as the dashboard parser's count summary (build step 1)."""
+    regs = acct.export()["Regions"]
+    allr = lambda k: [x for R in regs.values() for x in R[k]]
+    subnets, rts = allr("Subnets"), allr("RouteTables")
+    explicit = {a["SubnetId"]: rt for rt in rts for a in rt["Associations"] if "SubnetId" in a}
+    main = {rt["VpcId"]: rt for rt in rts if any(a.get("Main") for a in rt["Associations"])}
+    to_igw = lambda rt: any(r["DestinationCidrBlock"] == "0.0.0.0/0" and r.get("GatewayId", "").startswith("igw-")
+                            for r in rt["Routes"])
+    enis = allr("NetworkInterfaces")
+    lbs = allr("LoadBalancers")
+    rules = [r for g in allr("SecurityGroups") for p in g["IpPermissions"] for r in p["IpRanges"]]
+    return {
+        "regions": len(regs),
+        "azs": len({s["AvailabilityZone"] for s in subnets}),
+        "vpcs": len(allr("Vpcs")),
+        "defaultVpcs": sum(v["IsDefault"] for v in allr("Vpcs")),
+        "subnets": len(subnets),
+        "publicSubnets": sum(to_igw(explicit.get(s["SubnetId"]) or main.get(s["VpcId"]) or {"Routes": []})
+                             for s in subnets),
+        "internetGateways": len(allr("InternetGateways")),
+        "natGateways": len(allr("NatGateways")),
+        "transitGateways": len(allr("TransitGateways")),
+        "transitAttachments": sum(t["ResourceOwnerId"] == acct.id for t in allr("TransitGatewayAttachments")),
+        "peerings": len(allr("VpcPeeringConnections")),
+        "endpoints": len(allr("VpcEndpoints")),
+        "interfaces": len(enis),
+        "workloadInterfaces": sum(e["InterfaceType"] == "interface" and not e["Description"].startswith("ELB ")
+                                  for e in enis),
+        "securityGroups": len(allr("SecurityGroups")),
+        "worldIngressRules": sum(r["CidrIp"] == "0.0.0.0/0" for r in rules),
+        "loadBalancers": len(lbs),
+        "publicLoadBalancers": sum(lb["Scheme"] == "internet-facing" for lb in lbs),
+        "listeners": len(allr("Listeners")),
+        "cdnDistributions": len(acct.glob["CloudFrontDistributions"]),
+        "activeFlowLogs": sum(f["FlowLogStatus"] == "ACTIVE" for f in allr("FlowLogs")),
+    }
+
+
+def print_aws_counts(company, accts):
+    rows = [(a.name, aws_counts(a)) for a in accts]
+    cols = list(rows[0][1])
+    table = [["account", *cols]] + [[n, *(str(c[k]) for k in cols)] for n, c in rows]
+    widths = [max(len(r[i]) for r in table) for i in range(len(table[0]))]
+    print(f"== {company} ({len(accts)} accounts)")
+    for r in table:
+        print("  ".join(v.ljust(w) for v, w in zip(r, widths)).rstrip())
+    print()
+
+
 # ---------------------------------------------------------------------------
 # Azure: Brightwater Insurance (fictional), one subscription
 # ---------------------------------------------------------------------------
@@ -730,3 +780,7 @@ lines.append(f"Total planted findings: {len(PLANTED)}")
 
 print(f"Wrote samples to {OUT}")
 print(f"Planted findings: {len(PLANTED)}")
+print()
+print("AWS per-account counts (compare with dev/counts.html):")
+print_aws_counts(TW, (tw_net, tw_prod, tw_non, tw_data, tw_sec))
+print_aws_counts(LL, (ll_prod, ll_leg))
