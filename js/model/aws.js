@@ -3,6 +3,8 @@
 // Every record carries `src: { file, path }` so a finding can cite its evidence.
 // A section missing from the file is recorded in `notInExport`, never treated as empty.
 
+import { GLOBAL_SCOPE, getTag } from "./concepts.js";
+
 export const AWS_REGION_SECTIONS = [
   "Vpcs", "Subnets", "RouteTables", "InternetGateways", "NatGateways",
   "TransitGateways", "TransitGatewayAttachments", "VpcEndpoints",
@@ -79,8 +81,9 @@ export function normalizeAws(doc, meta) {
   const sections = {}; // region -> { section: true|false }
   out.accounts.push({
     cloud: "aws", id: accountId, name: (acct && acct.AccountName) || null, company,
-    exportCompany: (acct && acct.Company) || null, dir: meta.dir ?? null, file, tags: accountTags, role: accountTags?.AccountRole ?? null,
-    environment: accountTags?.Environment ?? null, regions: regionNames, sections,
+    exportCompany: (acct && acct.Company) || null, dir: meta.dir ?? null, file, tags: accountTags,
+    role: getTag(accountTags, "AccountRole"), environment: getTag(accountTags, "Environment"),
+    regions: regionNames, sections, tagsPath: "$.Account.Tags", regionSrc: {},
     src: src("Account"),
   });
 
@@ -100,8 +103,9 @@ export function normalizeAws(doc, meta) {
       const cidrs = (v.CidrBlockAssociationSet || []).map((a) => a.CidrBlock).filter(Boolean);
       if (v.CidrBlock && !cidrs.includes(v.CidrBlock)) cidrs.unshift(v.CidrBlock);
       out.networks.push({
-        ...base, id: v.VpcId, name: tags.Name ?? null, cidrs, isDefault: v.IsDefault === true,
-        state: v.State ?? null, tags, azs: [], src: src("Regions", region, "Vpcs", i),
+        ...base, id: v.VpcId, name: tags.Name ?? null, kind: "VPC", cidrs, isDefault: v.IsDefault === true,
+        state: v.State ?? null, tags, tagsPath: jp("Regions", region, "Vpcs", i, "Tags"), flowLogScope: "network",
+        azs: [], src: src("Regions", region, "Vpcs", i),
       });
     }
 
@@ -185,13 +189,13 @@ export function normalizeAws(doc, meta) {
     for (const [i, g] of list("SecurityGroups").entries()) {
       const name = tagMap(g.Tags).Name ?? g.GroupName ?? g.GroupId;
       out.securityGroups.push({
-        ...base, id: g.GroupId, networkId: g.VpcId ?? null, groupName: g.GroupName ?? null, name,
+        ...base, id: g.GroupId, networkId: g.VpcId ?? null, groupName: g.GroupName ?? null, name, kind: "security group",
         description: g.Description ?? null, src: src("Regions", region, "SecurityGroups", i),
       });
       for (const [direction, key] of [["ingress", "IpPermissions"], ["egress", "IpPermissionsEgress"]]) {
         for (const [j, p] of (g[key] || []).entries()) {
           const rule = {
-            ...base, groupId: g.GroupId, groupName: name, networkId: g.VpcId ?? null, direction,
+            ...base, groupId: g.GroupId, groupName: name, groupKind: "security group", networkId: g.VpcId ?? null, direction,
             protocol: p.IpProtocol === "-1" ? "all" : String(p.IpProtocol),
             fromPort: p.FromPort ?? null, toPort: p.ToPort ?? null,
             src: src("Regions", region, "SecurityGroups", i, key, j),
@@ -221,7 +225,7 @@ export function normalizeAws(doc, meta) {
 
     for (const [i, lb] of list("LoadBalancers").entries()) {
       out.loadBalancers.push({
-        ...base, id: lb.LoadBalancerArn, name: lb.LoadBalancerName ?? null, type: lb.Type ?? null,
+        ...base, id: lb.LoadBalancerArn, name: lb.LoadBalancerName ?? null, type: lb.Type ?? null, kind: "load balancer",
         scheme: lb.Scheme ?? null, internetFacing: lb.Scheme === "internet-facing",
         networkId: lb.VpcId ?? null, azs: (lb.AvailabilityZones || []).map((z) => z.ZoneName),
         dnsName: lb.DNSName ?? null,
@@ -249,6 +253,10 @@ export function normalizeAws(doc, meta) {
       });
     }
 
+    // Concepts AWS derives from other sections: zones come from subnets, network tags from VPCs.
+    sections[region].Zones = sections[region].Subnets;
+    sections[region].NetworkTags = sections[region].Vpcs;
+
     for (const [i, f] of list("FlowLogs").entries()) {
       out.flowLogs.push({
         ...base, id: f.FlowLogId, resourceId: f.ResourceId, status: f.FlowLogStatus ?? null,
@@ -266,16 +274,16 @@ export function normalizeAws(doc, meta) {
     globalSections[key] = !!G && Array.isArray(G[key]);
     if (G && !globalSections[key]) missing(jp("Global", key), key);
   }
-  sections.global = globalSections;
+  sections[GLOBAL_SCOPE] = globalSections;
   if (globalSections.WebAclsGlobal) {
     for (const [i, w] of G.WebAclsGlobal.entries()) {
-      out.wafAcls.push({ cloud: "aws", accountId, region: "global", id: w.ARN, name: w.Name ?? null, scope: w.Scope ?? null, src: src("Global", "WebAclsGlobal", i) });
+      out.wafAcls.push({ cloud: "aws", accountId, region: "global", scopeKey: GLOBAL_SCOPE, id: w.ARN, name: w.Name ?? null, scope: w.Scope ?? null, src: src("Global", "WebAclsGlobal", i) });
     }
   }
   if (globalSections.CloudFrontDistributions) {
     for (const [i, d] of G.CloudFrontDistributions.entries()) {
       out.cdnDistributions.push({
-        cloud: "aws", accountId, region: "global", id: d.Id, aliases: d.Aliases?.Items || [],
+        cloud: "aws", accountId, region: "global", scopeKey: GLOBAL_SCOPE, id: d.Id, aliases: d.Aliases?.Items || [],
         domainName: d.DomainName ?? null, enabled: d.Enabled !== false,
         // "" means no WAF; a missing field means the export cannot say
         wafAclArn: d.WebACLId === undefined ? undefined : d.WebACLId || null,

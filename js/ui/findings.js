@@ -73,7 +73,7 @@ export function renderFindings(el, data, state, { onFilter, onToggle }) {
     select("Account", flt.account, [["", "All accounts"], ...data.meta.files.map((f) => [f.accountId, f.accountName || f.accountId])], set("account")),
     select("Standard", flt.standard, [["", "All standards"], ...stds.map(([id, name]) => [id, `${id} ${name}`])], set("standard")),
     h("label", null, "Search",
-      h("input", { type: "search", value: flt.q, placeholder: "VPC, security group, file…", "data-role": "search",
+      h("input", { type: "search", value: flt.q, placeholder: "Network, rule, file…", "data-role": "search",
         oninput: (e) => onFilter({ ...flt, q: e.target.value }, { keepFocus: true }) })),
     h("button", { type: "button", class: "reset", disabled: !Object.values(flt).some(Boolean), onclick: () => onFilter({ severity: "", account: "", standard: "", q: "" }) }, "Clear filters"));
 

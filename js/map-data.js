@@ -7,7 +7,7 @@
 // Shared ids (attachments, peerings) are already de-duplicated by the model.
 
 const MAP_SECTIONS = [
-  ["Vpcs", "VPCs"], ["Subnets", "subnets"], ["InternetGateways", "internet gateways"],
+  ["Vpcs", "networks"], ["Subnets", "subnets"], ["InternetGateways", "internet gateways"],
   ["LoadBalancers", "load balancers"], ["TransitGatewayAttachments", "transit gateway attachments"],
   ["VpcPeeringConnections", "VPC peerings"],
 ];
@@ -31,8 +31,9 @@ export function buildNetworkMap({ model, accts, findings, severityOrder }) {
     const lb = known(a, n.region, "LoadBalancers")
       ? model.loadBalancers.some((l) => l.internetFacing && l.networkId === n.id) : null;
     return {
-      id: n.id, accountId: n.accountId, label: label(n), name: n.name, isDefault: n.isDefault,
-      cidrs: n.cidrs, region: n.region, azs: n.azs,
+      id: n.id, accountId: n.accountId, label: label(n), name: n.name, isDefault: n.isDefault, kind: n.kind || "VPC",
+      cidrs: n.cidrs, cidrSource: n.cidrSource ?? null, region: n.region, azs: n.azs, zonesKnown: known(a, n.region, "Zones"),
+      subnetRegions: [...new Set(subs.map((s) => s.region))].sort(),
       subnets: known(a, n.region, "Subnets")
         ? { public: subs.filter((s) => s.public === true).length, private: subs.filter((s) => s.public === false).length,
             unknown: subs.filter((s) => s.public === null).length }
@@ -84,9 +85,10 @@ export function buildNetworkMap({ model, accts, findings, severityOrder }) {
 
   const accounts = accts.map((a) => {
     const own = findings.filter((f) => f.accountIds.includes(a.id) && !f.networkIds.length);
+    // AWS sections are per region; Azure and GCP sections are file-wide, so no regions are listed.
     const notInExport = MAP_SECTIONS.map(([key, text]) => {
       const regions = a.regions.filter((r) => !known(a, r, key));
-      return regions.length ? { section: key, label: text, regions } : null;
+      return regions.length ? { section: key, label: text, regions: a.cloud === "aws" ? regions : [] } : null;
     }).filter(Boolean);
     return {
       accountId: a.id, name: a.name || a.id, role: a.role, roleStatement: a.tags === null ? "Not in export" : "Observed",

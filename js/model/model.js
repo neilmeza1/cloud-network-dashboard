@@ -15,8 +15,10 @@
 
 import { detectFormat } from "./detect.js";
 import { normalizeAws, emptyFragment } from "./aws.js";
+import { normalizeAzure } from "./azure.js";
+import { normalizeGcp } from "./gcp.js";
 
-const NORMALIZERS = { aws: normalizeAws };
+const NORMALIZERS = { aws: normalizeAws, azure: normalizeAzure, gcp: normalizeGcp };
 const SHARED = ["peerings", "transitAttachments"];
 
 // inputs: [{ path, text }]  path is the relative path (webkitRelativePath or sample path)

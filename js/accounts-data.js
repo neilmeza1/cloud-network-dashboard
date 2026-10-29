@@ -4,6 +4,7 @@
 // A value is null where the section it needs is not in the export.
 
 import { COUNTS } from "./model/counts.js";
+import { getTag, CLOUD_NAME } from "./model/concepts.js";
 
 const COLUMN_KEYS = ["vpcs", "subnets", "endpoints", "natGateways", "interfaces"];
 const COUNT = Object.fromEntries(COUNTS.map((c) => [c.key, c]));
@@ -15,10 +16,10 @@ const TARGET_LABEL = {
 const ROLES = ["workload", "load_balancer", "nat_gateway", "vpc_endpoint", "other"];
 
 export const ACCOUNT_COLUMNS = [
-  { key: "name", label: "Account", definition: "Account name and ID from the file. Select a row to see its VPCs." },
+  { key: "name", label: "Account", definition: "AWS account, Azure subscription or GCP project: name from the file. Select a row to see its networks." },
   { key: "cloud", label: "Cloud", definition: "Cloud provider, from the file's export schema." },
-  { key: "role", label: "Role", definition: "The account's AccountRole tag (shared-network, prod, nonprod, data, security, sandbox)." },
-  { key: "regions", label: "Regions", definition: "Region keys present in the file." },
+  { key: "role", label: "Role", definition: "The AccountRole tag or label (shared-network, prod, nonprod, data, security, sandbox), matched without regard to case." },
+  { key: "regions", label: "Regions", definition: "Regions the file has resources in." },
   ...COLUMN_KEYS.map((k) => ({ key: k, label: COUNT[k].label, definition: COUNT[k].definition, numeric: true })),
   { key: "findings", label: "Findings", definition: "This account's findings by severity. Select to show them in Findings." },
 ];
@@ -26,7 +27,7 @@ export const ACCOUNT_COLUMNS = [
 function networkDetail(model, a, n) {
   const known = (key) => a.sections[n.region]?.[key] === true;
   const subnetsAll = model.subnets.filter((s) => s.networkId === n.id);
-  const label = (s) => ({ id: s.id, name: s.name, cidr: s.cidr, az: s.az });
+  const label = (s) => ({ id: s.id, name: s.name, cidr: s.cidr, az: s.az, region: s.region });
 
   let subnets = null;
   if (known("Subnets")) {
@@ -73,9 +74,11 @@ function networkDetail(model, a, n) {
   let nat = null;
   if (known("NatGateways")) {
     const nats = model.gateways.filter((g) => g.kind === "nat" && g.networkIds.includes(n.id));
+    // AWS ids are short; Azure and GCP ids are long paths, so their names are shown instead.
+    const show = (g) => (a.cloud === "aws" ? g.id : g.name || g.id);
     nat = {
-      perZone: n.azs.map((az) => ({ az, gateways: nats.filter((g) => g.az === az).map((g) => g.id) })),
-      zoneUnknown: nats.filter((g) => !g.az || !n.azs.includes(g.az)).map((g) => g.id),
+      perZone: n.azs.map((az) => ({ az, gateways: nats.filter((g) => g.az === az).map(show) })),
+      zoneUnknown: nats.filter((g) => !g.az || !n.azs.includes(g.az)).map(show),
       any: nats.length > 0,
     };
   }
@@ -87,8 +90,9 @@ function networkDetail(model, a, n) {
   }
 
   return {
-    id: n.id, name: n.name, region: n.region, cidrs: n.cidrs, isDefault: n.isDefault, azs: n.azs,
-    environment: n.tags.Environment ?? null, src: n.src,
+    id: n.id, name: n.name, kind: n.kind || "VPC", region: n.region, cidrs: n.cidrs, cidrSource: n.cidrSource ?? null,
+    isDefault: n.isDefault, azs: n.azs, zonesKnown: known("Zones"),
+    environment: getTag(n.tags, "Environment"), src: n.src,
     subnets, defaultRoutes, endpoints, nat, interfaces,
   };
 }
@@ -99,7 +103,7 @@ export function buildAccounts({ model, accts, summary, findings, severityOrder }
     const mine = findings.filter((f) => f.accountIds.includes(a.id));
     return {
       statement: "Observed",
-      accountId: a.id, name: a.name, cloud: a.cloud, file: a.file,
+      accountId: a.id, name: a.name, cloud: a.cloud, cloudName: CLOUD_NAME[a.cloud] ?? a.cloud, file: a.file,
       role: a.role, roleStatement: a.tags === null ? "Not in export" : "Observed",
       regions: a.regions,
       counts: Object.fromEntries(COLUMN_KEYS.map((k) => [k, counts[k]])),

@@ -10,8 +10,10 @@ function value(item) {
   return h("span", { class: "num", "data-count": `company.${item.key}` }, item.value, item.notInExportIn.length ? "*" : "");
 }
 
+// Only for totals that have a number but leave some files out; a value that is wholly
+// not in export already says so.
 function partialNote(items) {
-  const files = [...new Set(items.flatMap((i) => i.notInExportIn))];
+  const files = [...new Set(items.filter((i) => i.value !== null).flatMap((i) => i.notInExportIn))];
   if (!files.length) return null;
   return h("p", { class: "tile-note" }, "* Not in export in ", files.map((f) => f.split("/").pop()).join(", "), ", so the total leaves it out.");
 }
@@ -19,10 +21,12 @@ function partialNote(items) {
 function tile(t, i) {
   const defId = `tile-def-${i}`;
   const [first, ...rest] = t.items;
+  // "6 internet gateways", or "internet gateways: Not in export"
+  const line = (it) => h("li", { title: it.definition }, it.value === null ? [it.label, ": ", value(it)] : [value(it), " ", it.label]);
   const body = t.layout === "primary"
     ? [h("p", { class: "big", title: first.definition }, value(first)),
-       rest.length ? h("ul", { class: "tile-sub" }, rest.map((it) => h("li", { title: it.definition }, value(it), " ", it.label))) : null]
-    : [h("ul", { class: "tile-list" }, t.items.map((it) => h("li", { title: it.definition }, value(it), " ", it.label)))];
+       rest.length ? h("ul", { class: "tile-sub" }, rest.map(line)) : null]
+    : [h("ul", { class: "tile-list" }, t.items.map(line))];
   return h("li", { class: "tile", tabindex: "0", "aria-describedby": defId },
     h("div", { class: "tile-head" }, h("h3", { class: "tile-label" }, t.label, h("span", { class: "hint", "aria-hidden": "true" }, "?")), stmt("Observed")),
     body,
@@ -49,9 +53,11 @@ export function renderOverview(el, data, { onPickSeverity }) {
   const ov = data.overview;
   const sc = ov.scope;
   const az = sc.availabilityZones;
+  const zones = az.value === null
+    ? [". Availability zones (AZs, separate data center buildings within a region): ", stmt("Not in export")]
+    : [", across ", num(az.value, "company.azs", null), " availability zones (AZs, separate data center buildings within a region)"];
   const scope = h("p", { class: "scope" }, stmt("Observed"), " ",
-    h("strong", null, sc.company), ": regions ", sc.regions.join(", "), ", across ",
-    az.value === null ? "an unknown number of" : num(az.value, "company.azs", null), " availability zones (AZs, separate data center buildings within a region)",
+    h("strong", null, sc.company), ": regions ", sc.regions.join(", "), zones,
     sc.exportsGenerated.length ? `. Exports generated ${[...new Set(sc.exportsGenerated.map(date))].join(", ")}.` : ".");
   el.replaceChildren(scope, h("ul", { class: "tiles" }, ov.tiles.map(tile), severityTile(ov.findingsBySeverity, onPickSeverity)));
 }

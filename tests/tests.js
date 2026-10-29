@@ -235,7 +235,7 @@ async function main() {
   const split = prod.networks.reduce((s, n) => s + n.subnets.public.length + n.subnets.private.length, 0);
   ok(split === stepOne.get(prod.accountId).subnets && /Public subnets/.test(openDetail.textContent) && /Private subnets/.test(openDetail.textContent),
     "subnets are split into public and private, and add up to the account's subnet count");
-  ok(["Default routes", "VPC endpoints", "NAT gateways per zone", "Network interfaces"].every((t) => openDetail.textContent.includes(t)) &&
+  ok(["Default routes", "Private endpoints", "NAT gateways per zone", "Network interfaces"].every((t) => openDetail.textContent.includes(t)) &&
     /us-east-1b: none/.test(openDetail.textContent), "detail shows default routes, endpoints, NAT gateways per zone (tw-prod-app has none in 1b) and interfaces");
 
   let picked = null;
@@ -259,7 +259,7 @@ async function main() {
   ok(/Not in export/.test(rowsOf(bEl)[0].querySelector('td[data-label="Role"]').textContent), "missing account tags: role says Not in export");
   bEl.querySelector(".acct-toggle").click();
   const bDetail = bEl.querySelector("tr.acct-detail:not([hidden])");
-  const epPart = [...bDetail.querySelectorAll(".vpc-part")].find((p) => p.querySelector("h5").textContent === "VPC endpoints");
+  const epPart = [...bDetail.querySelectorAll(".vpc-part")].find((p) => p.querySelector("h5").textContent === "Private endpoints");
   ok(epPart && /Not in export/.test(epPart.textContent) && !/\b0\b/.test(epPart.textContent), "expanded VPC says endpoints are Not in export");
 
   section("Map");
@@ -347,7 +347,7 @@ async function main() {
   const mbData = dd(mbModel, runChecks(mbModel, standards), new Map([[mbPath, JSON.parse(mbInputs[0].text)]]), mbModel.companies[0].name);
   const mbEl = drawMap(mbData);
   const mbText = mbEl.textContent;
-  ok(/Not in export/.test(mbText) && ["transit gateway attachments (us-east-1)", "internet gateways (us-east-1)", "VPCs (us-west-2)"].every((t) => mbText.includes(t)),
+  ok(/Not in export/.test(mbText) && ["transit gateway attachments (us-east-1)", "internet gateways (us-east-1)", "networks (us-west-2)"].every((t) => mbText.includes(t)),
     "missing map sections are named as Not in export", mbText.slice(0, 300));
   ok([...mbEl.querySelectorAll(".acct .t-nie")].length === 3 &&/Not in export for tidewater-prod-app/.test(mbEl.querySelector(".internet").textContent),
     "the account box and the internet edge also say Not in export, not just an empty drawing");
@@ -471,17 +471,21 @@ async function main() {
   ok(norm(gotNie) === norm(wantNie), "Not in export list matches what the broken fixtures removed, by file and section",
     `got  ${JSON.stringify(gotNie)}\nwant ${JSON.stringify(wantNie)}`);
 
-  // Nothing in both Findings and Gaps.
+  // Nothing in both Findings and Gaps. A skipped check clashes with a finding of the same
+  // standard in the same file and scope: the Global block (CloudFront) is its own scope.
   const manualIds = new Set(standards.manual.map((m) => m.id));
-  const both = [];
-  for (const [d, r] of [[tw, result], [ll, result], [baData, baChecks]]) {
-    for (const f of d.findings) if (manualIds.has(f.standardId)) both.push(`manual standard reported as a finding: ${f.id}`);
+  const bothProblems = (d) => {
+    const out = [];
+    for (const f of d.findings) if (manualIds.has(f.standardId)) out.push(`manual standard reported as a finding: ${f.id}`);
     for (const n of d.standards_gaps.notChecked) {
-      const clash = d.findings.find((f) => f.standardId === n.standardId && f.evidence.some((e) => e.file === n.file) && (!n.region || f.region === n.region));
-      if (clash) both.push(`${n.standardId} ${n.file} ${n.path} is in Gaps and in Findings (${clash.id})`);
+      const clash = d.findings.find((f) => f.standardId === n.standardId && f.evidence.some((e) => e.file === n.file) &&
+        (n.scope === "global" ? f.resource.kind === "CloudFront distribution" : f.resource.kind !== "CloudFront distribution") &&
+        (!n.region || f.region === n.region));
+      if (clash) out.push(`${n.standardId} ${n.file} ${n.path ?? n.what} is in Gaps and in Findings (${clash.id})`);
     }
-    void r;
-  }
+    return out;
+  };
+  const both = [tw, ll, baData].flatMap(bothProblems);
   const baFind = document.createElement("div");
   renderFindings(baFind, baData, { filters: emptyFilters(), expanded: new Set() }, { onFilter: () => {}, onToggle: () => {} });
   for (const n of baData.standards_gaps.notChecked) if (baFind.textContent.includes(n.path)) both.push(`Findings text mentions ${n.path}`);
@@ -562,12 +566,111 @@ async function main() {
       `${name}: no count appears in two sections (${facts.size} tagged counts checked across all five sections)`,
       [...dupes, ...leaks, perSection.length ? `no tagged counts in: ${perSection.join(", ")}` : ""].filter(Boolean).join("\n"));
   }
+
+  section("Azure and GCP");
+  const otherInputs = [...await fetchSampleSet("brightwater", BASE), ...await fetchSampleSet("cobalt", BASE)];
+  const om = buildModel(otherInputs);
+  const orr = runChecks(om, standards);
+  const odocs = new Map(otherInputs.map((i) => [i.path, JSON.parse(i.text)]));
+  ok(om.errors.length === 0 && om.files.map((f) => f.format).join() === "azure,gcp", "the Azure and GCP samples parse", om.errors.map((e) => e.message).join("\n"));
+  ok(orr.errors.length === 0, "the checks engine runs on them without errors");
+  ok(om.companies.map((c) => c.name).join() === "brightwater-insurance,cobalt-mortgage",
+    "with no company field in the file, each is named after its folder");
+
+  // Answer key, same automatic comparison as for AWS.
+  const otherFiles = new Set(otherInputs.map((i) => base(i.path)));
+  const okey = parseAnswerKey(await fetchText("samples/EXPECTED_FINDINGS.md")).filter((r) => otherFiles.has(r.file));
+  ok(okey.length === 9, `answer key has 9 Azure and GCP rows (found ${okey.length})`);
+  const od = diffKeys(okey.map((r) => `${r.file} | ${r.standard} | ${r.check}`), findingKeys(orr.findings));
+  ok(od.missing.length === 0, `every Azure and GCP answer-key row is reported (${okey.length - od.missing.length}/${okey.length})`, "missing: " + od.missing.join("\n         "));
+  ok(od.extra.length === 0, "nothing reported beyond the answer key", "extra: " + od.extra.join("\n       "));
+  const oUnresolved = orr.findings.flatMap((f) => f.evidence.filter((e) => resolvePath(odocs.get(e.file), e.path) === undefined).map((e) => `${f.id}: ${e.file} ${e.path}`));
+  ok(oUnresolved.length === 0 && orr.findings.every((f) => f.severity && f.standardId && f.what && f.evidence.length),
+    "every Azure and GCP finding is complete and its evidence path resolves in its file", oUnresolved.join("\n"));
+  const flowGcp = orr.findings.find((f) => f.cloud === "gcp" && f.standardId === "NET-10");
+  ok(flowGcp && flowGcp.resource.kind === "subnet" && JSON.stringify(resolvePath(odocs.get(flowGcp.evidence[0].file), flowGcp.evidence[0].path)) === '{"enable":false}',
+    "GCP flow logs are judged per subnet: the finding cites snet-europe-west1's logConfig {enable:false}");
+
+  const bw = dd(om, orr, odocs, "brightwater-insurance");
+  const cb = dd(om, orr, odocs, "cobalt-mortgage");
+  const oStepOne = new Map(countSummary(om).companies.flatMap((c) => c.accounts).map((a) => [a.id, a.counts]));
+  const tileVal = (d, key, item) => d.overview.tiles.find((t) => t.key === key).items.find((i) => i.key === item);
+  ok(tileVal(bw, "vpcs", "vpcs").value === 2 && tileVal(cb, "vpcs", "vpcs").value === 2 && tileVal(cb, "vpcs", "defaultVpcs").value === 1 &&
+    tileVal(bw, "subnets", "subnets").value === 5 && tileVal(bw, "subnets", "publicSubnets").value === null &&
+    tileVal(bw, "internet", "internetGateways").statement === "Not in export" && tileVal(cb, "connectivity", "transitAttachments").value === null &&
+    bw.overview.scope.availabilityZones.value === null,
+    "Overview: networks and subnets counted; public subnets, internet gateways, transit and zones say Not in export (no equivalent in these exports)");
+
+  for (const [name, d, raw] of [["Brightwater", bw, odocs.get(otherInputs[0].path)], ["Cobalt", cb, odocs.get(otherInputs[1].path)]]) {
+    // Accounts
+    const el = drawAccounts(d, { expanded: new Set() });
+    const rows = [...el.querySelectorAll("tr.acct-row")];
+    const id = d.accounts.rows[0].accountId;
+    const mism = [...rows[0].querySelectorAll("td[data-key]")].filter((td) => td.textContent.trim() !== String(oStepOne.get(id)[td.dataset.key] ?? "Not in export"))
+      .map((td) => `${td.dataset.key}: ${td.textContent.trim()} vs ${oStepOne.get(id)[td.dataset.key]}`);
+    ok(rows.length === 1 && mism.length === 0 && /Not in export/.test(rows[0].querySelector('td[data-key="interfaces"]').textContent) &&
+      rows[0].querySelector('td[data-label="Role"]').textContent === "prod",
+      `${name} Accounts: one row, numbers match the counts, interfaces say Not in export, role read case-insensitively`, mism.join("\n"));
+    el.querySelector(".acct-toggle").click();
+    const det = el.querySelector("tr.acct-detail:not([hidden])");
+    const wantNets = om.networks.filter((n) => n.accountId === id);
+    ok(det && det.querySelectorAll("article.vpc").length === wantNets.length && wantNets.every((n) => det.textContent.includes(n.name) && n.cidrs.every((c) => det.textContent.includes(c))) &&
+      /zones not in export/.test(det.textContent),
+      `${name} Accounts: expanding shows its ${wantNets.length} networks with name and address range, and zones not in export`);
+    ok(!/Public subnets|Private subnets/.test(det.textContent) && /Public or private: route tables are not in the export/.test(det.textContent),
+      `${name} Accounts: with no route tables, subnets are not claimed public or private ("None"); the split says Not in export`);
+
+    // Map
+    let picked2 = null;
+    const mEl = drawMap(d, (x) => { picked2 = x; });
+    const rawNets = (raw.VirtualNetworks || raw.Networks).length;
+    const rawPeer = new Set((raw.VirtualNetworks || raw.Networks).flatMap((n) => (n.virtualNetworkPeerings || n.peerings || []).map((p) => p.name))).size;
+    ok(mEl.querySelectorAll("g.node").length === rawNets && mEl.querySelectorAll("path.edge-transit").length === 0 &&
+      mEl.querySelectorAll("path.edge-peering").length === rawPeer,
+      `${name} Map: ${rawNets} network nodes, no transit lines, ${rawPeer} peering lines`);
+    const worstO = (nid) => standards.severityOrder.find((sv) => orr.findings.some((f) => f.severity === sv && f.networkIds.includes(nid))) ?? null;
+    const outl = [...mEl.querySelectorAll("g.node")].filter((g) => ([...g.classList].find((c) => c.startsWith("worst-"))?.slice(6) ?? null) !== worstO(g.dataset.vpc));
+    ok(outl.length === 0 && /Not in export/.test(mEl.querySelector(".internet").textContent) && mEl.querySelectorAll(".acct .t-nie").length >= 2,
+      `${name} Map: outlines match the findings; the internet edge and the account box say what is not in export`);
+    const node0 = mEl.querySelector("g.node");
+    node0.dispatchEvent(new FocusEvent("focus"));
+    const tipT = mEl.querySelector(".map-tip").textContent;
+    node0.dispatchEvent(new FocusEvent("blur"));
+    node0.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    ok(/Zones\s*Not in export/.test(tipT) && picked2 === id && /^(VNet|VPC network) /.test(tipT),
+      `${name} Map: tooltip uses the cloud's term and says zones are not in export; clicking filters Findings to the account`, tipT.slice(0, 160));
+
+    // Gaps
+    const gEl2 = document.createElement("div");
+    renderGaps(gEl2, d);
+    ok(gEl2.querySelectorAll("li.gap").length === rawManual.length, `${name} Gaps: all ${rawManual.length} manual mandates are listed`);
+    const cloud = d.accounts.rows[0].cloudName;
+    const fmt = (c) => `(not in the ${cloud} export format)`;
+    const want = cloud === "Azure"
+      ? { [`network interfaces ${fmt()}`]: ["NET-04", "NET-08"], [`availability zones ${fmt()}`]: ["NET-09", "RES-01"],
+          [`load balancer listeners ${fmt()}`]: ["DAT-01"], [`CDN distributions ${fmt()}`]: ["NET-05"] }
+      : { [`network interfaces ${fmt()}`]: ["NET-04", "NET-08"], [`private endpoints ${fmt()}`]: ["NET-08"],
+          [`availability zones ${fmt()}`]: ["NET-09", "RES-01"], [`network tags ${fmt()}`]: ["OPS-01", "RES-01"],
+          [`load balancer listeners ${fmt()}`]: ["DAT-01"], [`CDN distributions ${fmt()}`]: ["NET-05"] };
+    const got = Object.fromEntries([...gEl2.querySelectorAll(".nie-section")].map((s) => [s.dataset.path, [...s.querySelectorAll(".nie-check")].map((c) => c.dataset.standard)]));
+    ok(JSON.stringify(Object.entries(got).sort()) === JSON.stringify(Object.entries(want).sort()),
+      `${name} Gaps: the checks that could not run are exactly those whose concept the ${cloud} export lacks`, `got  ${JSON.stringify(got)}\nwant ${JSON.stringify(want)}`);
+    const bp = bothProblems(d);
+    ok(bp.length === 0, `${name}: no item appears in both Findings and Gaps`, bp.join("\n"));
+
+    // One home per count
+    const cp = countProblems(d);
+    ok(cp.dupes.length === 0 && cp.leaks.length === 0 && cp.perSection.length === 0,
+      `${name}: no count appears in two sections (${cp.facts.size} tagged counts checked)`, [...cp.dupes, ...cp.leaks, cp.perSection.join(", ")].filter(Boolean).join("\n"));
+  }
   mapStage.remove();
 
-  // Reference listing: what the engine reported for the clean AWS samples.
-  lines.push("", "## Findings reported for the AWS samples", "");
-  for (const f of result.findings) {
-    lines.push(`${f.severity.toUpperCase().padEnd(8)} ${f.standardId}  ${f.files.map(base).join(" + ")}`, `         ${f.what}`);
+  // Reference listing: what the engine reported for the clean samples.
+  for (const [title, r] of [["AWS", result], ["Azure and GCP", orr]]) {
+    lines.push("", `## Findings reported for the ${title} samples`, "");
+    for (const f of r.findings) {
+      lines.push(`${f.severity.toUpperCase().padEnd(8)} ${f.standardId}  ${f.files.map(base).join(" + ")}`, `         ${f.what}`);
+    }
   }
 }
 

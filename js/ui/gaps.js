@@ -31,8 +31,8 @@ function fileBlock(f) {
   return h("li", { class: "nie-file", "data-file": f.file },
     h("h4", null, h("code", null, f.file)),
     h("ul", { class: "nie-sections" }, f.sections.map((s) =>
-      h("li", { class: "nie-section", "data-path": s.path },
-        h("p", null, stmt("Not in export"), " ", h("code", null, s.path)),
+      h("li", { class: "nie-section", "data-path": s.key },
+        h("p", null, stmt("Not in export"), " ", s.path ? h("code", null, s.path) : h("span", { class: "nie-what" }, s.what)),
         h("p", { class: "small" }, "Could not check: ",
           s.checks.map((c, i) => [i ? ", " : null, h("span", { class: "nie-check", "data-standard": c.standardId }, `${c.standardId} ${c.standardName ?? ""}`.trim())]))))));
 }

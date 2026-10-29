@@ -23,15 +23,17 @@ export function buildGaps({ standards, notChecked, notInExport }) {
   for (const n of notChecked) {
     let f = byFile.find((x) => x.file === n.file);
     if (!f) byFile.push((f = { file: n.file, sections: [] }));
-    let s = f.sections.find((x) => x.path === n.path);
-    if (!s) f.sections.push((s = { statement: "Not in export", path: n.path, what: n.what, region: n.region, checks: [] }));
+    // A concept the format lacks has no path, so it is grouped by its description.
+    const key = n.path ?? n.what;
+    let s = f.sections.find((x) => x.key === key);
+    if (!s) f.sections.push((s = { statement: "Not in export", key, path: n.path, what: n.what, region: n.region, checks: [] }));
     if (!s.checks.some((c) => c.standardId === n.standardId)) {
       const m = standards.mandates.find((x) => x.id === n.standardId);
       s.checks.push({ standardId: n.standardId, standardName: m?.name ?? null, severity: m?.severity ?? null, check: n.check });
     }
   }
   for (const f of byFile) {
-    f.sections.sort((a, b) => a.path.localeCompare(b.path));
+    f.sections.sort((a, b) => a.key.localeCompare(b.key));
     for (const s of f.sections) s.checks.sort((a, b) => a.standardId.localeCompare(b.standardId));
   }
 

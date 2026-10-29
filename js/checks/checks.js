@@ -1,24 +1,34 @@
 // Check implementations, keyed by the `check` id used in Cloud_Standards.yaml.
 // Each check reads the normalized model and calls ctx.report(...) once per finding.
 //
-// needs: export sections the check reads. Where a section is missing, the engine records
-// "not checked: not in export" for that scope and ctx.can(record) returns false for records
-// in it, so a missing section never turns into a finding.
-//   region:  sections inside Regions.<region>
-//   global:  sections inside Global (records with region "global")
-//   account: fields of Account
+// needs: concepts the check reads (see model/concepts.js). Where one is missing, the engine
+// records "not checked: not in export" for that scope and ctx.can(record) returns false for
+// records in it, so a missing section never turns into a finding.
+//   region:  per-region concepts (AWS Regions.<region>; file-wide lists for Azure and GCP)
+//   global:  the AWS Global block (CloudFront and its WAF)
+//   account: fields of the account record
+//
+// Wording uses each cloud's own terms through the records' `kind` fields
+// (VPC / VNet / VPC network, security group / network security group / firewall rule).
 
-const isTcp = (r) => r.protocol === "tcp" || r.protocol === "6";
+import { getTag } from "../model/concepts.js";
+
+const isTcp = (r) => r.protocol === "tcp" || r.protocol === "6" || r.protocol === "any";
 const covers = (r, port) => r.fromPort !== null && r.fromPort <= port && port <= r.toPort;
 const coveredPorts = (r, ports) => (isTcp(r) ? ports.filter((p) => covers(r, p)) : []);
 const worldIngress = (m, ctx) => m.firewallRules.filter((r) => r.direction === "ingress" && r.fromWorld && ctx.can(r));
 const portText = (r) => (r.protocol === "all" ? "all traffic" : r.fromPort === r.toPort ? `${r.protocol} ${r.fromPort}` : `${r.protocol} ${r.fromPort}-${r.toPort}`);
+// Azure writes "any source" as * or the Internet service tag; say so in plain words.
+const sourceText = (v) => (v === "*" || /^(internet|any)$/i.test(v) ? `${v} (any source)` : v);
+const cap = (s) => s[0].toUpperCase() + s.slice(1);
+const same = (a, b) => a && b && String(a).toLowerCase() === String(b).toLowerCase(); // Azure ids ignore case
 
 export function networkLabel(n) {
-  if (!n) return "unknown VPC";
+  if (!n) return "unknown network";
   if (n.name) return n.name;
   return n.isDefault ? `default (${n.id})` : n.id;
 }
+const kindOf = (n) => n?.kind || "VPC";
 
 function groupBy(rows, key) {
   const out = new Map();
@@ -39,15 +49,23 @@ function ipv4Range(cidr) {
   return [start, start + size - 1];
 }
 
-// Report one finding per security group, listing the offending rules.
+// Report one finding per security group (NSG, firewall rule), listing the offending rules.
 function reportGroups(m, ctx, rules, describe) {
   for (const [, rs] of groupBy(rules, (r) => r.groupId)) {
     const sg = rs[0];
+    const kind = sg.groupKind || "security group";
     ctx.report({
-      record: sg, resource: { kind: "security group", id: sg.groupId, name: sg.groupName },
-      what: describe(sg, rs), evidence: rs.map((r) => r.src),
+      record: sg, resource: { kind, id: sg.groupId, name: sg.groupName },
+      what: describe(cap(kind), sg, rs), evidence: rs.map((r) => r.src),
     });
   }
+}
+
+// How each cloud says an internet-facing endpoint has no WAF.
+function noWafText(lb) {
+  if (lb.cloud === "azure") return `uses ${lb.sku ?? "an unknown SKU"} with no WAF policy`;
+  if (lb.cloud === "gcp") return "has no Cloud Armor security policy";
+  return "is not associated with any WAF web ACL";
 }
 
 export const CHECKS = {
@@ -60,7 +78,7 @@ export const CHECKS = {
         ctx.report({
           record: a, accountIds: [a.id], resource: { kind: "account", id: a.id, name: a.name },
           what: `Account ${a.name || a.id} has no AccountRole tag`,
-          evidence: [{ file: a.file, path: `${a.src.path}.Tags` }],
+          evidence: [{ file: a.file, path: a.tagsPath }],
         });
       }
     },
@@ -68,12 +86,17 @@ export const CHECKS = {
 
   default_network_present: {
     needs: { region: ["Vpcs"] },
-    action: "Delete the default VPC, or keep it empty and unrouted.",
+    action: "Delete the default network, or keep it empty and unrouted.",
     run(m, ctx) {
       for (const n of m.networks.filter((n) => n.isDefault && ctx.can(n))) {
+        const range = n.cidrSource === "subnets" ? "" : ` (${n.cidrs.join(", ")})`;
+        const mode = n.autoMode ? " (auto mode)" : "";
         ctx.report({
-          record: n, resource: { kind: "VPC", id: n.id, name: networkLabel(n) },
-          what: `Default VPC ${n.id} (${n.cidrs.join(", ")}) exists in ${n.region}`, evidence: [n.src],
+          record: n, resource: { kind: kindOf(n), id: n.id, name: networkLabel(n) },
+          what: n.cloud === "gcp"
+            ? `Default ${kindOf(n)} '${n.name}'${mode} exists` // GCP networks are global
+            : `Default ${kindOf(n)} ${n.id}${range} exists in ${n.region}`,
+          evidence: [n.src],
         });
       }
     },
@@ -95,8 +118,8 @@ export const CHECKS = {
               const fa = ctx.account(a).file.split("/").pop(), fb = ctx.account(b).file.split("/").pop();
               ctx.report({
                 record: a, accountIds: [a.accountId, b.accountId], networkIds: [a.id, b.id],
-                resource: { kind: "VPC pair", id: `${a.id}+${b.id}`, name: `${networkLabel(a)} / ${networkLabel(b)}` },
-                what: `VPC ${networkLabel(a)} (${ca}) in ${fa} overlaps VPC ${networkLabel(b)} (${cb}) in ${fb}`,
+                resource: { kind: `${kindOf(a)} pair`, id: `${a.id}+${b.id}`, name: `${networkLabel(a)} / ${networkLabel(b)}` },
+                what: `${kindOf(a)} ${networkLabel(a)} (${ca}) in ${fa} overlaps ${kindOf(b)} ${networkLabel(b)} (${cb}) in ${fb}`,
                 evidence: [a.src, b.src],
               });
             }
@@ -114,8 +137,8 @@ export const CHECKS = {
       for (const [netId, es] of groupBy(hits, (e) => e.networkId)) {
         const n = m.networks.find((x) => x.id === netId);
         ctx.report({
-          record: es[0], resource: { kind: "VPC", id: netId, name: networkLabel(n) },
-          what: `${es.length} workload interface${es.length > 1 ? "s" : ""} in VPC ${networkLabel(n)} ${es.length > 1 ? "have" : "has"} public IP addresses (${es.map((e) => `${e.id} ${e.publicIp}`).join(", ")})`,
+          record: es[0], resource: { kind: kindOf(n), id: netId, name: networkLabel(n) },
+          what: `${es.length} workload interface${es.length > 1 ? "s" : ""} in ${kindOf(n)} ${networkLabel(n)} ${es.length > 1 ? "have" : "has"} public IP addresses (${es.map((e) => `${e.id} ${e.publicIp}`).join(", ")})`,
           evidence: es.map((e) => e.src),
         });
       }
@@ -127,10 +150,14 @@ export const CHECKS = {
     action: "Associate the baseline web application firewall (WAF) rule set with the endpoint.",
     run(m, ctx) {
       for (const lb of m.loadBalancers.filter((l) => l.internetFacing && ctx.can(l))) {
+        if (lb.wafAclArn === undefined) {
+          ctx.unknown(lb, lb.src, `WAF setting of ${lb.kind || "load balancer"} ${lb.name}`);
+          continue;
+        }
         if (lb.wafAclArn) continue;
         ctx.report({
-          record: lb, resource: { kind: "load balancer", id: lb.id, name: lb.name },
-          what: `Internet-facing load balancer ${lb.name} is not associated with any WAF web ACL`,
+          record: lb, resource: { kind: lb.kind || "load balancer", id: lb.id, name: lb.name },
+          what: `Internet-facing ${lb.kind || "load balancer"} ${lb.name} ${noWafText(lb)}`,
           evidence: [lb.src],
         });
       }
@@ -154,8 +181,8 @@ export const CHECKS = {
     run(m, ctx) {
       const admin = ctx.config.admin_ports;
       const rules = worldIngress(m, ctx).filter((r) => coveredPorts(r, admin).length);
-      reportGroups(m, ctx, rules, (sg, rs) =>
-        `Security group ${sg.groupName} allows admin port${rs.length > 1 ? "s" : ""} ${rs.map((r) => `${portText(r)} from ${r.source.value}`).join(", ")}`);
+      reportGroups(m, ctx, rules, (kind, sg, rs) =>
+        `${kind} ${sg.groupName} allows admin port${rs.length > 1 ? "s" : ""} ${rs.map((r) => `${portText(r)} from ${sourceText(r.source.value)}`).join(", ")}`);
     },
   },
 
@@ -166,8 +193,8 @@ export const CHECKS = {
       const { admin_ports: admin, database_ports: db } = ctx.config;
       const rules = worldIngress(m, ctx).filter((r) =>
         !coveredPorts(r, admin).length && (r.protocol === "all" || coveredPorts(r, db).length));
-      reportGroups(m, ctx, rules, (sg, rs) =>
-        `Security group ${sg.groupName} allows ${rs.map((r) => `${portText(r)} from ${r.source.value}`).join(", ")}`);
+      reportGroups(m, ctx, rules, (kind, sg, rs) =>
+        `${kind} ${sg.groupName} allows ${rs.map((r) => `${portText(r)} from ${sourceText(r.source.value)}`).join(", ")}`);
     },
   },
 
@@ -181,8 +208,8 @@ export const CHECKS = {
         const s3 = m.endpoints.some((e) => e.networkId === n.id && e.type === "gateway" && e.serviceShort === "s3");
         if (s3) continue;
         ctx.report({
-          record: n, resource: { kind: "VPC", id: n.id, name: networkLabel(n) },
-          what: `VPC ${networkLabel(n)} has ${wl.length} workload interface${wl.length > 1 ? "s" : ""} and no S3 gateway endpoint`,
+          record: n, resource: { kind: kindOf(n), id: n.id, name: networkLabel(n) },
+          what: `${kindOf(n)} ${networkLabel(n)} has ${wl.length} workload interface${wl.length > 1 ? "s" : ""} and no S3 gateway endpoint`,
           evidence: [n.src],
         });
       }
@@ -190,7 +217,7 @@ export const CHECKS = {
   },
 
   nat_not_per_az: {
-    needs: { region: ["NatGateways", "Subnets"] },
+    needs: { region: ["NatGateways", "Subnets", "Zones"] },
     action: "Add a NAT gateway in each zone that hosts workloads, or centralize egress.",
     run(m, ctx) {
       for (const n of m.networks.filter((n) => ctx.can(n))) {
@@ -199,8 +226,8 @@ export const CHECKS = {
         const natAzs = new Set(nats.map((g) => g.az).filter(Boolean));
         if (natAzs.size >= n.azs.length) continue;
         ctx.report({
-          record: n, resource: { kind: "VPC", id: n.id, name: networkLabel(n) },
-          what: `VPC ${networkLabel(n)} has NAT gateways in ${natAzs.size} of its ${n.azs.length} availability zones (${[...natAzs].join(", ") || "none"} of ${n.azs.join(", ")})`,
+          record: n, resource: { kind: kindOf(n), id: n.id, name: networkLabel(n) },
+          what: `${kindOf(n)} ${networkLabel(n)} has NAT gateways in ${natAzs.size} of its ${n.azs.length} availability zones (${[...natAzs].join(", ") || "none"} of ${n.azs.join(", ")})`,
           evidence: [n.src, ...nats.map((g) => g.src)],
         });
       }
@@ -209,13 +236,27 @@ export const CHECKS = {
 
   flow_logs_disabled: {
     needs: { region: ["FlowLogs"] },
-    action: "Enable flow logs on the VPC, delivered to the central log account.",
+    action: "Enable flow logs, delivered to the central log account.",
     run(m, ctx) {
       for (const n of m.networks.filter((n) => ctx.can(n))) {
-        if (m.flowLogs.some((f) => f.resourceId === n.id && f.active)) continue;
+        if (n.flowLogScope === "subnet") {
+          // GCP: flow logs are a subnet setting; a network with no subnets has nothing to log.
+          for (const s of m.subnets.filter((x) => x.networkId === n.id)) {
+            const logs = m.flowLogs.filter((f) => f.resourceId === s.id);
+            if (!logs.length) { ctx.unknown(s, { file: s.src.file, path: `${s.src.path}.logConfig` }, `flow log setting of subnet ${s.name}`); continue; }
+            if (logs.some((f) => f.active)) continue;
+            ctx.report({
+              record: s, networkIds: [n.id], region: s.region, resource: { kind: "subnet", id: s.id, name: s.name },
+              what: `Subnet ${s.name} in ${kindOf(n)} ${networkLabel(n)} has flow logs disabled`,
+              evidence: logs.map((f) => f.src),
+            });
+          }
+          continue;
+        }
+        if (m.flowLogs.some((f) => same(f.resourceId, n.id) && f.active)) continue;
         ctx.report({
-          record: n, resource: { kind: "VPC", id: n.id, name: networkLabel(n) },
-          what: `VPC ${networkLabel(n)} has no active flow log`, evidence: [n.src],
+          record: n, resource: { kind: kindOf(n), id: n.id, name: networkLabel(n) },
+          what: `${kindOf(n)} ${networkLabel(n)} has no active flow log`, evidence: [n.src],
         });
       }
     },
@@ -228,15 +269,16 @@ export const CHECKS = {
       const side = (s) => {
         const n = m.networks.find((x) => x.id === s.networkId);
         const a = m.accounts.find((x) => x.id === s.accountId);
-        return `${n ? networkLabel(n) : s.networkId} (${a ? a.name : s.accountId}, ${s.region})`;
+        return `${n ? networkLabel(n) : s.networkId} (${a ? a.name : s.accountId}${s.region ? `, ${s.region}` : ""})`;
       };
       for (const p of m.peerings.filter((p) => p.active)) {
         const accountIds = [p.requester.accountId, p.accepter.accountId].filter((id) => m.accounts.some((a) => a.id === id));
+        const kind = kindOf(m.networks.find((x) => x.id === p.requester.networkId));
         ctx.report({
           record: p, accountIds, region: p.requester.region,
           networkIds: [p.requester.networkId, p.accepter.networkId].filter(Boolean),
-          resource: { kind: "VPC peering", id: p.id, name: p.id },
-          what: `Active VPC peering ${p.id} between ${side(p.requester)} and ${side(p.accepter)}`,
+          resource: { kind: `${kind} peering`, id: p.id, name: p.id },
+          what: `Active ${kind} peering ${p.id} between ${side(p.requester)} and ${side(p.accepter)}`,
           evidence: p.seenIn,
         });
       }
@@ -253,7 +295,7 @@ export const CHECKS = {
           ctx.report({
             record: a, accountIds: [a.id], region: r, resource: { kind: "region", id: `${a.id}:${r}`, name: r },
             what: `Resources exist in ${r} (approved: ${approved.join(", ")})`,
-            evidence: [{ file: a.file, path: `$.Regions["${r}"]` }],
+            evidence: [{ file: a.file, path: a.regionSrc?.[r] ?? `$.Regions["${r}"]` }],
           });
         }
       }
@@ -270,7 +312,7 @@ export const CHECKS = {
         ctx.report({
           record: l, networkIds: lb.networkId ? [lb.networkId] : [],
           resource: { kind: "listener", id: l.id, name: `${lb.name}:${l.port}` },
-          what: `Internet-facing load balancer ${lb.name} serves port ${l.port} over plain HTTP (default action: ${l.defaultActions.join(", ") || "none"})`,
+          what: `Internet-facing ${lb.kind || "load balancer"} ${lb.name} serves port ${l.port} over plain HTTP (default action: ${l.defaultActions.join(", ") || "none"})`,
           evidence: [l.src],
         });
       }
@@ -278,15 +320,15 @@ export const CHECKS = {
   },
 
   single_az_network: {
-    needs: { region: ["Vpcs", "Subnets"] },
+    needs: { region: ["Vpcs", "Subnets", "Zones", "NetworkTags"] },
     action: "Extend the network and its workloads into a second availability zone.",
     run(m, ctx) {
       const min = ctx.config.min_azs_for_prod;
-      for (const n of m.networks.filter((n) => n.tags.Environment === "prod" && ctx.can(n))) {
+      for (const n of m.networks.filter((n) => getTag(n.tags, "Environment") === "prod" && ctx.can(n))) {
         if (n.azs.length >= min) continue;
         ctx.report({
-          record: n, resource: { kind: "VPC", id: n.id, name: networkLabel(n) },
-          what: `Production VPC ${networkLabel(n)} spans ${n.azs.length} availability zone${n.azs.length === 1 ? "" : "s"} (minimum ${min})`,
+          record: n, resource: { kind: kindOf(n), id: n.id, name: networkLabel(n) },
+          what: `Production ${kindOf(n)} ${networkLabel(n)} spans ${n.azs.length} availability zone${n.azs.length === 1 ? "" : "s"} (minimum ${min})`,
           evidence: [n.src],
         });
       }
@@ -294,16 +336,16 @@ export const CHECKS = {
   },
 
   missing_required_tags: {
-    needs: { region: ["Vpcs"] },
+    needs: { region: ["Vpcs", "NetworkTags"] },
     action: "Add the missing tags through the pipeline tag policy.",
     run(m, ctx) {
       for (const n of m.networks.filter((n) => !n.isDefault && ctx.can(n))) {
-        const missing = ctx.config.required_tags.filter((t) => !n.tags[t]);
+        const missing = ctx.config.required_tags.filter((t) => !getTag(n.tags, t));
         if (!missing.length) continue;
         ctx.report({
-          record: n, resource: { kind: "VPC", id: n.id, name: networkLabel(n) },
-          what: `VPC ${networkLabel(n)} is missing required tag${missing.length > 1 ? "s" : ""} ${missing.join(", ")}`,
-          evidence: [{ file: n.src.file, path: `${n.src.path}.Tags` }],
+          record: n, resource: { kind: kindOf(n), id: n.id, name: networkLabel(n) },
+          what: `${kindOf(n)} ${networkLabel(n)} is missing required tag${missing.length > 1 ? "s" : ""} ${missing.join(", ")}`,
+          evidence: [{ file: n.src.file, path: n.tagsPath }],
         });
       }
     },

@@ -18,6 +18,14 @@ export const SAMPLE_SETS = {
       "samples/aws/larkspur-lending/larkspur-legacy.json",
     ],
   },
+  brightwater: {
+    label: "Brightwater (Azure)",
+    files: ["samples/azure/brightwater-insurance/brightwater-prod-subscription.json"],
+  },
+  cobalt: {
+    label: "Cobalt (GCP)",
+    files: ["samples/gcp/cobalt-mortgage/cobalt-analytics-project.json"],
+  },
   // No button: open with ?sample=broken to see "Not in export" and file errors.
   broken: {
     label: "Broken test fixtures",
