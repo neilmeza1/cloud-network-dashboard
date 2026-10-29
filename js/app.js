@@ -11,6 +11,7 @@ import { renderOverview } from "./ui/overview.js";
 import { renderFindings, emptyFilters } from "./ui/findings.js";
 import { renderAccounts } from "./ui/accounts.js";
 import { renderMap } from "./ui/map.js";
+import { renderGaps } from "./ui/gaps.js";
 import { h } from "./ui/dom.js";
 
 const $ = (id) => document.getElementById(id);
@@ -106,6 +107,7 @@ function render() {
   renderFindingsSection();
   renderMap($("map-body"), data, { onPickAccount: showAccountFindings });
   renderAccountsSection();
+  renderGaps($("gaps-body"), data);
 }
 
 function renderFindingsSection(opts = {}) {
@@ -192,18 +194,21 @@ async function init() {
     return;
   }
   // ?sample=tidewater|larkspur loads a sample on open; &expand=N opens the first N findings;
-  // &accounts=N opens the first N account rows.
+  // &accounts=N opens the first N account rows; &gaps=N opens the first N standards in Gaps.
+  // ?sample=broken loads the broken test fixtures.
   const params = new URLSearchParams(location.search);
   const sample = params.get("sample");
   if (sample && SAMPLE_SETS[sample]) {
     await loadSample(sample, { scroll: false });
     const n = Number(params.get("expand") || 0);
     const a = Number(params.get("accounts") || 0);
+    const g = Number(params.get("gaps") || 0);
     if (state.data) {
       state.data.findings.slice(0, n).forEach((f) => state.expanded.add(f.id));
       state.data.accounts.rows.slice(0, a).forEach((r) => state.openAccounts.add(r.accountId));
       if (n) renderFindingsSection();
       if (a) renderAccountsSection();
+      [...document.querySelectorAll("#gaps details")].slice(0, g).forEach((d) => (d.open = true));
     }
   }
   document.body.dataset.ready = "true";

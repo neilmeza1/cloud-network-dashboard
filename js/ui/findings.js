@@ -1,7 +1,7 @@
 // Findings: filters, a severity-sorted list, and expandable evidence.
 // Renders only from dashboard-data (data.findings and data.standards).
 
-import { h, stmt, sevBadge, cap, clear } from "./dom.js";
+import { h, stmt, sevBadge, cap, clear, num } from "./dom.js";
 
 export const emptyFilters = () => ({ severity: "", account: "", standard: "", q: "" });
 
@@ -77,8 +77,10 @@ export function renderFindings(el, data, state, { onFilter, onToggle }) {
         oninput: (e) => onFilter({ ...flt, q: e.target.value }, { keepFocus: true }) })),
     h("button", { type: "button", class: "reset", disabled: !Object.values(flt).some(Boolean), onclick: () => onFilter({ severity: "", account: "", standard: "", q: "" }) }, "Clear filters"));
 
+  // The checks that could not run live in Gaps; this is only a pointer to them.
   const gaps = data.standards_gaps.notChecked.length
-    ? h("p", { class: "note" }, stmt("Not in export"), " Some checks could not run on parts of these files because a section is missing. They will be listed under Gaps (build step 6), not here.")
+    ? h("p", { class: "note gaps-pointer" }, stmt("Not in export"), " Some checks could not run on these files. ",
+        h("a", { href: "#gaps-not-in-export" }, "See Gaps"), ".")
     : null;
 
   const list = !data.findings.length
@@ -88,6 +90,7 @@ export function renderFindings(el, data, state, { onFilter, onToggle }) {
       : h("ol", { class: "finding-list" }, shown.map((f, i) => row(f, i, data, state.expanded, onToggle)));
 
   clear(el, filters,
-    h("p", { class: "result-count", "aria-live": "polite" }, `Showing ${shown.length} of ${data.findings.length}, most severe first.`),
+    h("p", { class: "result-count", "aria-live": "polite" },
+      "Showing ", num(shown.length, "findings.shown", null), " of ", num(data.findings.length, "findings.total", null), ", most severe first."),
     gaps, list);
 }

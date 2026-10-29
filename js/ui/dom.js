@@ -30,6 +30,11 @@ export function sevBadge(sev) {
   return h("span", { class: `sev sev-${sev}` }, h("span", { class: "sev-icon", "aria-hidden": "true" }, SEV_ICON[sev] || "•"), cap(sev));
 }
 
+// A rendered count, tagged with the fact it shows so tests can check each fact has one home.
+export function num(value, fact, cls = "num") {
+  return h("span", { class: cls, "data-count": fact }, value);
+}
+
 // A label with a one-line definition shown on hover or keyboard focus.
 let defSeq = 0;
 export function withDef(label, definition, align = "start") {

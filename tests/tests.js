@@ -13,6 +13,8 @@ import { renderFindings, emptyFilters } from "../js/ui/findings.js";
 import { renderAccounts } from "../js/ui/accounts.js";
 import { renderMap } from "../js/ui/map.js";
 import { layoutMap } from "../js/map-layout.js";
+import { renderGaps } from "../js/ui/gaps.js";
+import { h } from "../js/ui/dom.js";
 
 const BASE = new URL("../", import.meta.url);
 const BROKEN = "tests/fixtures/broken/";
@@ -409,6 +411,158 @@ async function main() {
   ok(synthOut.length === 0 && synthL.cols === 5 && synthL.boxes.length === 13,
     `synthetic 13-account map (${synth.nodes.length} VPCs, ${synth.edges.length} lines, 2 hubs): 5 columns, no overlaps or crossings`, synthOut.slice(0, 8).join("\n"));
   stage.remove();
+
+  section("Gaps");
+  const yamlText = await fetchText("ai-skills/Cloud_Standards.yaml");
+  // Independent of the YAML parser: scan the raw lines for mandate ids and their check.
+  const rawMandates = [];
+  for (const line of yamlText.split(/\r?\n/)) {
+    const id = /^\s+- id: ([A-Z]{3}-\d+)\s*$/.exec(line);
+    if (id) rawMandates.push({ id: id[1], check: null });
+    const chk = /^\s+check: (\S+)\s*$/.exec(line);
+    if (chk && rawMandates.length && rawMandates[rawMandates.length - 1].check === null) rawMandates[rawMandates.length - 1].check = chk[1];
+  }
+  const rawManual = rawMandates.filter((m) => m.check === "manual").map((m) => m.id).sort();
+  const declared = Number(/mandate_count: (\d+)/.exec(yamlText)[1]);
+  const gEl = document.createElement("div");
+  renderGaps(gEl, tw);
+  const listed = [...gEl.querySelectorAll("li.gap")].map((li) => li.dataset.standard);
+  ok(JSON.stringify([...listed].sort()) === JSON.stringify(rawManual) && rawManual.length > 0,
+    `every check: manual mandate in the YAML is listed once (${listed.length}/${rawManual.length})`, `listed: ${listed.join(", ")}\nyaml: ${rawManual.join(", ")}`);
+  const ledeCounts = Object.fromEntries([...gEl.querySelectorAll(".lede [data-count]")].map((x) => [x.dataset.count, Number(x.textContent)]));
+  ok(ledeCounts["standards.manual"] === rawManual.length && ledeCounts["standards.mandates"] === rawMandates.length && rawMandates.length === declared,
+    `mandate counts come from the YAML (${ledeCounts["standards.manual"]} of ${ledeCounts["standards.mandates"]}; meta.mandate_count ${declared})`);
+  const pillarOrder = [...gEl.querySelectorAll(".pillar")].map((p) => p.getAttribute("aria-label"));
+  const yamlPillarOrder = [...new Set(standards.manual.map((m) => m.pillarName))];
+  const sortedWithin = [...gEl.querySelectorAll(".pillar")].every((p) => {
+    const ranks = [...p.querySelectorAll("li.gap")].map((li) => sevs.indexOf(standards.mandates.find((m) => m.id === li.dataset.standard).severity));
+    return ranks.every((r, i) => !i || ranks[i - 1] <= r);
+  });
+  ok(JSON.stringify(pillarOrder) === JSON.stringify(yamlPillarOrder) && sortedWithin, "grouped by pillar in YAML order, sorted by severity within each pillar");
+  const textMismatch = [...gEl.querySelectorAll("li.gap")].flatMap((li) => {
+    const m = standards.mandates.find((x) => x.id === li.dataset.standard);
+    const dds = [...li.querySelectorAll(".kv dd")].map((d) => d.textContent.trim());
+    const quote = li.querySelector("blockquote").firstChild.textContent.trim();
+    const why = li.querySelector("h4 + p").textContent.trim();
+    const okText = dds[0] === m.enforcement.trim() && dds[1] === m.kpi.trim() && dds.length === 2 && quote === m.statement.trim() && why === m.why.trim();
+    return okText ? [] : [`${m.id}: evidence/statement differs from the YAML`];
+  });
+  ok(textMismatch.length === 0, "each expands to the YAML's statement and why, and evidence is exactly its enforcement and kpi text", textMismatch.join("\n"));
+  ok(!gEl.querySelector(".nie-file") && /Every check could read/.test(gEl.textContent), "clean samples: Gaps says every check could run, with nothing listed");
+
+  // Not in export list vs the broken fixtures (both loaded as one folder).
+  const brokenAll = await Promise.all(["larkspur-prod-broken.json", "tidewater-prod-app-map-broken.json"]
+    .map(async (f) => ({ path: BROKEN + f, text: await fetchText(BROKEN + f) })));
+  const baModel = buildModel(brokenAll);
+  const baChecks = runChecks(baModel, standards);
+  const baData = dd(baModel, baChecks, new Map(brokenAll.map((i) => [i.path, JSON.parse(i.text)])), baModel.companies[0].name);
+  const baGaps = document.createElement("div");
+  renderGaps(baGaps, baData);
+  const gotNie = Object.fromEntries([...baGaps.querySelectorAll(".nie-file")].map((f) => [f.dataset.file,
+    Object.fromEntries([...f.querySelectorAll(".nie-section")].map((s) => [s.dataset.path, [...s.querySelectorAll(".nie-check")].map((c) => c.dataset.standard)]))]));
+  const wantNie = {
+    [BROKEN + "larkspur-prod-broken.json"]: {
+      "$.Account.Tags": ["NET-01"], '$.Regions["us-east-1"].FlowLogs': ["NET-10"], '$.Regions["us-east-1"].VpcEndpoints': ["NET-08"],
+      '$.Regions["us-east-1"].WebAclResources': ["NET-05"], "$.Global.CloudFrontDistributions": ["NET-05"],
+    },
+    [BROKEN + "tidewater-prod-app-map-broken.json"]: { '$.Regions["us-west-2"].Vpcs': ["NET-02", "NET-03", "OPS-01", "RES-01"] },
+  };
+  const norm = (o) => JSON.stringify(Object.keys(o).sort().map((f) => [f, Object.keys(o[f]).sort().map((p) => [p, o[f][p]])]));
+  ok(norm(gotNie) === norm(wantNie), "Not in export list matches what the broken fixtures removed, by file and section",
+    `got  ${JSON.stringify(gotNie)}\nwant ${JSON.stringify(wantNie)}`);
+
+  // Nothing in both Findings and Gaps.
+  const manualIds = new Set(standards.manual.map((m) => m.id));
+  const both = [];
+  for (const [d, r] of [[tw, result], [ll, result], [baData, baChecks]]) {
+    for (const f of d.findings) if (manualIds.has(f.standardId)) both.push(`manual standard reported as a finding: ${f.id}`);
+    for (const n of d.standards_gaps.notChecked) {
+      const clash = d.findings.find((f) => f.standardId === n.standardId && f.evidence.some((e) => e.file === n.file) && (!n.region || f.region === n.region));
+      if (clash) both.push(`${n.standardId} ${n.file} ${n.path} is in Gaps and in Findings (${clash.id})`);
+    }
+    void r;
+  }
+  const baFind = document.createElement("div");
+  renderFindings(baFind, baData, { filters: emptyFilters(), expanded: new Set() }, { onFilter: () => {}, onToggle: () => {} });
+  for (const n of baData.standards_gaps.notChecked) if (baFind.textContent.includes(n.path)) both.push(`Findings text mentions ${n.path}`);
+  for (const f of baData.findings) if (baGaps.textContent.includes(f.what)) both.push(`Gaps text repeats finding: ${f.what}`);
+  ok(both.length === 0, "no item appears in both Findings and Gaps", both.join("\n"));
+
+  const pointer = baFind.querySelector(".gaps-pointer a");
+  ok(pointer && pointer.getAttribute("href") === "#gaps-not-in-export" && baGaps.querySelector("#gaps-not-in-export") &&
+    !/\d/.test(baFind.querySelector(".gaps-pointer").textContent),
+    "Findings has a one-line pointer that links to the Gaps list, with no count of its own");
+  const cleanFind = document.createElement("div");
+  renderFindings(cleanFind, tw, { filters: emptyFilters(), expanded: new Set() }, { onFilter: () => {}, onToggle: () => {} });
+  ok(!cleanFind.querySelector(".gaps-pointer"), "the pointer is absent when every check could run");
+
+  // Acceptance checklist: no count appears in two sections (per-account counts are their own facts).
+  const renderAll = (d, tamper = () => {}) => {
+    const secs = {};
+    secs.overview = document.createElement("div");
+    renderOverview(secs.overview, d, { onPickSeverity: () => {} });
+    secs.findings = document.createElement("div");
+    renderFindings(secs.findings, d, { filters: emptyFilters(), expanded: new Set(d.findings.map((f) => f.id)) }, { onFilter: () => {}, onToggle: () => {} });
+    secs.accounts = document.createElement("div");
+    renderAccounts(secs.accounts, d, { expanded: new Set(d.accounts.rows.map((r) => r.accountId)) }, { onToggle: () => {}, onPickAccount: () => {} });
+    secs.gaps = document.createElement("div");
+    renderGaps(secs.gaps, d);
+    secs.map = drawMapFor(d);
+    tamper(secs);
+    const facts = new Map();
+    const textOf = {};
+    // Text with the tagged counts blanked out, so the text check only finds untagged copies.
+    const untagged = (el) => {
+      const c = el.cloneNode(true);
+      for (const x of c.querySelectorAll("[data-count]")) x.textContent = "#";
+      return c.textContent;
+    };
+    for (const [name, el] of Object.entries(secs)) {
+      let tips = "";
+      if (name === "map") {
+        for (const g of el.querySelectorAll("g.node")) {
+          g.dispatchEvent(new FocusEvent("focus"));
+          const tip = el.querySelector(".map-tip");
+          for (const c of tip.querySelectorAll("[data-count]")) (facts.get(c.dataset.count) || facts.set(c.dataset.count, new Set()).get(c.dataset.count)).add(name);
+          tips += " " + untagged(tip);
+          g.dispatchEvent(new FocusEvent("blur"));
+        }
+      }
+      for (const c of el.querySelectorAll("[data-count]")) (facts.get(c.dataset.count) || facts.set(c.dataset.count, new Set()).get(c.dataset.count)).add(name);
+      textOf[name] = untagged(el) + tips;
+    }
+    return { facts, textOf, secs };
+  };
+  const mapStage = document.createElement("div");
+  mapStage.style.cssText = "position:absolute;left:-10000px;top:0;width:1200px";
+  document.body.append(mapStage);
+  const drawMapFor = (d) => { const el = document.createElement("div"); mapStage.append(el); renderMap(el, d, { onPickAccount: () => {} }); return el; };
+  const countProblems = (d, tamper) => {
+    const { facts, textOf } = renderAll(d, tamper);
+    const dupes = [...facts].filter(([, where]) => where.size > 1).map(([k, where]) => `${k} in ${[...where].join(" and ")}`);
+    const perSection = ["overview", "findings", "map", "accounts", "gaps"].filter((s) => ![...facts.values()].some((w) => w.has(s)));
+    // Text check: an Overview total next to its label must not show up in another section.
+    const leaks = [];
+    for (const t of d.overview.tiles) for (const it of t.items) {
+      if (it.value === null) continue;
+      const re = new RegExp(`(^|[^\\d.])${it.value}\\*?\\s+${it.label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "i");
+      for (const s of ["findings", "map", "accounts", "gaps"]) if (re.test(textOf[s])) leaks.push(`${it.value} ${it.label} also in ${s}`);
+    }
+    return { facts, dupes, perSection, leaks };
+  };
+  const planted = countProblems(tw, (secs) => {
+    secs.accounts.append(h("span", { "data-count": "company.vpcs" }, "9"));
+    secs.gaps.append(document.createTextNode(" 44 subnets "));
+  });
+  ok(planted.dupes.some((x) => x.startsWith("company.vpcs")) && planted.leaks.some((x) => x.startsWith("44 subnets")),
+    "control: a planted duplicate count (tagged or untagged) is caught", JSON.stringify({ dupes: planted.dupes, leaks: planted.leaks }));
+  for (const [name, d] of [["Tidewater", tw], ["Larkspur", ll], ["broken fixtures", baData]]) {
+    const { facts, dupes, perSection, leaks } = countProblems(d);
+    ok(dupes.length === 0 && leaks.length === 0 && perSection.length === 0 && facts.size > 20,
+      `${name}: no count appears in two sections (${facts.size} tagged counts checked across all five sections)`,
+      [...dupes, ...leaks, perSection.length ? `no tagged counts in: ${perSection.join(", ")}` : ""].filter(Boolean).join("\n"));
+  }
+  mapStage.remove();
 
   // Reference listing: what the engine reported for the clean AWS samples.
   lines.push("", "## Findings reported for the AWS samples", "");

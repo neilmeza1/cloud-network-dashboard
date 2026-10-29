@@ -1,13 +1,13 @@
 // Overview: one scope line, five count tiles and the findings-by-severity tile.
 // Renders only from dashboard-data (data.overview).
 
-import { h, stmt, sevBadge } from "./dom.js";
+import { h, stmt, sevBadge, num } from "./dom.js";
 
 const date = (iso) => (iso || "").slice(0, 10);
 
 function value(item) {
   if (item.value === null) return stmt("Not in export");
-  return h("span", { class: "num" }, item.value, item.notInExportIn.length ? "*" : "");
+  return h("span", { class: "num", "data-count": `company.${item.key}` }, item.value, item.notInExportIn.length ? "*" : "");
 }
 
 function partialNote(items) {
@@ -41,7 +41,7 @@ function severityTile(s, onPick) {
       : h("p", { class: "tile-note" }, "No checks failed."),
     h("ul", { class: "sev-rows" }, s.counts.map((c) =>
       h("li", null, h("button", { type: "button", class: "sev-row", title: `${c.meaning}. Show these in Findings.`, onclick: () => onPick(c.severity) },
-        sevBadge(c.severity), h("span", { class: "num" }, c.count))))),
+        sevBadge(c.severity), num(c.count, `company.findings.${c.severity}`))))),
     h("p", { class: "tile-def", id: "tile-def-sev", role: "tooltip" }, s.definition, " Select a severity to filter Findings."));
 }
 
@@ -51,7 +51,7 @@ export function renderOverview(el, data, { onPickSeverity }) {
   const az = sc.availabilityZones;
   const scope = h("p", { class: "scope" }, stmt("Observed"), " ",
     h("strong", null, sc.company), ": regions ", sc.regions.join(", "), ", across ",
-    az.value === null ? "an unknown number of" : az.value, " availability zones (AZs, separate data center buildings within a region)",
+    az.value === null ? "an unknown number of" : num(az.value, "company.azs", null), " availability zones (AZs, separate data center buildings within a region)",
     sc.exportsGenerated.length ? `. Exports generated ${[...new Set(sc.exportsGenerated.map(date))].join(", ")}.` : ".");
   el.replaceChildren(scope, h("ul", { class: "tiles" }, ov.tiles.map(tile), severityTile(ov.findingsBySeverity, onPickSeverity)));
 }

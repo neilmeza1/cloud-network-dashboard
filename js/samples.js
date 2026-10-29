@@ -18,6 +18,16 @@ export const SAMPLE_SETS = {
       "samples/aws/larkspur-lending/larkspur-legacy.json",
     ],
   },
+  // No button: open with ?sample=broken to see "Not in export" and file errors.
+  broken: {
+    label: "Broken test fixtures",
+    files: [
+      "tests/fixtures/broken/larkspur-prod-broken.json",
+      "tests/fixtures/broken/tidewater-prod-app-map-broken.json",
+      "tests/fixtures/broken/unknown-schema.json",
+      "tests/fixtures/broken/not-json.json",
+    ],
+  },
 };
 
 // Fetches the files of one set as [{ path, text }]. `base` is the URL of the site root.

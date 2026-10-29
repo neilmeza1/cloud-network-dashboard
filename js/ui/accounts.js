@@ -1,7 +1,7 @@
 // Accounts: one table, one row per account, expanding to its VPCs.
 // Renders only from dashboard-data (data.accounts).
 
-import { h, stmt, cap, withDef } from "./dom.js";
+import { h, stmt, withDef, num } from "./dom.js";
 
 const SEV_ICON = { critical: "◆", high: "▲", medium: "●", low: "○" };
 const ROLE_LABEL = { workload: "workload", load_balancer: "load balancer", nat_gateway: "NAT gateway", vpc_endpoint: "VPC endpoint", other: "other" };
@@ -9,8 +9,8 @@ const short = (az) => az.replace(/^.*\d/, "") || az;
 
 const notInExport = (what) => h("p", { class: "nie" }, stmt("Not in export"), what ? ` ${what}` : null);
 
-function count(v) {
-  return v === null ? stmt("Not in export") : h("span", { class: "num" }, v);
+function count(v, fact) {
+  return v === null ? stmt("Not in export") : num(v, fact);
 }
 
 function marker(row, onPick) {
@@ -20,7 +20,8 @@ function marker(row, onPick) {
   return h("button", { type: "button", class: "sev-marker", "data-account": row.accountId,
     title: `${words}. Show in Findings.`, onclick: () => onPick(row.accountId) },
   hits.map((s) => h("span", { class: `sev sev-${s.severity}` },
-    h("span", { "aria-hidden": "true" }, SEV_ICON[s.severity]), s.count, h("span", { class: "visually-hidden" }, ` ${s.severity}`))),
+    h("span", { "aria-hidden": "true" }, SEV_ICON[s.severity]), num(s.count, `account.${row.accountId}.findings.${s.severity}`, null),
+    h("span", { class: "visually-hidden" }, ` ${s.severity}`))),
   h("span", { class: "visually-hidden" }, ". Show in Findings"));
 }
 
@@ -44,8 +45,8 @@ function vpc(n) {
 
   const subnets = n.subnets === null
     ? [block("Subnets", notInExport())]
-    : [block(`Public subnets (${n.subnets.public.length})`, subnetTable(n.subnets.public)),
-       block(`Private subnets (${n.subnets.private.length})`, subnetTable(n.subnets.private)),
+    : [block("Public subnets", subnetTable(n.subnets.public)),
+       block("Private subnets", subnetTable(n.subnets.private)),
        n.subnets.unknown.length ? block("Public or private", notInExport("Route tables are missing, so this cannot be told."), subnetTable(n.subnets.unknown)) : null]
       .map((b) => b && (b.classList.add("subnets"), b));
 
@@ -73,7 +74,7 @@ function vpc(n) {
 
   const enis = block("Network interfaces",
     n.interfaces === null ? notInExport()
-      : n.interfaces.length ? h("ul", { class: "plain" }, n.interfaces.map((r) => h("li", null, h("span", { class: "num" }, r.count), ` ${ROLE_LABEL[r.role]}`)))
+      : n.interfaces.length ? h("ul", { class: "plain" }, n.interfaces.map((r) => h("li", null, num(r.count, `vpc.${n.id}.interfaces.${r.role}`), ` ${ROLE_LABEL[r.role]}`)))
         : h("p", { class: "muted small" }, "None"));
 
   return h("article", { class: "vpc", "data-vpc": n.id }, head, h("div", { class: "vpc-grid" }, subnets, routes, endpoints, nat, enis));
@@ -105,7 +106,7 @@ export function renderAccounts(el, data, state, { onToggle, onPickAccount }) {
         h("td", { "data-label": "Cloud" }, r.cloud.toUpperCase()),
         h("td", { "data-label": "Role" }, r.roleStatement === "Not in export" ? stmt("Not in export") : r.role || h("span", { class: "muted" }, "No AccountRole tag")),
         h("td", { "data-label": "Regions", class: "regions" }, r.regions.map((g, j) => [j ? ", " : null, h("span", { class: "nowrap" }, g)])),
-        columns.filter((c) => c.numeric).map((c) => h("td", { class: "n", "data-label": c.label, "data-key": c.key }, count(r.counts[c.key]))),
+        columns.filter((c) => c.numeric).map((c) => h("td", { class: "n", "data-label": c.label, "data-key": c.key }, count(r.counts[c.key], `account.${r.accountId}.${c.key}`))),
         h("td", { "data-label": "Findings" }, marker(r, onPickAccount))),
       h("tr", { class: "acct-detail", id, hidden: !open }, h("td", { colspan: n }, open ? detail(r) : null)),
     ];

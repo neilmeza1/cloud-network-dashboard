@@ -1,7 +1,7 @@
 // Map: inline SVG drawn from data.network_map, laid out by layoutMap(). No libraries.
 // Severity is shown as a colored outline plus an icon; everything else is neutral.
 
-import { h, stmt, clear } from "./dom.js";
+import { h, stmt, clear, num } from "./dom.js";
 import { layoutMap } from "../map-layout.js";
 
 const NS = "http://www.w3.org/2000/svg";
@@ -18,8 +18,10 @@ const sevWords = (list) => list.filter((x) => x.count).map((x) => `${x.count} ${
 
 function tooltip(n, data) {
   const acct = data.network_map.accounts.find((a) => a.accountId === n.accountId);
+  const f = (k) => `vpc.${n.id}.${k}`;
   const subs = n.subnets === null ? stmt("Not in export")
-    : `${n.subnets.public} public, ${n.subnets.private} private${n.subnets.unknown ? `, ${n.subnets.unknown} unknown` : ""}`;
+    : [num(n.subnets.public, f("subnets.public"), null), " public, ", num(n.subnets.private, f("subnets.private"), null), " private",
+       n.subnets.unknown ? [", ", num(n.subnets.unknown, f("subnets.unknown"), null), " unknown"] : null];
   const internet = [n.internet.gateway && "internet gateway", n.internet.publicLoadBalancer && "internet-facing load balancer"].filter(Boolean);
   const hits = n.findingsBySeverity.filter((x) => x.count);
   return [
@@ -34,7 +36,8 @@ function tooltip(n, data) {
       n.externalPeerings.length ? [h("dt", null, "Peered with"), h("dd", null, n.externalPeerings.map((p) => `${p.networkId} (not in these files)`).join(", "))] : null,
       h("dt", null, "Findings"),
       h("dd", null, hits.length
-        ? hits.map((x) => h("span", { class: `sev sev-${x.severity} tip-sev` }, h("span", { "aria-hidden": "true" }, SEV_ICON[x.severity]), `${x.count} ${x.severity}`))
+        ? hits.map((x) => h("span", { class: `sev sev-${x.severity} tip-sev` }, h("span", { "aria-hidden": "true" }, SEV_ICON[x.severity]),
+            num(x.count, f(`findings.${x.severity}`), null), ` ${x.severity}`))
         : "none")),
     h("p", { class: "tip-hint" }, hits.length ? "Select to show this account's findings." : "Select to show this account in Findings."),
   ];
@@ -79,7 +82,9 @@ export function renderMap(el, data, { onPickAccount }) {
       s("title", null, `${sevWords(own)} not tied to one VPC (account or region). Select to show this account's findings.`),
       s("rect", { class: "marker-hit", x: b.x + b.w - 74, y: b.y + 5, width: 68, height: 20, rx: 4 }),
       s("text", { x: b.x + b.w - 10, y: b.y + 19, "text-anchor": "end", class: "t-small" },
-        own.map((x, i) => s("tspan", { class: `sev-${x.severity} t-sev`, dx: i ? 6 : 0 }, `${SEV_ICON[x.severity]}${x.count}`))));
+        own.map((x, i) => [
+          s("tspan", { class: `sev-${x.severity} t-sev`, dx: i ? 6 : 0 }, SEV_ICON[x.severity]),
+          s("tspan", { class: `sev-${x.severity} t-sev`, "data-count": `account.${a.accountId}.unscopedFindings.${x.severity}` }, x.count)])));
       const pick = () => onPickAccount(a.accountId);
       marker.addEventListener("click", pick);
       marker.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });

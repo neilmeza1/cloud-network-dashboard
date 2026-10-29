@@ -2,7 +2,6 @@
 // The page renders only from this object. Parts, in order:
 //   overview, findings, network_map, accounts, standards_gaps
 // plus `meta` (sources) and `standards` (mandate text copied from Cloud_Standards.yaml).
-// Most of standards_gaps is built in a later step.
 //
 // Every statement carries `statement`: "Observed" | "Finding" | "Not in export".
 // A count is null when a section it needs is not in the export (rendered "Not in export").
@@ -12,8 +11,9 @@ import { resolvePath, snippet } from "./model/jsonpath.js";
 import { STANDARDS_PATH } from "./standards.js";
 import { buildAccounts } from "./accounts-data.js";
 import { buildNetworkMap } from "./map-data.js";
+import { buildGaps } from "./gaps-data.js";
 
-export const DASHBOARD_SCHEMA = "kestrel-dashboard-data/0.5";
+export const DASHBOARD_SCHEMA = "kestrel-dashboard-data/0.6";
 const COUNT = Object.fromEntries(COUNTS.map((c) => [c.key, c]));
 
 // docs: Map(path -> parsed JSON), used to attach the raw snippet behind each piece of evidence.
@@ -109,11 +109,11 @@ export function buildDashboardData({ model, checks, standards, docs, company, ge
     findings,
     network_map: buildNetworkMap({ model, accts, findings, severityOrder: standards.severityOrder }),
     accounts: buildAccounts({ model, accts, summary, findings, severityOrder: standards.severityOrder }),
-    standards_gaps: {
-      // build step 6 adds the manual mandates and the evidence each needs
-      notChecked: checks.notChecked.filter((n) => files.has(n.file)).map((n) => ({ statement: "Not in export", ...n })),
-      notInExport: model.notInExport.filter((n) => files.has(n.file)).map((n) => ({ statement: "Not in export", ...n })),
-    },
+    standards_gaps: buildGaps({
+      standards,
+      notChecked: checks.notChecked.filter((n) => files.has(n.file)),
+      notInExport: model.notInExport.filter((n) => files.has(n.file)),
+    }),
     standards: Object.fromEntries(standards.mandates.map((m) => [m.id, mandateFields(m)])),
   };
 }
