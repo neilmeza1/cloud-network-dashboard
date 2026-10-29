@@ -2,7 +2,7 @@
 // The page renders only from this object. Parts, in order:
 //   overview, findings, network_map, accounts, standards_gaps
 // plus `meta` (sources) and `standards` (mandate text copied from Cloud_Standards.yaml).
-// network_map and most of standards_gaps are built in later steps.
+// Most of standards_gaps is built in a later step.
 //
 // Every statement carries `statement`: "Observed" | "Finding" | "Not in export".
 // A count is null when a section it needs is not in the export (rendered "Not in export").
@@ -11,8 +11,9 @@ import { countSummary, COUNTS } from "./model/counts.js";
 import { resolvePath, snippet } from "./model/jsonpath.js";
 import { STANDARDS_PATH } from "./standards.js";
 import { buildAccounts } from "./accounts-data.js";
+import { buildNetworkMap } from "./map-data.js";
 
-export const DASHBOARD_SCHEMA = "kestrel-dashboard-data/0.4";
+export const DASHBOARD_SCHEMA = "kestrel-dashboard-data/0.5";
 const COUNT = Object.fromEntries(COUNTS.map((c) => [c.key, c]));
 
 // docs: Map(path -> parsed JSON), used to attach the raw snippet behind each piece of evidence.
@@ -72,7 +73,7 @@ export function buildDashboardData({ model, checks, standards, docs, company, ge
       statement: "Finding",
       id: f.id, severity: f.severity, standardId: f.standardId, standardName: f.standardName, check: f.check,
       what: f.what, action: f.action, region: f.region, resource: f.resource,
-      accountIds: f.accountIds, accountNames: f.accountNames,
+      accountIds: f.accountIds, accountNames: f.accountNames, networkIds: f.networkIds,
       evidence: f.evidence.map((e) => {
         const value = resolvePath(docs.get(e.file), e.path);
         const s = value === undefined ? { text: "(path not found in file)", truncated: false } : snippet(value);
@@ -106,7 +107,7 @@ export function buildDashboardData({ model, checks, standards, docs, company, ge
     },
     overview,
     findings,
-    network_map: null, // build step 5
+    network_map: buildNetworkMap({ model, accts, findings, severityOrder: standards.severityOrder }),
     accounts: buildAccounts({ model, accts, summary, findings, severityOrder: standards.severityOrder }),
     standards_gaps: {
       // build step 6 adds the manual mandates and the evidence each needs

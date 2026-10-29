@@ -2,7 +2,7 @@
 //
 // result = {
 //   findings:   [{ id, standardId, standardName, severity, check, cloud, company, accountIds,
-//                  accountNames, region, resource: { kind, id, name }, what, action,
+//                  accountNames, networkIds, region, resource: { kind, id, name }, what, action,
 //                  evidence: [{ file, path }], files }]   sorted by severity, then standard
 //   notChecked: [{ standardId, check, file, accountId, region, path, what }]
 //               a check could not run here because a section is not in the export
@@ -23,6 +23,7 @@ function sectionKnown(a, scope, region, key) {
 export function runChecks(model, standards) {
   const findings = [], notChecked = [], errors = [];
   const accountsById = new Map(model.accounts.map((a) => [a.id, a]));
+  const networksById = new Map(model.networks.map((n) => [n.id, n]));
 
   for (const [checkId, mandate] of standards.byCheck) {
     const check = CHECKS[checkId];
@@ -63,13 +64,16 @@ export function runChecks(model, standards) {
         const a = accountsById.get(rec.accountId);
         notChecked.push({ standardId: mandate.id, check: checkId, file: where.file, accountId: a?.id ?? null, region: rec.region ?? null, path: where.path, what });
       },
-      report({ record, accountIds, region, resource, what, evidence }) {
+      report({ record, accountIds, networkIds, region, resource, what, evidence }) {
         const ids = accountIds || [record.accountId];
         const accts = ids.map((id) => accountsById.get(id)).filter(Boolean);
+        // VPCs the finding is about; empty for account- or region-level findings
+        const nets = networkIds || (networksById.has(record.id) ? [record.id] : record.networkId ? [record.networkId] : []);
         findings.push({
           id: `${mandate.id}:${resource.id}`, standardId: mandate.id, standardName: mandate.name,
           severity: mandate.severity, check: checkId, cloud: record.cloud || accts[0]?.cloud || null,
           company: accts[0]?.company ?? null, accountIds: ids, accountNames: accts.map((a) => a.name || a.id),
+          networkIds: nets.filter((id) => networksById.has(id)),
           region: region ?? (record.region || null), resource, what, action: check.action,
           evidence, files: [...new Set(evidence.map((e) => e.file))],
         });

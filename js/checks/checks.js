@@ -94,7 +94,7 @@ export const CHECKS = {
               if (!ra || !rb || ra[1] < rb[0] || rb[1] < ra[0]) continue;
               const fa = ctx.account(a).file.split("/").pop(), fb = ctx.account(b).file.split("/").pop();
               ctx.report({
-                record: a, accountIds: [a.accountId, b.accountId],
+                record: a, accountIds: [a.accountId, b.accountId], networkIds: [a.id, b.id],
                 resource: { kind: "VPC pair", id: `${a.id}+${b.id}`, name: `${networkLabel(a)} / ${networkLabel(b)}` },
                 what: `VPC ${networkLabel(a)} (${ca}) in ${fa} overlaps VPC ${networkLabel(b)} (${cb}) in ${fb}`,
                 evidence: [a.src, b.src],
@@ -234,6 +234,7 @@ export const CHECKS = {
         const accountIds = [p.requester.accountId, p.accepter.accountId].filter((id) => m.accounts.some((a) => a.id === id));
         ctx.report({
           record: p, accountIds, region: p.requester.region,
+          networkIds: [p.requester.networkId, p.accepter.networkId].filter(Boolean),
           resource: { kind: "VPC peering", id: p.id, name: p.id },
           what: `Active VPC peering ${p.id} between ${side(p.requester)} and ${side(p.accepter)}`,
           evidence: p.seenIn,
@@ -267,7 +268,8 @@ export const CHECKS = {
         const lb = m.loadBalancers.find((x) => x.id === l.loadBalancerId);
         if (!lb || !lb.internetFacing || l.redirectsToHttps) continue;
         ctx.report({
-          record: l, resource: { kind: "listener", id: l.id, name: `${lb.name}:${l.port}` },
+          record: l, networkIds: lb.networkId ? [lb.networkId] : [],
+          resource: { kind: "listener", id: l.id, name: `${lb.name}:${l.port}` },
           what: `Internet-facing load balancer ${lb.name} serves port ${l.port} over plain HTTP (default action: ${l.defaultActions.join(", ") || "none"})`,
           evidence: [l.src],
         });

@@ -65,6 +65,7 @@ def main():
         shutil.rmtree(profile, ignore_errors=True)
     m = re.search(r'<pre id="results"[^>]*>(.*?)</pre>', dom, re.S)
     text = html.unescape(m.group(1)) if m else "FAIL  test page produced no results"
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # results contain severity icons
     print(text)
     sys.exit(0 if "RESULT: PASS" in text else 1)
 

@@ -23,6 +23,15 @@ for key in ("FlowLogs", "VpcEndpoints", "WebAclResources"):  # NET-10, NET-08, N
 del doc["Global"]                          # CloudFront not in export
 (OUT / "larkspur-prod-broken.json").write_text(json.dumps(doc, indent=2) + "\n", newline="\n")
 
+# tidewater-prod-app with the sections the Map needs removed. The map must say
+# "Not in export" for them instead of drawing nothing.
+doc = json.loads((ROOT / "samples" / "aws" / "tidewater-payments" / "tidewater-prod-app.json").read_text())
+doc["_export"]["source"] = "DELIBERATELY BROKEN test copy of samples/aws/tidewater-payments/tidewater-prod-app.json"
+del doc["Regions"]["us-east-1"]["TransitGatewayAttachments"]
+del doc["Regions"]["us-east-1"]["InternetGateways"]
+del doc["Regions"]["us-west-2"]["Vpcs"]
+(OUT / "tidewater-prod-app-map-broken.json").write_text(json.dumps(doc, indent=2) + "\n", newline="\n")
+
 # A file whose schema the dashboard does not know.
 unknown = {"_export": {"schema": "oracle-tenancy-inventory/1.0", "synthetic": True}, "Tenancy": {}}
 (OUT / "unknown-schema.json").write_text(json.dumps(unknown, indent=2) + "\n", newline="\n")

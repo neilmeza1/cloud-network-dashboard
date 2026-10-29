@@ -10,6 +10,7 @@ import { fromFileList, fromDrop } from "./ui/upload.js";
 import { renderOverview } from "./ui/overview.js";
 import { renderFindings, emptyFilters } from "./ui/findings.js";
 import { renderAccounts } from "./ui/accounts.js";
+import { renderMap } from "./ui/map.js";
 import { h } from "./ui/dom.js";
 
 const $ = (id) => document.getElementById(id);
@@ -103,6 +104,7 @@ function render() {
     },
   });
   renderFindingsSection();
+  renderMap($("map-body"), data, { onPickAccount: showAccountFindings });
   renderAccountsSection();
 }
 

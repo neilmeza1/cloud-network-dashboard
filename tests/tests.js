@@ -11,6 +11,8 @@ import { buildDashboardData } from "../js/dashboard-data.js";
 import { renderOverview } from "../js/ui/overview.js";
 import { renderFindings, emptyFilters } from "../js/ui/findings.js";
 import { renderAccounts } from "../js/ui/accounts.js";
+import { renderMap } from "../js/ui/map.js";
+import { layoutMap } from "../js/map-layout.js";
 
 const BASE = new URL("../", import.meta.url);
 const BROKEN = "tests/fixtures/broken/";
@@ -257,6 +259,156 @@ async function main() {
   const bDetail = bEl.querySelector("tr.acct-detail:not([hidden])");
   const epPart = [...bDetail.querySelectorAll(".vpc-part")].find((p) => p.querySelector("h5").textContent === "VPC endpoints");
   ok(epPart && /Not in export/.test(epPart.textContent) && !/\b0\b/.test(epPart.textContent), "expanded VPC says endpoints are Not in export");
+
+  section("Map");
+  const stage = document.createElement("div");
+  stage.style.cssText = "position:absolute;left:-10000px;top:0;width:1200px";
+  document.body.append(stage);
+  const drawMap = (d, onPick = () => {}) => {
+    const el = document.createElement("div");
+    stage.append(el);
+    renderMap(el, d, { onPickAccount: onPick });
+    return el;
+  };
+  // Independent expectations straight from the raw files of each company.
+  const rawFor = (company) => inputs.filter((i) => model.accounts.find((a) => a.file === i.path)?.company === company).map((i) => docs.get(i.path));
+  const allRegions = (doc) => Object.values(doc.Regions);
+  const rawExpect = (company) => {
+    const ds = rawFor(company);
+    const vpcs = ds.flatMap((d) => allRegions(d).flatMap((R) => R.Vpcs));
+    const vpcIds = new Set(vpcs.map((v) => v.VpcId));
+    const attach = new Set(ds.flatMap((d) => allRegions(d).flatMap((R) => R.TransitGatewayAttachments))
+      .filter((t) => vpcIds.has(t.ResourceId)).map((t) => t.TransitGatewayAttachmentId));
+    const peer = new Set(ds.flatMap((d) => allRegions(d).flatMap((R) => R.VpcPeeringConnections))
+      .filter((p) => p.Status.Code === "active").map((p) => p.VpcPeeringConnectionId));
+    const facing = new Set(ds.flatMap((d) => allRegions(d).flatMap((R) => [
+      ...R.InternetGateways.flatMap((g) => g.Attachments.map((x) => x.VpcId)),
+      ...R.LoadBalancers.filter((l) => l.Scheme === "internet-facing").map((l) => l.VpcId)])));
+    return { vpcs: vpcs.length, attach: attach.size, peer: peer.size, facing: facing.size };
+  };
+  for (const [d, company] of [[tw, "Tidewater Payments"], [ll, "Larkspur Lending"]]) {
+    const el = drawMap(d);
+    const want = rawExpect(company);
+    const got = { vpcs: el.querySelectorAll("g.node").length, attach: el.querySelectorAll("path.edge-transit").length,
+      peer: el.querySelectorAll("path.edge-peering").length, facing: el.querySelectorAll("path.edge-internet").length };
+    ok(got.vpcs === want.vpcs, `${company}: VPC nodes equal the VPC count (${got.vpcs}/${want.vpcs})`);
+    ok(got.attach + got.peer === want.attach + want.peer && got.attach === want.attach,
+      `${company}: lines equal unique attachments + peerings (${got.attach} transit + ${got.peer} peering; want ${want.attach} + ${want.peer})`);
+    ok(got.facing === want.facing, `${company}: internet paths equal VPCs with an internet gateway or internet-facing load balancer (${got.facing}/${want.facing})`);
+  }
+
+  const twMap = drawMap(tw);
+  const worstFor = (id) => standards.severityOrder.find((sv) => result.findings.some((f) => f.severity === sv && f.networkIds.includes(id))) ?? null;
+  const outlineErrors = [...twMap.querySelectorAll("g.node"), ...drawMap(ll).querySelectorAll("g.node")].flatMap((g) => {
+    const want = worstFor(g.dataset.vpc);
+    const cls = [...g.classList].find((c) => c.startsWith("worst-"))?.slice(6) ?? null;
+    const icon = g.querySelector(".sev-icon-map");
+    const paired = want ? icon && icon.classList.contains(`sev-${want}`) : !icon;
+    return cls === want && paired && (!want || g.getAttribute("aria-label").includes(want)) ? [] : [`${g.dataset.vpc}: outline ${cls}, want ${want}, icon ${icon?.textContent}`];
+  });
+  ok(outlineErrors.length === 0, "every node's outline is its worst finding, paired with an icon and the word in its label", outlineErrors.join("\n"));
+  const nodeByName = (el, name) => [...el.querySelectorAll("g.node")].find((g) => g.getAttribute("aria-label").startsWith(`VPC ${name},`));
+  ok(nodeByName(twMap, "tw-prod-app").classList.contains("worst-critical") && nodeByName(twMap, "tw-prod-app-dr").classList.contains("worst-medium") &&
+    !/worst-/.test(nodeByName(twMap, "tw-seclog").getAttribute("class")) && !/worst-/.test(nodeByName(twMap, "tw-data-eu").getAttribute("class")),
+    "spot check: tw-prod-app critical, tw-prod-app-dr medium, tw-seclog and tw-data-eu no outline (SEC-04 is region-level)");
+  const dp = tw.network_map.accounts.find((a) => a.name === "tidewater-data-platform");
+  const dpMarker = twMap.querySelector(`.acct-marker[data-account="${dp.accountId}"]`);
+  ok(dpMarker && /▲1/.test(dpMarker.textContent), "region-level finding (SEC-04 eu-west-1) shows as a marker on its account box");
+
+  const prodNode = nodeByName(twMap, "tw-prod-app");
+  prodNode.dispatchEvent(new FocusEvent("focus"));
+  const tipText = twMap.querySelector(".map-tip:not([hidden])")?.textContent || "";
+  ok(["tw-prod-app", "10.20.16.0/20", "us-east-1", "us-east-1a, us-east-1b, us-east-1c", "3 public, 6 private", "1 critical", "1 medium"].every((t) => tipText.includes(t)),
+    "focusing a node shows name, address range, region, zones, subnet counts and findings by severity", tipText);
+  prodNode.dispatchEvent(new FocusEvent("blur"));
+  ok(twMap.querySelector(".map-tip").hidden, "the tooltip hides on blur");
+
+  let mapPicked = null;
+  const llMap = drawMap(ll, (id) => { mapPicked = id; });
+  const legacyNode = nodeByName(llMap, "ll-legacy-batch");
+  legacyNode.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  const legacyAcct = ll.network_map.nodes.find((n) => n.label === "ll-legacy-batch").accountId;
+  ok(mapPicked === legacyAcct, "clicking a node asks for Findings filtered to that VPC's account");
+  mapPicked = null;
+  legacyNode.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+  ok(mapPicked === legacyAcct, "Enter on a focused node does the same");
+  const mf = document.createElement("div");
+  renderFindings(mf, ll, { filters: { ...emptyFilters(), account: mapPicked }, expanded: new Set() }, { onFilter: () => {}, onToggle: () => {} });
+  const legacyRows = [...mf.querySelectorAll(".finding")];
+  ok(legacyRows.length === ll.findings.filter((f) => f.accountIds.includes(legacyAcct)).length && legacyRows.every((r) => r.textContent.includes("larkspur-legacy")),
+    `Findings then shows only larkspur-legacy's findings (${legacyRows.length})`);
+
+  // Not in export: a copy of tidewater-prod-app without the sections the map needs.
+  const mbPath = BROKEN + "tidewater-prod-app-map-broken.json";
+  const mbInputs = [{ path: mbPath, text: await fetchText(mbPath) }];
+  const mbModel = buildModel(mbInputs);
+  const mbData = dd(mbModel, runChecks(mbModel, standards), new Map([[mbPath, JSON.parse(mbInputs[0].text)]]), mbModel.companies[0].name);
+  const mbEl = drawMap(mbData);
+  const mbText = mbEl.textContent;
+  ok(/Not in export/.test(mbText) && ["transit gateway attachments (us-east-1)", "internet gateways (us-east-1)", "VPCs (us-west-2)"].every((t) => mbText.includes(t)),
+    "missing map sections are named as Not in export", mbText.slice(0, 300));
+  ok([...mbEl.querySelectorAll(".acct .t-nie")].length === 3 &&/Not in export for tidewater-prod-app/.test(mbEl.querySelector(".internet").textContent),
+    "the account box and the internet edge also say Not in export, not just an empty drawing");
+  ok(mbEl.querySelectorAll("g.node").length === 1 && mbEl.querySelectorAll("path.edge-transit").length === 0,
+    "only the VPC that is in the export is drawn, with no invented attachment");
+
+  // Geometry: nothing overlaps, and lines only cross what they connect.
+  const inside = (a, b) => a.x >= b.x && a.y >= b.y && a.x + a.w <= b.x + b.w && a.y + a.h <= b.y + b.h;
+  const overlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+  const segHits = ([x1, y1], [x2, y2], r) => overlap({ x: Math.min(x1, x2), y: Math.min(y1, y2), w: Math.abs(x2 - x1) || 0.01, h: Math.abs(y2 - y1) || 0.01 },
+    { x: r.x + 1, y: r.y + 1, w: r.w - 2, h: r.h - 2 });
+  const geometryProblems = (map) => {
+    const Lm = layoutMap(map);
+    const out = [];
+    const boxOf = new Map(Lm.boxes.map((b) => [b.accountId, b]));
+    const nodeAt = new Map(Lm.nodes.map((n) => [n.id, n]));
+    Lm.nodes.forEach((a, i) => Lm.nodes.slice(i + 1).forEach((b) => overlap(a, b) && out.push(`nodes overlap: ${a.id} ${b.id}`)));
+    Lm.boxes.forEach((a, i) => Lm.boxes.slice(i + 1).forEach((b) => overlap(a, b) && out.push(`boxes overlap: ${a.accountId} ${b.accountId}`)));
+    Lm.nodes.forEach((n) => !inside(n, boxOf.get(n.accountId)) && out.push(`node outside its box: ${n.id}`));
+    Lm.hubs.forEach((hb) => [...Lm.boxes, ...Lm.nodes].forEach((r) => overlap(hb, r) && out.push(`hub overlaps: ${hb.id}`)));
+    for (const e of Lm.edges) {
+      const ends = e.kind === "peering" ? [e.from, e.to] : [e.kind === "internet" ? e.to : e.from];
+      const okRects = new Set([...ends.map((id) => nodeAt.get(id)), ...ends.map((id) => boxOf.get(nodeAt.get(id).accountId)), Lm.hubs.find((hb) => hb.id === e.to)]);
+      const blockers = [...Lm.nodes, ...Lm.boxes, ...Lm.hubs].filter((r) => !okRects.has(r));
+      for (let i = 1; i < e.points.length; i++) {
+        for (const r of blockers) if (segHits(e.points[i - 1], e.points[i], r)) out.push(`${e.kind} ${e.id} crosses ${r.id || r.accountId}`);
+      }
+    }
+    const segs = Lm.edges.flatMap((e) => e.points.slice(1).map((p, i) => ({ e, a: e.points[i], b: p })));
+    const vertical = segs.filter((sg) => sg.a[0] === sg.b[0] && sg.a[1] !== sg.b[1]);
+    vertical.forEach((p, i) => vertical.slice(i + 1).forEach((q) => {
+      if (p.e !== q.e && p.a[0] === q.a[0] && Math.max(p.a[1], p.b[1]) > Math.min(q.a[1], q.b[1]) && Math.max(q.a[1], q.b[1]) > Math.min(p.a[1], p.b[1])) {
+        out.push(`vertical lines on top of each other: ${p.e.id} ${q.e.id}`);
+      }
+    }));
+    return { out, Lm };
+  };
+  for (const [name, d] of [["Tidewater", tw], ["Larkspur", ll]]) {
+    const { out } = geometryProblems(d.network_map);
+    ok(out.length === 0, `${name} layout: no overlaps, and lines only touch what they connect`, out.join("\n"));
+  }
+  let seed = 7;
+  const rnd = (n) => { seed = (seed * 9301 + 49297) % 233280; return Math.floor((seed / 233280) * n); };
+  const synth = { internet: { notInExportIn: [] }, hubs: [], edges: [], nodes: [], accounts: [] };
+  for (let i = 0; i < 13; i++) {
+    const nets = Array.from({ length: rnd(5) }, (_, k) => `vpc-${i}-${k}`);
+    synth.accounts.push({ accountId: `a${i}`, name: `account-${i}`, role: "prod", roleStatement: "Observed", regions: ["us-east-1"],
+      networkIds: nets, accountFindingsBySeverity: [], notInExport: i === 4 ? [{ section: "Vpcs", label: "VPCs", regions: ["us-west-2"] }] : [] });
+    for (const id of nets) synth.nodes.push({ id, accountId: `a${i}` });
+  }
+  synth.hubs = [{ id: "tgw-1", ownerAccountId: "a0" }, { id: "tgw-2", ownerAccountId: "a6" }];
+  synth.nodes.forEach((n, i) => {
+    if (i % 3 === 0) synth.edges.push({ kind: "internet", id: `i${i}`, from: "internet", to: n.id });
+    if (i % 2 === 0) synth.edges.push({ kind: "transit", id: `t${i}`, from: n.id, to: i % 4 ? "tgw-2" : "tgw-1" });
+  });
+  for (let k = 0; k < 6; k++) {
+    const a = synth.nodes[rnd(synth.nodes.length)], b = synth.nodes[rnd(synth.nodes.length)];
+    if (a.id !== b.id) synth.edges.push({ kind: "peering", id: `p${k}`, from: a.id, to: b.id });
+  }
+  const { out: synthOut, Lm: synthL } = geometryProblems(synth);
+  ok(synthOut.length === 0 && synthL.cols === 5 && synthL.boxes.length === 13,
+    `synthetic 13-account map (${synth.nodes.length} VPCs, ${synth.edges.length} lines, 2 hubs): 5 columns, no overlaps or crossings`, synthOut.slice(0, 8).join("\n"));
+  stage.remove();
 
   // Reference listing: what the engine reported for the clean AWS samples.
   lines.push("", "## Findings reported for the AWS samples", "");
