@@ -30,6 +30,14 @@ export function sevBadge(sev) {
   return h("span", { class: `sev sev-${sev}` }, h("span", { class: "sev-icon", "aria-hidden": "true" }, SEV_ICON[sev] || "•"), cap(sev));
 }
 
+// A label with a one-line definition shown on hover or keyboard focus.
+let defSeq = 0;
+export function withDef(label, definition, align = "start") {
+  const id = `def-${++defSeq}`;
+  return h("span", { class: `has-def def-${align}`, tabindex: "0", "aria-describedby": id },
+    label, h("span", { class: "def-pop", id, role: "tooltip" }, definition));
+}
+
 export function clear(el, ...kids) {
   el.replaceChildren();
   for (const k of kids.flat(Infinity)) if (k) el.append(k);

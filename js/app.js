@@ -9,14 +9,35 @@ import { SAMPLE_SETS, fetchSampleSet } from "./samples.js";
 import { fromFileList, fromDrop } from "./ui/upload.js";
 import { renderOverview } from "./ui/overview.js";
 import { renderFindings, emptyFilters } from "./ui/findings.js";
+import { renderAccounts } from "./ui/accounts.js";
 import { h } from "./ui/dom.js";
 
 const $ = (id) => document.getElementById(id);
 const BASE = new URL("./", location.href);
 const state = {
   standards: null, inputs: [], docs: new Map(), model: null, checks: null,
-  company: null, data: null, filters: emptyFilters(), expanded: new Set(),
+  company: null, data: null, filters: emptyFilters(), expanded: new Set(), openAccounts: new Set(),
 };
+
+const fresh = () => ({ filters: emptyFilters(), expanded: new Set(), openAccounts: new Set() });
+
+// Show Findings filtered to one account (from an Accounts severity marker).
+function showAccountFindings(accountId) {
+  state.filters = { ...emptyFilters(), account: accountId };
+  renderFindingsSection();
+  $("findings").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderAccountsSection() {
+  renderAccounts($("accounts-body"), state.data, { expanded: state.openAccounts }, {
+    onToggle: (id) => {
+      state.openAccounts.has(id) ? state.openAccounts.delete(id) : state.openAccounts.add(id);
+      renderAccountsSection();
+      document.querySelector(`.acct-toggle[data-account="${CSS.escape(id)}"]`)?.focus();
+    },
+    onPickAccount: showAccountFindings,
+  });
+}
 
 function status(...kids) {
   $("load-status").replaceChildren(...kids);
@@ -38,7 +59,7 @@ async function load(inputs, { ignored = [], scroll = true } = {}) {
   const model = buildModel(inputs);
   Object.assign(state, {
     inputs, docs, model, checks: runChecks(model, state.standards),
-    company: model.companies[0]?.name ?? null, filters: emptyFilters(), expanded: new Set(),
+    company: model.companies[0]?.name ?? null, ...fresh(),
   });
   const notes = [];
   if (model.errors.length) notes.push(errorList("Some files could not be read:", model.errors.map((e) => e.message)));
@@ -82,6 +103,7 @@ function render() {
     },
   });
   renderFindingsSection();
+  renderAccountsSection();
 }
 
 function renderFindingsSection(opts = {}) {
@@ -118,7 +140,7 @@ function wire() {
   });
   $("download-btn").addEventListener("click", download);
   $("company-select").addEventListener("change", (e) => {
-    Object.assign(state, { company: e.target.value, filters: emptyFilters(), expanded: new Set() });
+    Object.assign(state, { company: e.target.value, ...fresh() });
     rebuild();
   });
   $("pick-files").addEventListener("click", () => $("file-input").click());
@@ -167,15 +189,19 @@ async function init() {
     document.querySelectorAll("#load button").forEach((b) => (b.disabled = true));
     return;
   }
-  // ?sample=tidewater|larkspur loads a sample on open; &expand=N opens the first N findings.
+  // ?sample=tidewater|larkspur loads a sample on open; &expand=N opens the first N findings;
+  // &accounts=N opens the first N account rows.
   const params = new URLSearchParams(location.search);
   const sample = params.get("sample");
   if (sample && SAMPLE_SETS[sample]) {
     await loadSample(sample, { scroll: false });
     const n = Number(params.get("expand") || 0);
-    if (n && state.data) {
+    const a = Number(params.get("accounts") || 0);
+    if (state.data) {
       state.data.findings.slice(0, n).forEach((f) => state.expanded.add(f.id));
-      renderFindingsSection();
+      state.data.accounts.rows.slice(0, a).forEach((r) => state.openAccounts.add(r.accountId));
+      if (n) renderFindingsSection();
+      if (a) renderAccountsSection();
     }
   }
   document.body.dataset.ready = "true";

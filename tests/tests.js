@@ -10,6 +10,7 @@ import { resolvePath } from "../js/model/jsonpath.js";
 import { buildDashboardData } from "../js/dashboard-data.js";
 import { renderOverview } from "../js/ui/overview.js";
 import { renderFindings, emptyFilters } from "../js/ui/findings.js";
+import { renderAccounts } from "../js/ui/accounts.js";
 
 const BASE = new URL("../", import.meta.url);
 const BROKEN = "tests/fixtures/broken/";
@@ -185,6 +186,77 @@ async function main() {
   ok(opened && opened.querySelector("pre.snippet") && /ai-skills\/Cloud_Standards\.yaml/.test(opened.textContent) && /\$\.Regions/.test(opened.textContent),
     "expanding a finding shows file, path, raw snippet and the standard text");
   ok(!fl.textContent.includes("null") && !ov.textContent.includes("null") && !ov.textContent.includes("undefined"), "no stray null or undefined in rendered text");
+
+  section("Accounts");
+  const stepOne = new Map(countSummary(model).companies.flatMap((c) => c.accounts).map((a) => [a.id, a.counts]));
+  const drawAccounts = (d, st, cb = {}) => {
+    const el = document.createElement("div");
+    const redraw = () => renderAccounts(el, d, st, { onToggle: (id) => { st.expanded.add(id); redraw(); }, onPickAccount: cb.onPick || (() => {}) });
+    redraw();
+    return el;
+  };
+  const twEl = drawAccounts(tw, { expanded: new Set() });
+  const llEl = drawAccounts(ll, { expanded: new Set() });
+  const rowsOf = (el) => [...el.querySelectorAll("tr.acct-row")];
+  ok(rowsOf(twEl).length === 5 && rowsOf(llEl).length === 2 && !/TOTAL/i.test(twEl.textContent),
+    "one row per account, no company total row");
+  const cellMismatches = [];
+  for (const [el, d] of [[twEl, tw], [llEl, ll]]) {
+    rowsOf(el).forEach((tr, i) => {
+      const id = d.accounts.rows[i].accountId;
+      for (const td of tr.querySelectorAll("td[data-key]")) {
+        const want = String(stepOne.get(id)[td.dataset.key]);
+        if (td.textContent.trim() !== want) cellMismatches.push(`${d.accounts.rows[i].name} ${td.dataset.key}: shows ${td.textContent.trim()}, step 1 says ${want}`);
+      }
+    });
+  }
+  ok(cellMismatches.length === 0, "every per-account number in the table matches the step 1 counts", cellMismatches.join("\n"));
+  const cells = (el, name) => Object.fromEntries([...rowsOf(el).find((tr) => tr.textContent.includes(name)).querySelectorAll("td[data-key]")]
+    .map((td) => [td.dataset.key, td.textContent.trim()]));
+  ok(JSON.stringify(cells(twEl, "tidewater-prod-app")) === JSON.stringify({ vpcs: "2", subnets: "15", endpoints: "7", natGateways: "3", interfaces: "22" }) &&
+    JSON.stringify(cells(llEl, "larkspur-legacy")) === JSON.stringify({ vpcs: "1", subnets: "1", endpoints: "0", natGateways: "0", interfaces: "2" }),
+    "spot check against the generator's table: tidewater-prod-app 2/15/7/3/22, larkspur-legacy 1/1/0/0/2");
+  ok(twEl.querySelectorAll("thead th .def-pop").length === tw.accounts.columns.length, "every column header has a hover definition");
+
+  const prod = tw.accounts.rows.find((r) => r.name === "tidewater-prod-app");
+  twEl.querySelector(`.acct-toggle[data-account="${prod.accountId}"]`).click();
+  const openDetail = twEl.querySelector("tr.acct-detail:not([hidden])");
+  const wantVpcs = model.networks.filter((n) => n.accountId === prod.accountId);
+  ok(openDetail && openDetail.querySelectorAll("article.vpc").length === wantVpcs.length &&
+    wantVpcs.every((n) => openDetail.textContent.includes(n.name) && n.cidrs.every((c) => openDetail.textContent.includes(c))),
+    `expanding tidewater-prod-app shows its ${wantVpcs.length} VPCs with name and address range`,
+    openDetail ? openDetail.textContent.slice(0, 200) : "no open detail row");
+  const shownVpcIds = [...openDetail.querySelectorAll("article.vpc")].map((a) => a.dataset.vpc).sort();
+  ok(JSON.stringify(shownVpcIds) === JSON.stringify(wantVpcs.map((n) => n.id).sort()), "the expanded row shows only that account's VPCs");
+  const split = prod.networks.reduce((s, n) => s + n.subnets.public.length + n.subnets.private.length, 0);
+  ok(split === stepOne.get(prod.accountId).subnets && /Public subnets/.test(openDetail.textContent) && /Private subnets/.test(openDetail.textContent),
+    "subnets are split into public and private, and add up to the account's subnet count");
+  ok(["Default routes", "VPC endpoints", "NAT gateways per zone", "Network interfaces"].every((t) => openDetail.textContent.includes(t)) &&
+    /us-east-1b: none/.test(openDetail.textContent), "detail shows default routes, endpoints, NAT gateways per zone (tw-prod-app has none in 1b) and interfaces");
+
+  let picked = null;
+  const llPick = drawAccounts(ll, { expanded: new Set() }, { onPick: (id) => { picked = id; } });
+  const lp = ll.accounts.rows.find((r) => r.name === "larkspur-prod");
+  llPick.querySelector(`.sev-marker[data-account="${lp.accountId}"]`).click();
+  ok(picked === lp.accountId, "clicking an account's severity marker asks for Findings filtered to that account");
+  const fEl = document.createElement("div");
+  renderFindings(fEl, ll, { filters: { ...emptyFilters(), account: picked }, expanded: new Set() }, { onFilter: () => {}, onToggle: () => {} });
+  const markerTotal = lp.findingsBySeverity.reduce((n, s) => n + s.count, 0);
+  const fRows = [...fEl.querySelectorAll(".finding")];
+  ok(fRows.length === markerTotal && fRows.every((r) => r.textContent.includes("larkspur-prod")) &&
+    fEl.querySelector("select:nth-of-type(1)") !== null && [...fEl.querySelectorAll("select")][1].value === lp.accountId,
+    `Findings then shows exactly that account's ${markerTotal} findings, with the account filter set`);
+  ok(rowsOf(twEl).filter((tr) => tr.lastElementChild.textContent.trim() === "None").length === 2,
+    "accounts without findings show None instead of a marker (2 in Tidewater)");
+
+  const bEl = drawAccounts(bd, { expanded: new Set() });
+  const bCells = cells(bEl, "larkspur-prod");
+  ok(bCells.endpoints === "Not in export" && bCells.vpcs === "1", `missing VpcEndpoints shows "Not in export", not 0 (shows ${bCells.endpoints})`);
+  ok(/Not in export/.test(rowsOf(bEl)[0].querySelector('td[data-label="Role"]').textContent), "missing account tags: role says Not in export");
+  bEl.querySelector(".acct-toggle").click();
+  const bDetail = bEl.querySelector("tr.acct-detail:not([hidden])");
+  const epPart = [...bDetail.querySelectorAll(".vpc-part")].find((p) => p.querySelector("h5").textContent === "VPC endpoints");
+  ok(epPart && /Not in export/.test(epPart.textContent) && !/\b0\b/.test(epPart.textContent), "expanded VPC says endpoints are Not in export");
 
   // Reference listing: what the engine reported for the clean AWS samples.
   lines.push("", "## Findings reported for the AWS samples", "");

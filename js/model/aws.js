@@ -118,7 +118,7 @@ export function normalizeAws(doc, meta) {
     for (const [i, rt] of list("RouteTables").entries()) {
       const assoc = rt.Associations || [];
       out.routeTables.push({
-        ...base, id: rt.RouteTableId, networkId: rt.VpcId,
+        ...base, id: rt.RouteTableId, networkId: rt.VpcId, name: tagMap(rt.Tags).Name ?? null,
         isMain: assoc.some((a) => a.Main === true),
         subnetIds: assoc.map((a) => a.SubnetId).filter(Boolean),
         routes: (rt.Routes || []).map((r) => ({
