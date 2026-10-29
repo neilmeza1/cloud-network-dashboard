@@ -96,7 +96,7 @@ function detail(row) {
       ? h("p", { class: "small" }, stmt("Not in export"), " ", row.notInExport.map((x) => x.what).join(", "))
       : null,
     row.networks.length ? row.networks.map(vpc)
-      : row.vpcsNotInExportIn.length ? null : h("p", { class: "muted" }, "No VPCs in this file."));
+      : row.vpcsNotInExportIn.length ? null : h("p", { class: "muted" }, "No networks in this file."));
 }
 
 export function renderAccounts(el, data, state, { onToggle, onPickAccount }) {

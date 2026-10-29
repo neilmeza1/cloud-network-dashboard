@@ -13,6 +13,7 @@ import { renderAccounts } from "./ui/accounts.js";
 import { renderMap } from "./ui/map.js";
 import { renderGaps } from "./ui/gaps.js";
 import { h } from "./ui/dom.js";
+import { initTheme } from "./ui/theme.js";
 
 const $ = (id) => document.getElementById(id);
 const BASE = new URL("./", location.href);
@@ -96,7 +97,10 @@ function render() {
     $("company-select").replaceChildren(...companies.map((c) => h("option", { value: c.name, selected: c.name === state.company }, c.name)));
   }
   document.title = data ? `${data.meta.company} · Cloud Network Dashboard` : "Cloud Network Dashboard";
-  if (!data) return;
+  if (!data) {
+    renderEmpty(!!state.model);
+    return;
+  }
   renderOverview($("overview-body"), data, {
     onPickSeverity: (severity) => {
       state.filters = { ...emptyFilters(), severity };
@@ -108,6 +112,20 @@ function render() {
   renderMap($("map-body"), data, { onPickAccount: showAccountFindings });
   renderAccountsSection();
   renderGaps($("gaps-body"), data);
+}
+
+// Nothing to show: either nothing is loaded yet, or every file failed to read. Earlier results
+// are cleared so a failed upload never leaves another company's dashboard on screen.
+const EMPTY = {
+  "overview-body": "the overview", "findings-body": "findings", "map-body": "the network map",
+  "accounts-body": "each account", "gaps-body": "what the files cannot show",
+};
+function renderEmpty(attempted) {
+  for (const [id, what] of Object.entries(EMPTY)) {
+    $(id).replaceChildren(attempted
+      ? h("p", { class: "empty" }, "None of the files could be read, so there is nothing to show. ", h("a", { href: "#load" }, "See the errors"), ".")
+      : h("p", { class: "empty" }, `Load files to see ${what}.`));
+  }
 }
 
 function renderFindingsSection(opts = {}) {
@@ -138,6 +156,7 @@ function download() {
 }
 
 function wire() {
+  initTheme($("theme-btn"));
   $("upload-btn").addEventListener("click", () => {
     $("load").scrollIntoView({ behavior: "smooth", block: "start" });
     $("pick-files").focus({ preventScroll: true });

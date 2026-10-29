@@ -6,6 +6,8 @@ Serves the repo root on a free localhost port, loads the test page in headless C
 Edge, and prints what the page reports. Exits 1 if any test fails.
 
 Usage:  python tests/run_tests.py
+        python tests/run_tests.py --subfolder   (serve the parent folder and open the site from
+                                                 /<repo folder>/, as GitHub Pages will)
         BROWSER=/path/to/chrome python tests/run_tests.py
 """
 import functools
@@ -50,15 +52,19 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
 
 
 def main():
-    handler = functools.partial(QuietHandler, directory=str(ROOT))
+    subfolder = "--subfolder" in sys.argv[1:]
+    served = ROOT.parent if subfolder else ROOT
+    prefix = f"/{ROOT.name}" if subfolder else ""
+    handler = functools.partial(QuietHandler, directory=str(served))
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
-    url = f"http://127.0.0.1:{server.server_address[1]}/tests/test.html"
+    url = f"http://127.0.0.1:{server.server_address[1]}{prefix}/tests/test.html"
+    print(f"Serving {served} and opening {prefix or ''}/tests/test.html\n")
     profile = tempfile.mkdtemp(prefix="dashboard-tests-")
     try:
         dom = subprocess.run(
             [find_browser(), "--headless=new", "--disable-gpu", "--no-first-run",
-             f"--user-data-dir={profile}", "--virtual-time-budget=20000", "--dump-dom", url],
+             f"--user-data-dir={profile}", "--virtual-time-budget=120000", "--dump-dom", url],
             capture_output=True, text=True, encoding="utf-8", timeout=120).stdout
     finally:
         server.shutdown()

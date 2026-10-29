@@ -22,4 +22,9 @@ A static web app. A user uploads a cloud inventory JSON export (AWS first; Azure
 - Work in the build order from the design doc, one step at a time, and stop after each step so the result can be checked.
 
 ## Commands
-- `python tools/generate_samples.py` regenerates the synthetic samples and the answer key
+On this machine Python is `python`, not `python3`.
+- `python -m http.server 8000` then open http://localhost:8000/ to run the site (ES modules do not load from `file://`)
+- `python tests/run_tests.py` runs every test in headless Chrome or Edge; exits non-zero on failure
+- `python tests/run_tests.py --subfolder` runs them with the site opened from `/<repo folder>/`, as GitHub Pages will
+- `python tests/make_broken_fixtures.py` regenerates the broken copies in `tests/fixtures/broken/`
+- `python tools/generate_samples.py` regenerates the synthetic samples and the answer key, and prints per-account AWS counts to compare with http://localhost:8000/dev/counts.html

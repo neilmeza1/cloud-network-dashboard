@@ -24,6 +24,8 @@ let passed = 0, failed = 0;
 function ok(cond, name, detail = "") {
   cond ? passed++ : failed++;
   lines.push(`${cond ? "PASS" : "FAIL"}  ${name}${!cond && detail ? `\n      ${detail.replace(/\n/g, "\n      ")}` : ""}`);
+  // Show progress as it happens, so a run that stalls still shows where.
+  document.getElementById("results").textContent = lines.join("\n").trimStart() + "\n\nRunning…";
 }
 const section = (t) => lines.push("", `## ${t}`);
 
@@ -664,6 +666,135 @@ async function main() {
       `${name}: no count appears in two sections (${cp.facts.size} tagged counts checked)`, [...cp.dupes, ...cp.leaks, cp.perSection.join(", ")].filter(Boolean).join("\n"));
   }
   mapStage.remove();
+
+  section("Contrast (WCAG AA, 4.5:1 for text)");
+  const css = await fetchText("css/app.css");
+  const tokens = (re) => Object.fromEntries([...(re.exec(css)?.[1] ?? "").matchAll(/--([\w-]+):\s*(#[0-9a-f]{6})/gi)].map((m) => [m[1], m[2]]));
+  const themes = { light: tokens(/\n:root \{([^}]*)\}/), dark: tokens(/:root\[data-theme="dark"\] \{([^}]*)\}/),
+    "dark (system)": tokens(/:root:not\(\[data-theme="light"\]\) \{([^}]*)\}/) };
+  const lum = (hex) => {
+    const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+  for (const [name, t] of Object.entries(themes)) {
+    const lows = [];
+    for (const fg of ["text", "muted", "sev-critical", "sev-high", "sev-medium", "sev-low"]) {
+      for (const bg of ["bg", "surface", "sunken"]) {
+        const r = ratio(t[fg], t[bg]);
+        if (!(r >= 4.5)) lows.push(`${fg} on ${bg}: ${r.toFixed(2)}`);
+      }
+    }
+    ok(Object.keys(t).length >= 10 && lows.length === 0, `${name} theme: text, muted and all four severity colors reach 4.5:1 on every background`, lows.join("\n"));
+  }
+  ok(JSON.stringify(themes.dark) === JSON.stringify(themes["dark (system)"]), "the dark toggle and the system dark setting use the same colors");
+
+  section("Whole page (index.html in a frame)");
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const waitFor = async (fn, ms = 10000) => { const t0 = Date.now(); while (!fn()) { if (Date.now() - t0 > ms) return false; await sleep(25); } return true; };
+  const frame = document.createElement("iframe");
+  frame.style.cssText = "position:absolute;left:-10000px;top:0;width:1200px;height:900px";
+  const openFrame = async () => {
+    const loaded = new Promise((r) => { frame.onload = r; });
+    if (!frame.isConnected) { frame.src = new URL("index.html", BASE).href; document.body.append(frame); } else frame.contentWindow.location.reload();
+    await loaded;
+    await waitFor(() => frame.contentDocument.body?.dataset.ready === "true");
+    return [frame.contentWindow, frame.contentDocument];
+  };
+  let [w, d] = await openFrame();
+  ok(d.getElementById("overview-body").textContent.includes("Load files to see the overview") && d.getElementById("download-btn").disabled,
+    "empty state: before anything is loaded each section says to load files, and Download is disabled");
+
+  // Theme toggle: defaults to the system setting, remembers the choice, survives blocked storage.
+  try { w.localStorage.removeItem("cnd-theme"); } catch { /* ignore */ }
+  [w, d] = await openFrame();
+  const sysTheme = w.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  ok(!d.documentElement.hasAttribute("data-theme"), `theme defaults to the system setting (${sysTheme}) when nothing is saved`);
+  const themeBtn = d.getElementById("theme-btn");
+  const other = sysTheme === "dark" ? "light" : "dark";
+  ok(themeBtn.getAttribute("aria-label") === `Switch to ${other} theme`, "the toggle names the theme it switches to");
+  themeBtn.click();
+  ok(d.documentElement.getAttribute("data-theme") === other && w.localStorage.getItem("cnd-theme") === other &&
+    w.getComputedStyle(d.body).backgroundColor !== "", `toggling switches to ${other} and saves the choice`);
+  [w, d] = await openFrame();
+  ok(d.documentElement.getAttribute("data-theme") === other, "the saved theme is applied again after a reload");
+  w.localStorage.removeItem("cnd-theme");
+  let storageErr = null;
+  try {
+    Object.defineProperty(w, "localStorage", { configurable: true, get() { throw new w.DOMException("blocked", "SecurityError"); } });
+    const before = d.documentElement.getAttribute("data-theme");
+    d.getElementById("theme-btn").click();
+    ok(d.documentElement.getAttribute("data-theme") !== before, "with browser storage blocked the toggle still works (not remembered)");
+  } catch (e) { storageErr = e; ok(false, "with browser storage blocked the toggle still works", String(e)); }
+  void storageErr;
+  [w, d] = await openFrame();
+
+  // Load a sample, then walk the page as a keyboard user would.
+  d.querySelector('[data-sample="tidewater"]').click();
+  await waitFor(() => d.body.classList.contains("has-data") && d.querySelectorAll("g.node").length > 0);
+  d.querySelector(".acct-toggle").click();
+  await waitFor(() => d.querySelector("tr.acct-detail:not([hidden])"));
+  const visible = (el) => el.getClientRects().length > 0 && !el.closest("[hidden]");
+  const tabbables = [...d.querySelectorAll('a[href], button:not([disabled]), input:not([tabindex="-1"]), select, summary, [tabindex]:not([tabindex="-1"])')]
+    .filter((el) => visible(el) || el.classList.contains("skip"));
+  const nameOf = (el) => (el.getAttribute("aria-label") || (el.labels?.[0]?.textContent) || el.closest("label")?.textContent || el.textContent || el.getAttribute("title") || "").trim();
+  const unnamed = tabbables.filter((el) => !nameOf(el)).map((el) => el.outerHTML.slice(0, 80));
+  ok(tabbables[0]?.classList.contains("skip"), "the first stop in the tab order is the skip link");
+  ok(!d.querySelector('[tabindex]:not([tabindex="0"]):not([tabindex="-1"])'), "no positive tabindex anywhere, so the tab order follows the page");
+  ok(unnamed.length === 0, `all ${tabbables.length} keyboard stops have an accessible name`, unnamed.join("\n"));
+  const kinds = { "header button": "#theme-btn", "nav link": "nav a", "tile": ".tile", "finding row": ".finding-head", "filter": ".filters select",
+    "map node": "g.node", "account row": ".acct-toggle", "column definition": ".has-def", "gaps row": ".gap summary", "skip link": "a.skip" };
+  const noRing = [];
+  for (const [label, sel] of Object.entries(kinds)) {
+    const el = d.querySelector(sel);
+    if (!el) { noRing.push(`${label}: not found`); continue; }
+    el.focus({ focusVisible: true });
+    const cs = w.getComputedStyle(el);
+    const ring = el.matches("g.node") ? w.getComputedStyle(el.querySelector(".focus-ring")).stroke !== "none" : cs.outlineStyle !== "none" && parseFloat(cs.outlineWidth) > 0;
+    if (d.activeElement !== el || !ring) noRing.push(`${label}: ${d.activeElement === el ? "no visible outline" : "cannot take focus"}`);
+  }
+  ok(noRing.length === 0, "every kind of control takes keyboard focus and shows a visible focus outline", noRing.join("\n"));
+  const skip = d.querySelector("a.skip");
+  skip.focus({ focusVisible: true });
+  ok(skip.getBoundingClientRect().left >= 0, "the skip link becomes visible when focused");
+  skip.click();
+  ok(d.activeElement === d.getElementById("main"), "activating the skip link moves focus to the main content");
+  ok(d.querySelector("h1") && d.querySelectorAll("main h2").length >= 6 && d.documentElement.lang === "en",
+    "one h1 (the company), an h2 per section, and the page language set");
+
+  // Error state: every file bad. Earlier results must not stay on screen.
+  const upload = (files) => {
+    const input = d.getElementById("file-input");
+    const dt = new w.DataTransfer();
+    for (const [name, text] of files) dt.items.add(new w.File([text], name, { type: "application/json" }));
+    input.files = dt.files;
+    input.dispatchEvent(new w.Event("change", { bubbles: true }));
+  };
+  upload([["unknown-schema.json", await fetchText(BROKEN + "unknown-schema.json")], ["not-json.json", await fetchText(BROKEN + "not-json.json")]]);
+  await waitFor(() => /could not be read/.test(d.getElementById("load-status").textContent));
+  const statusText = d.getElementById("load-status").textContent;
+  ok(/unknown-schema\.json/.test(statusText) && /not-json\.json/.test(statusText) &&
+    ["overview-body", "findings-body", "map-body", "accounts-body", "gaps-body"].every((id) => /None of the files could be read/.test(d.getElementById(id).textContent)) &&
+    d.getElementById("download-btn").disabled && !d.querySelector("g.node"),
+    "error state: when every file is bad, each error names its file and the previous dashboard is cleared");
+
+  // A file with no networks: zero is observed, not "not in export".
+  upload([["no-networks.json", await fetchText(BROKEN + "no-networks.json")]]);
+  await waitFor(() => d.body.classList.contains("has-data"));
+  const netTile = d.querySelector('#overview-body [data-count="company.vpcs"]');
+  ok(netTile?.textContent === "0" && /No networks in these files/.test(d.getElementById("map-body").textContent) &&
+    /No checks failed/.test(d.getElementById("findings-body").textContent),
+    "a file with no networks: Networks shows 0, the map says there are no networks, and no checks failed");
+
+  // Offline after load: uploading and analyzing your own files makes no network request.
+  let fetches = 0;
+  w.fetch = () => { fetches++; return Promise.reject(new TypeError("offline (test)")); };
+  const llFiles = await Promise.all(SAMPLE_SETS.larkspur.files.map(async (p) => [base(p), await fetchText(p)]));
+  upload(llFiles);
+  await waitFor(() => d.querySelectorAll(".finding").length === 18);
+  ok(d.querySelectorAll(".finding").length === 18 && fetches === 0 && d.querySelectorAll("g.node").length === 2,
+    `offline: after the page has loaded, uploading files still parses and analyzes them (18 findings, ${fetches} network requests)`);
+  frame.remove();
 
   // Reference listing: what the engine reported for the clean samples.
   for (const [title, r] of [["AWS", result], ["Azure and GCP", orr]]) {

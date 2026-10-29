@@ -9,7 +9,7 @@
   --border: #d8d8d1;
   --focus: #1c1c1a;
   --sev-critical: #b42318;
-  --sev-high: #c2410c;
+  --sev-high: #bc3f0b;
   --sev-medium: #946200;
   --sev-low: #1d4ed8;
   --mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
@@ -38,7 +38,8 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+/* scroll-padding keeps a focused or linked element clear of the sticky header */
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 112px; }
 body {
   margin: 0;
   font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -58,7 +59,10 @@ a { color: inherit; }
   clip: rect(0 0 0 0); white-space: nowrap; border: 0; padding: 0; margin: -1px;
 }
 .skip { position: absolute; left: -9999px; }
-.skip:focus { left: 16px; top: 8px; z-index: 20; background: var(--surface); padding: 6px 10px; border: 1px solid var(--border); }
+.skip:focus { left: 16px; top: 8px; z-index: 20; background: var(--surface); color: var(--text); padding: 6px 10px; border: 1px solid var(--border); }
+main:focus { outline: none; } /* focused only as the skip link's target */
+/* Inside containers that clip overflow, draw the focus outline inside the element. */
+nav a:focus-visible, .finding-head:focus-visible, .gap summary:focus-visible { outline-offset: -3px; }
 .muted { color: var(--muted); }
 .small { font-size: 0.85rem; }
 
@@ -77,7 +81,8 @@ header.site {
   background: var(--surface); border-bottom: 1px solid var(--border);
 }
 .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding-top: 10px; padding-bottom: 6px; }
-.brand { font-weight: 650; font-size: 1.05rem; min-width: 0; overflow-wrap: anywhere; }
+.brand { margin: 0; font-weight: 650; font-size: 1.05rem; line-height: 1.3; min-width: 0; overflow-wrap: anywhere; }
+.theme-icon { display: inline-block; }
 .company-pick select { font-weight: 650; width: auto; max-width: 100%; }
 nav { min-width: 0; max-width: 100%; }
 nav ul { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; overflow-x: auto; scrollbar-width: thin; }
@@ -384,4 +389,38 @@ table.mini td code { white-space: nowrap; }
   .accounts tr.acct-row > td { display: flex; justify-content: space-between; gap: 12px; text-align: right; }
   .accounts tr.acct-row > td::before { content: attr(data-label); color: var(--muted); text-align: left; }
   .accounts tr.acct-detail { border: 1px solid var(--border); border-top: 0; border-radius: 0 0 10px 10px; overflow: hidden; }
+}
+
+/* Print: all five sections on white paper, without the controls. Rows that are open on
+   screen print open; closed rows print their one-line summary. */
+@media print {
+  :root, :root[data-theme] {
+    --bg: #ffffff; --surface: #ffffff; --sunken: #f2f2ee; --text: #000000; --muted: #4a4a46;
+    --border: #c9c9c2; --focus: #000000; --sev-critical: #b42318; --sev-high: #bc3f0b;
+    --sev-medium: #946200; --sev-low: #1d4ed8; color-scheme: light;
+  }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html { scroll-padding-top: 0; }
+  body { background: #fff; font-size: 11pt; }
+  header.site { position: static; border-bottom: 1px solid var(--border); }
+  header.site nav, header.site .actions, .skip, #load, .filters, .map-hint, .chev,
+  .tile-def, .def-pop, .map-tip, .hint, .reset { display: none !important; }
+  main section { padding: 14px 0; scroll-margin-top: 0; }
+  h2, h3, h4, h5 { break-after: avoid; }
+  .tile, .finding, .gap, .nie-file, .vpc, .accounts tr, .map-legend { break-inside: avoid; }
+  .tiles { grid-template-columns: repeat(3, 1fr); }
+  .finding-list, .gap-list, .table-scroll, .map-scroll { overflow: visible; max-height: none; }
+  .map-scroll { border: 0; }
+  .map-svg { width: 100% !important; height: auto !important; }
+  .snippet { max-height: none; overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .has-def { border-bottom: 0; }
+  a { text-decoration: none; }
+  .gaps-pointer a::after { content: " (Standards gaps section)"; }
+  /* The accounts table must fit the page: let cells wrap and lay the detail out in two columns. */
+  table.accounts { font-size: 9pt; table-layout: auto; }
+  .accounts th, .accounts td { padding: 5px 6px; }
+  .accounts tr.acct-row > *, .accounts thead th { white-space: normal; }
+  .vpc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .vpc-part.subnets { grid-column: auto !important; }
+  .vpc-part code, table.mini td code, .nie-section code { white-space: normal; overflow-wrap: anywhere; }
 }

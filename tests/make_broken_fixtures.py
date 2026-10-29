@@ -32,6 +32,21 @@ del doc["Regions"]["us-east-1"]["InternetGateways"]
 del doc["Regions"]["us-west-2"]["Vpcs"]
 (OUT / "tidewater-prod-app-map-broken.json").write_text(json.dumps(doc, indent=2) + "\n", newline="\n")
 
+# A valid account with no networks at all: every section present and empty.
+# The dashboard must show zero (observed), not "not in export", and say there are no networks.
+empty_region = {k: [] for k in ("Vpcs Subnets RouteTables InternetGateways NatGateways TransitGateways "
+                                "TransitGatewayAttachments VpcEndpoints NetworkInterfaces SecurityGroups "
+                                "VpcPeeringConnections FlowLogs LoadBalancers Listeners WebAcls WebAclResources").split()}
+doc = {
+    "_export": {"schema": "aws-account-inventory/1.0", "generated": "2026-10-28T12:00:00Z", "synthetic": True,
+                "source": "SYNTHETIC test fixture: an account with no networks."},
+    "Account": {"AccountId": "880310000099", "AccountName": "larkspur-sandbox", "Company": "Larkspur Lending",
+                "Tags": {"AccountRole": "sandbox", "Environment": "sandbox", "Owner": "ops-team"}},
+    "Regions": {"us-east-1": empty_region},
+    "Global": {"CloudFrontDistributions": [], "WebAclsGlobal": []},
+}
+(OUT / "no-networks.json").write_text(json.dumps(doc, indent=2) + "\n", newline="\n")
+
 # A file whose schema the dashboard does not know.
 unknown = {"_export": {"schema": "oracle-tenancy-inventory/1.0", "synthetic": True}, "Tenancy": {}}
 (OUT / "unknown-schema.json").write_text(json.dumps(unknown, indent=2) + "\n", newline="\n")

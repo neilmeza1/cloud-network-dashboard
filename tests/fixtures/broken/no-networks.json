@@ -1,0 +1,42 @@
+{
+  "_export": {
+    "schema": "aws-account-inventory/1.0",
+    "generated": "2026-10-28T12:00:00Z",
+    "synthetic": true,
+    "source": "SYNTHETIC test fixture: an account with no networks."
+  },
+  "Account": {
+    "AccountId": "880310000099",
+    "AccountName": "larkspur-sandbox",
+    "Company": "Larkspur Lending",
+    "Tags": {
+      "AccountRole": "sandbox",
+      "Environment": "sandbox",
+      "Owner": "ops-team"
+    }
+  },
+  "Regions": {
+    "us-east-1": {
+      "Vpcs": [],
+      "Subnets": [],
+      "RouteTables": [],
+      "InternetGateways": [],
+      "NatGateways": [],
+      "TransitGateways": [],
+      "TransitGatewayAttachments": [],
+      "VpcEndpoints": [],
+      "NetworkInterfaces": [],
+      "SecurityGroups": [],
+      "VpcPeeringConnections": [],
+      "FlowLogs": [],
+      "LoadBalancers": [],
+      "Listeners": [],
+      "WebAcls": [],
+      "WebAclResources": []
+    }
+  },
+  "Global": {
+    "CloudFrontDistributions": [],
+    "WebAclsGlobal": []
+  }
+}
