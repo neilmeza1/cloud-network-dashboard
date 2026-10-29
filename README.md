@@ -1,5 +1,7 @@
 # Cloud Network Dashboard
 
+**Live demo:** https://neilmeza1.github.io/cloud-network-dashboard/
+
 Drop in a cloud inventory export (AWS, Azure or GCP) and get a clean network dashboard: what is there, what breaks the standards, how it connects, and what the files cannot tell you.
 
 It is a static site with no backend and no build step. Files are read in your browser and never uploaded.
