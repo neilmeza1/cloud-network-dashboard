@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cloud Network Dashboard</title>
+  <meta name="description" content="Upload a cloud inventory export and see its network, findings and gaps. Files are read in your browser and never uploaded.">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site">
+    <div class="wrap bar">
+      <div class="brand">
+        <span id="company-name">Cloud Network Dashboard</span>
+        <label class="company-pick" hidden>
+          <span class="visually-hidden">Company</span>
+          <select id="company-select"></select>
+        </label>
+      </div>
+      <nav aria-label="Sections">
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#findings">Findings</a></li>
+          <li><a href="#map">Map</a></li>
+          <li><a href="#accounts">Accounts</a></li>
+          <li><a href="#gaps">Gaps</a></li>
+        </ul>
+      </nav>
+      <div class="actions">
+        <button type="button" id="upload-btn">Upload</button>
+        <button type="button" id="download-btn" disabled>Download dashboard-data.json</button>
+      </div>
+    </div>
+    <p class="wrap privacy">Files are read in your browser and never uploaded.</p>
+  </header>
+
+  <main id="main" class="wrap">
+    <section id="load" aria-labelledby="load-h">
+      <h2 id="load-h">Load inventory files</h2>
+      <div id="dropzone" class="dropzone">
+        <p>Drop JSON export files or a whole folder here. One folder is one company.</p>
+        <div class="row">
+          <button type="button" id="pick-files">Choose files</button>
+          <button type="button" id="pick-folder">Choose folder</button>
+          <input type="file" id="file-input" class="visually-hidden" accept=".json,application/json" multiple tabindex="-1">
+          <input type="file" id="folder-input" class="visually-hidden" webkitdirectory multiple tabindex="-1">
+        </div>
+        <p class="samples">Or try a synthetic sample:
+          <button type="button" data-sample="tidewater">Load Tidewater (AWS)</button>
+          <button type="button" data-sample="larkspur">Load Larkspur (messy AWS)</button>
+        </p>
+      </div>
+      <div id="load-status" role="status" aria-live="polite"></div>
+    </section>
+
+    <section id="overview" aria-labelledby="overview-h">
+      <h2 id="overview-h">Overview</h2>
+      <p class="q">What am I looking at?</p>
+      <div id="overview-body"><p class="empty">Load files to see the overview.</p></div>
+    </section>
+
+    <section id="findings" aria-labelledby="findings-h">
+      <h2 id="findings-h">Findings</h2>
+      <p class="q">What is wrong?</p>
+      <div id="findings-body"><p class="empty">Load files to see findings.</p></div>
+    </section>
+
+    <section id="map" aria-labelledby="map-h">
+      <h2 id="map-h">Network map</h2>
+      <p class="q">How does it connect?</p>
+      <p class="pending">The network map is built in build step 5.</p>
+    </section>
+
+    <section id="accounts" aria-labelledby="accounts-h">
+      <h2 id="accounts-h">Accounts</h2>
+      <p class="q">What is in each one?</p>
+      <p class="pending">The accounts table is built in build step 4.</p>
+    </section>
+
+    <section id="gaps" aria-labelledby="gaps-h">
+      <h2 id="gaps-h">Standards gaps</h2>
+      <p class="q">What can we not tell from these files?</p>
+      <p class="pending">This section is built in build step 6.</p>
+    </section>
+  </main>
+
+  <footer class="wrap site-foot">
+    <p>Portfolio project. Kestrel Ridge Financial and the sample companies are fictional; all sample data is synthetic.</p>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

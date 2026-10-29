@@ -79,7 +79,7 @@ export function normalizeAws(doc, meta) {
   const sections = {}; // region -> { section: true|false }
   out.accounts.push({
     cloud: "aws", id: accountId, name: (acct && acct.AccountName) || null, company,
-    file, tags: accountTags, role: accountTags?.AccountRole ?? null,
+    exportCompany: (acct && acct.Company) || null, dir: meta.dir ?? null, file, tags: accountTags, role: accountTags?.AccountRole ?? null,
     environment: accountTags?.Environment ?? null, regions: regionNames, sections,
     src: src("Account"),
   });

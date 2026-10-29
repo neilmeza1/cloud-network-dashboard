@@ -1,0 +1,184 @@
+// Page controller: load files -> model -> checks -> dashboard-data -> render.
+// Rendering reads only the dashboard-data object.
+
+import { buildModel } from "./model/model.js";
+import { runChecks } from "./checks/engine.js";
+import { fetchStandards } from "./standards.js";
+import { buildDashboardData } from "./dashboard-data.js";
+import { SAMPLE_SETS, fetchSampleSet } from "./samples.js";
+import { fromFileList, fromDrop } from "./ui/upload.js";
+import { renderOverview } from "./ui/overview.js";
+import { renderFindings, emptyFilters } from "./ui/findings.js";
+import { h } from "./ui/dom.js";
+
+const $ = (id) => document.getElementById(id);
+const BASE = new URL("./", location.href);
+const state = {
+  standards: null, inputs: [], docs: new Map(), model: null, checks: null,
+  company: null, data: null, filters: emptyFilters(), expanded: new Set(),
+};
+
+function status(...kids) {
+  $("load-status").replaceChildren(...kids);
+}
+
+function errorList(title, items) {
+  return h("div", { class: "errors", role: "alert" }, h("p", null, h("strong", null, title)), h("ul", null, items.map((t) => h("li", null, t))));
+}
+
+async function load(inputs, { ignored = [], scroll = true } = {}) {
+  if (!inputs.length) {
+    status(errorList("No JSON files found.", ignored.length ? [`Ignored (not .json): ${ignored.join(", ")}`] : ["Pick .json export files or a folder that contains them."]));
+    return;
+  }
+  const docs = new Map();
+  for (const i of inputs) {
+    try { docs.set(i.path, JSON.parse(i.text)); } catch { /* buildModel reports it */ }
+  }
+  const model = buildModel(inputs);
+  Object.assign(state, {
+    inputs, docs, model, checks: runChecks(model, state.standards),
+    company: model.companies[0]?.name ?? null, filters: emptyFilters(), expanded: new Set(),
+  });
+  const notes = [];
+  if (model.errors.length) notes.push(errorList("Some files could not be read:", model.errors.map((e) => e.message)));
+  if (ignored.length) notes.push(h("p", { class: "muted small" }, `Ignored (not .json): ${ignored.join(", ")}`));
+  if (model.companies.length) {
+    notes.unshift(h("p", null, "Loaded ", model.companies.map((c) => c.name).join(", "), ". ",
+      h("details", { class: "file-list" }, h("summary", null, "Files"),
+        h("ul", null, model.files.map((f) => h("li", null, h("code", null, f.file)))))));
+  }
+  status(...notes);
+  rebuild();
+  if (scroll && state.data) $("overview").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function rebuild() {
+  state.data = state.model && state.company
+    ? buildDashboardData({ model: state.model, checks: state.checks, standards: state.standards, docs: state.docs, company: state.company })
+    : null;
+  document.body.classList.toggle("has-data", !!state.data);
+  render();
+}
+
+function render() {
+  const data = state.data;
+  $("download-btn").disabled = !data;
+  const pick = document.querySelector(".company-pick");
+  const companies = state.model?.companies || [];
+  $("company-name").textContent = data ? data.meta.company : "Cloud Network Dashboard";
+  $("company-name").hidden = companies.length > 1;
+  pick.hidden = companies.length <= 1;
+  if (companies.length > 1) {
+    $("company-select").replaceChildren(...companies.map((c) => h("option", { value: c.name, selected: c.name === state.company }, c.name)));
+  }
+  document.title = data ? `${data.meta.company} · Cloud Network Dashboard` : "Cloud Network Dashboard";
+  if (!data) return;
+  renderOverview($("overview-body"), data, {
+    onPickSeverity: (severity) => {
+      state.filters = { ...emptyFilters(), severity };
+      renderFindingsSection();
+      $("findings").scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+  });
+  renderFindingsSection();
+}
+
+function renderFindingsSection(opts = {}) {
+  const search = document.querySelector('[data-role="search"]');
+  const caret = opts.keepFocus && search ? search.selectionStart : null;
+  renderFindings($("findings-body"), state.data, state, {
+    onFilter: (filters, o) => { state.filters = filters; renderFindingsSection(o); },
+    onToggle: (id) => {
+      state.expanded.has(id) ? state.expanded.delete(id) : state.expanded.add(id);
+      renderFindingsSection();
+      [...document.querySelectorAll(".finding-head")].find((b) => b.dataset.id === id)?.focus();
+    },
+  });
+  if (caret !== null) {
+    const s = document.querySelector('[data-role="search"]');
+    s.focus();
+    s.setSelectionRange(caret, caret);
+  }
+}
+
+function download() {
+  const blob = new Blob([JSON.stringify(state.data, null, 2) + "\n"], { type: "application/json" });
+  const a = h("a", { href: URL.createObjectURL(blob), download: "dashboard-data.json" });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function wire() {
+  $("upload-btn").addEventListener("click", () => {
+    $("load").scrollIntoView({ behavior: "smooth", block: "start" });
+    $("pick-files").focus({ preventScroll: true });
+  });
+  $("download-btn").addEventListener("click", download);
+  $("company-select").addEventListener("change", (e) => {
+    Object.assign(state, { company: e.target.value, filters: emptyFilters(), expanded: new Set() });
+    rebuild();
+  });
+  $("pick-files").addEventListener("click", () => $("file-input").click());
+  $("pick-folder").addEventListener("click", () => $("folder-input").click());
+  for (const id of ["file-input", "folder-input"]) {
+    $(id).addEventListener("change", async (e) => {
+      const { inputs, ignored } = await fromFileList(e.target.files);
+      e.target.value = "";
+      load(inputs, { ignored });
+    });
+  }
+  for (const b of document.querySelectorAll("[data-sample]")) {
+    b.addEventListener("click", () => loadSample(b.dataset.sample));
+  }
+  const dz = $("dropzone");
+  const over = (on) => (e) => { e.preventDefault(); dz.classList.toggle("over", on); };
+  dz.addEventListener("dragenter", over(true));
+  dz.addEventListener("dragover", over(true));
+  dz.addEventListener("dragleave", over(false));
+  dz.addEventListener("drop", async (e) => {
+    over(false)(e);
+    const { inputs, ignored } = await fromDrop(e.dataTransfer);
+    load(inputs, { ignored });
+  });
+  // A file dropped outside the drop zone must not navigate away from the page.
+  window.addEventListener("dragover", (e) => e.preventDefault());
+  window.addEventListener("drop", (e) => e.preventDefault());
+}
+
+async function loadSample(key, opts) {
+  status(h("p", null, `Loading ${SAMPLE_SETS[key].label}…`));
+  try {
+    await load(await fetchSampleSet(key, BASE), opts);
+  } catch (e) {
+    status(errorList("Could not load the sample.", [String(e.message || e)]));
+  }
+}
+
+async function init() {
+  wire();
+  try {
+    state.standards = await fetchStandards(BASE);
+  } catch (e) {
+    status(errorList("Could not load the standards file, so no checks can run.", [String(e.message || e),
+      "Serve the folder over http (for example: python -m http.server) instead of opening index.html directly."]));
+    document.querySelectorAll("#load button").forEach((b) => (b.disabled = true));
+    return;
+  }
+  // ?sample=tidewater|larkspur loads a sample on open; &expand=N opens the first N findings.
+  const params = new URLSearchParams(location.search);
+  const sample = params.get("sample");
+  if (sample && SAMPLE_SETS[sample]) {
+    await loadSample(sample, { scroll: false });
+    const n = Number(params.get("expand") || 0);
+    if (n && state.data) {
+      state.data.findings.slice(0, n).forEach((f) => state.expanded.add(f.id));
+      renderFindingsSection();
+    }
+  }
+  document.body.dataset.ready = "true";
+}
+
+init();

@@ -3,7 +3,7 @@
 All files here are **synthetic**. The companies (Tidewater Payments, Larkspur Lending, Brightwater Insurance, Cobalt Mortgage) and all account IDs, addresses and names are made up. IP addresses come from reserved documentation ranges. Regenerate everything with:
 
 ```bash
-python3 tools/generate_samples.py
+python tools/generate_samples.py
 ```
 
 The generator uses a fixed seed, so the output is identical every time. It also rewrites `EXPECTED_FINDINGS.md`, the answer key listing every problem it planted.

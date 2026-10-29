@@ -6,6 +6,10 @@ import { countSummary } from "../js/model/counts.js";
 import { runChecks } from "../js/checks/engine.js";
 import { fetchStandards } from "../js/standards.js";
 import { SAMPLE_SETS, fetchSampleSet } from "../js/samples.js";
+import { resolvePath } from "../js/model/jsonpath.js";
+import { buildDashboardData } from "../js/dashboard-data.js";
+import { renderOverview } from "../js/ui/overview.js";
+import { renderFindings, emptyFilters } from "../js/ui/findings.js";
 
 const BASE = new URL("../", import.meta.url);
 const BROKEN = "tests/fixtures/broken/";
@@ -36,22 +40,6 @@ function parseAnswerKey(md) {
     if (r && file) rows.push({ file, standard: r[1], check: r[2], text: r[3] });
   }
   return rows;
-}
-
-// Resolves a path like $.Regions["us-east-1"].Vpcs[0].Tags against a parsed document.
-function resolvePath(doc, path) {
-  let cur = doc;
-  const re = /\.([A-Za-z_]\w*)|\["([^"]+)"\]|\[(\d+)\]/g;
-  if (!path.startsWith("$")) return undefined;
-  let m, pos = 1;
-  while ((m = re.exec(path))) {
-    if (m.index !== pos) return undefined;
-    pos = re.lastIndex;
-    const key = m[1] ?? m[2] ?? Number(m[3]);
-    if (cur === null || typeof cur !== "object" || !(key in cur)) return undefined;
-    cur = cur[key];
-  }
-  return pos === path.length ? cur : undefined;
 }
 
 // Multiset diff of "file | standard | check" keys.
@@ -142,6 +130,61 @@ async function main() {
   ok(/not-json\.json: not valid JSON/.test(errFor("not-json.json")?.message || ""), "invalid JSON gives an error naming the file",
     errFor("not-json.json")?.message);
   ok(bm.files.length === 1, "a bad file does not stop the good one from loading");
+
+  section("dashboard-data and rendering");
+  const dd = (m, r, docMap, company) => buildDashboardData({ model: m, checks: r, standards, docs: docMap, company });
+  const tw = dd(model, result, docs, "Tidewater Payments");
+  const ll = dd(model, result, docs, "Larkspur Lending");
+  ok(JSON.stringify(Object.keys(tw)) === JSON.stringify(["meta", "overview", "findings", "network_map", "accounts", "standards_gaps", "standards"]),
+    "dashboard-data parts are in the order the analyze-cloud-export contract lists");
+  ok(tw.findings.length === 8 && ll.findings.length === 18, `findings split by company: Tidewater ${tw.findings.length} (want 8), Larkspur ${ll.findings.length} (want 18)`);
+  const tile = (d, key, item) => d.overview.tiles.find((t) => t.key === key).items.find((i) => i.key === item).value;
+  ok(tile(tw, "accounts", "accounts") === 5 && tile(tw, "vpcs", "vpcs") === 9 && tile(tw, "subnets", "subnets") === 44 &&
+    tile(tw, "connectivity", "transitAttachments") === 5 && tile(ll, "connectivity", "peerings") === 1,
+    "overview tiles carry the step 1 company totals");
+  ok(tw.overview.tiles.length === 5 && tw.overview.findingsBySeverity.counts.map((c) => c.count).join() === "1,4,3,0",
+    "five count tiles plus severity counts (critical 1, high 4, medium 3, low 0 for Tidewater)");
+  ok(tw.overview.tiles.every((t) => t.definition) && tw.overview.tiles.every((t) => t.items.every((i) => i.definition)),
+    "every tile and tile item has a definition");
+  ok(tw.findings.every((f) => f.statement === "Finding" && f.evidence.every((e) => e.snippet && !e.snippet.startsWith("(path not found")))
+    && tw.findings.every((f) => tw.standards[f.standardId]?.statement), "every finding has a raw snippet and the standard's text from the YAML");
+  const bdocs = new Map(brokenInputs.flatMap((i) => { try { return [[i.path, JSON.parse(i.text)]]; } catch { return []; } }));
+  const bd = dd(bm, br, bdocs, bm.companies[0].name);
+  const cdn = bd.overview.tiles.find((t) => t.key === "internet").items.find((i) => i.key === "cdnDistributions");
+  ok(cdn.value === null && cdn.statement === "Not in export", "a tile item whose section is missing says Not in export");
+  ok(bd.standards_gaps.notChecked.length > 0 && bd.standards_gaps.notChecked.every((n) => n.statement === "Not in export"),
+    "checks that could not run are carried as Not in export");
+
+  // Company grouping: by folder; files picked without a folder group by the export's company name.
+  const loose = buildModel(inputs.map((i) => ({ path: base(i.path), text: i.text })));
+  ok(loose.companies.map((c) => `${c.name}:${c.accountIds.length}`).join() === "Tidewater Payments:5,Larkspur Lending:2",
+    "files without a folder group by Account.Company");
+  const moved = buildModel(inputs.map((i) => ({ path: `acquired/${base(i.path)}`, text: i.text })));
+  ok(moved.companies.length === 1 && moved.companies[0].name === "acquired",
+    "one folder is one company, named after the folder when the files disagree on Company");
+  const twice = buildModel([...inputs.slice(0, 1), { path: "copy/" + base(inputs[0].path), text: inputs[0].text }]);
+  ok(twice.accounts.length === 1 && /same account/.test(twice.errors[0]?.message || ""), "the same account uploaded twice is counted once, with an error");
+
+  // Renderers, into detached elements.
+  const ov = document.createElement("div");
+  renderOverview(ov, tw, { onPickSeverity: () => {} });
+  ok(ov.querySelectorAll(".tile").length === 6 && ov.querySelectorAll(".tile-def").length === 6, "overview renders six tiles, each with a definition");
+  const fl = document.createElement("div");
+  const st = { filters: { ...emptyFilters(), severity: "high" }, expanded: new Set() };
+  const draw = () => renderFindings(fl, ll, st, { onFilter: (f) => { st.filters = f; draw(); }, onToggle: (id) => { st.expanded.add(id); draw(); } });
+  draw();
+  ok(fl.querySelectorAll(".finding").length === 9, `severity filter "high" shows the 9 high Larkspur findings (got ${fl.querySelectorAll(".finding").length})`);
+  st.filters = { ...emptyFilters(), q: "ll-legacy-batch flow" };
+  draw();
+  ok(fl.querySelectorAll(".finding").length === 1, "search matches all words: 'll-legacy-batch flow' finds one finding");
+  st.filters = { ...emptyFilters(), standard: "NET-07", account: "880310000001" };
+  draw();
+  ok(fl.querySelectorAll(".finding").length === 2, "standard + account filters combine (NET-07 in larkspur-prod: 2)");
+  fl.querySelector(".finding-head").click();
+  const opened = fl.querySelector(".finding-body:not([hidden])");
+  ok(opened && opened.querySelector("pre.snippet") && /ai-skills\/Cloud_Standards\.yaml/.test(opened.textContent) && /\$\.Regions/.test(opened.textContent),
+    "expanding a finding shows file, path, raw snippet and the standard text");
+  ok(!fl.textContent.includes("null") && !ov.textContent.includes("null") && !ov.textContent.includes("undefined"), "no stray null or undefined in rendered text");
 
   // Reference listing: what the engine reported for the clean AWS samples.
   lines.push("", "## Findings reported for the AWS samples", "");
